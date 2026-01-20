@@ -26,9 +26,9 @@ extends RigidBody3D
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
 var rest_length: float = 0.5
-var spring_stiffness: float = 33300.0
-var damper_stiffness: float = 4995.0
-var max_compression: float = 0.6
+var spring_stiffness: float = 20000.0
+var damper_stiffness: float = 10995.0
+var max_compression: float = 0.5
 var wheel_spring_force: Vector3
 
 	######################
@@ -58,10 +58,10 @@ var brake_torque: float
 
 @export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
 var max_torque = 2000.0 # used to convert the torque value on the curve to a proper force amount.
-var max_rpm = 8000.0 # Max amount of engine rotations
-var idle_rpm = 2000.0 # Lowest amount of engine rotations
-var gear_ratio = 4.5 # Current power multiplyer of gear
-var final_drive = 3.9 # Final gear to multiple torque.
+var max_rpm = 7000.0 # Max amount of engine rotations
+var idle_rpm = 1000.0 # Lowest amount of engine rotations
+var gear_ratio = 4.1 # Current power multiplyer of gear
+var final_drive = 3.63 # Final gear to multiple torque.
 var drive_train_efficeny = 0.85
 
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
@@ -88,7 +88,7 @@ var road_resistance_torque: float # reistance against the road (rolling friction
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
 var wheel_radius = 0.5 # How big the wheel is.
-var wheel_mass = 1.0 # How much the wheel takes up
+var wheel_mass = 10.0 # How much the wheel takes up
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
 var tire_stiffness = 800.0 # Changes how much grip the tire has, makes turning more or less.
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction

@@ -1,6 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://dpu35v4g0f3s4"]
+[gd_scene load_steps=9 format=3 uid="uid://dpu35v4g0f3s4"]
 
-[ext_resource type="PackedScene" uid="uid://c8hy24blg5tii" path="res://Car/Scenes/arcade_car.tscn" id="1_37kl0"]
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_37kl0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -22,10 +22,6 @@ tonemap_mode = 2
 size = Vector3(30, 5, 200)
 
 [sub_resource type="BoxMesh" id="BoxMesh_37kl0"]
-
-[sub_resource type="Curve" id="Curve_37kl0"]
-_data = [Vector2(0.138298, 0.202247), 0.0, 0.0, 0, 0, Vector2(0.37234, 1), 0.0, 0.0, 0, 0, Vector2(0.574468, 1), 0.0, 0.0, 0, 0, Vector2(0.925532, 0.797753), 0.0, 0.0, 0, 0, Vector2(1, 0.595506), 0.0, 0.0, 0, 0]
-point_count = 5
 
 [node name="Test" type="Node3D"]
 
@@ -83,12 +79,9 @@ mesh = SubResource("BoxMesh_37kl0")
 
 [node name="Functional" type="Node3D" parent="."]
 
-[node name="VehicleRigidBody" parent="Functional" node_paths=PackedStringArray("wheels") instance=ExtResource("1_37kl0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.6897, 0)
-mass = 59.0
+[node name="Node3D" parent="Functional" instance=ExtResource("1_37kl0")]
+mass = 1000.0
 gravity_scale = 9.8
-wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("WheelRearLeft"), NodePath("WheelRearRight")]
-torque_curve = SubResource("Curve_37kl0")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)

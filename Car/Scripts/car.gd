@@ -25,10 +25,9 @@ extends RigidBody3D
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length: float = 0.5
-var spring_stiffness: float = 20000.0
-var damper_stiffness: float = 10995.0
-var max_compression: float = 0.5
+var rest_length: float = 0.4
+var spring_stiffness: float = 40000.0
+var max_compression: float = 0.4
 var wheel_spring_force: Vector3
 
 	######################
@@ -57,7 +56,7 @@ var brake_torque: float
 	####################
 
 @export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
-var max_torque = 2000.0 # used to convert the torque value on the curve to a proper force amount.
+var max_torque = 200.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7000.0 # Max amount of engine rotations
 var idle_rpm = 1000.0 # Lowest amount of engine rotations
 var gear_ratio = 4.1 # Current power multiplyer of gear
@@ -87,8 +86,8 @@ var RL_torque_brake = true
 var road_resistance_torque: float # reistance against the road (rolling friction)
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
-var wheel_radius = 0.5 # How big the wheel is.
-var wheel_mass = 10.0 # How much the wheel takes up
+var wheel_radius = 0.2 # How big the wheel is.
+var wheel_mass = 20.0 # How much the wheel takes up
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
 var tire_stiffness = 800.0 # Changes how much grip the tire has, makes turning more or less.
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
@@ -142,9 +141,14 @@ func _physics_process(delta: float) -> void:
 	
 	motor_process()
 	
-	for wheel in wheels:
-		if wheel.is_colliding():
-			gas_proccess(wheel)
+	if FR_torque_engine == true:
+		gas_proccess(fr_wheel)
+	if FL_torque_engine == true:
+		gas_proccess(fl_wheel)
+	if RR_torque_engine == true:
+		gas_proccess(rr_wheel)
+	if RL_torque_engine == true:
+		gas_proccess(rl_wheel)
 		
 		
 func motor_process() -> void:
@@ -322,6 +326,8 @@ func _get_point_velocity(point: Vector3) -> Vector3:
 
 func _get_wheel_traction(ray: RayCast3D):
 	
+	var friction_coefficient = 1.0  # Typical tire friction
+	
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
 	var velocity_at_wheel = linear_velocity + angular_velocity.cross(
@@ -337,12 +343,13 @@ func _get_wheel_traction(ray: RayCast3D):
 	var side_velocity = velocity_at_wheel.dot(side_dir) # How fast the car is going from the side.
 	var car_speed = velocity_at_wheel.dot(-ray.transform.basis.z) # car speed in forward direction
 	
-	
 	var slip_angle = 0.0
-	if abs(car_speed) > 0.1:  # Check car_speed, not slip_angle!
+	if abs(car_speed) > 0.1: 
 		slip_angle = atan2(side_velocity, abs(car_speed))
 	
-	lateral_force[wheel_index] = (-slip_angle * tire_stiffness)
+	var cornering_stiffness = 400.0 
+	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force.length() / 5000.0)  # Normalize to typical load
+
 	
 	# Longitude Force
 
@@ -351,21 +358,22 @@ func _get_wheel_traction(ray: RayCast3D):
 		slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed) # slip ratio decides whether wheel is spinning same, less, or more than the speed of car
 	
   # Better traction curve
-	var optimal_slip = 10.0
-	var normalized_slip = slip_ratio / optimal_slip
+	var optimal_slip = 0.1
+	var slip_sign = sign(slip_ratio)
+	var normalized_slip = abs(slip_ratio) / optimal_slip
 	var traction_multiplier = (2.0 * normalized_slip) / (1.0 + normalized_slip * normalized_slip)
-	traction_multiplier = clamp(traction_multiplier, -1.0, 1.0)
+	traction_multiplier = clamp(traction_multiplier * slip_sign, -1.0, 1.0)
 	
 	if abs(car_speed) < 0.1 and abs(wheel_surface_speed) < 0.1:
 		traction_multiplier = 0.0
 	
-	longitude_force[wheel_index] = (wheel_spring_force.length() * traction_multiplier)
+	longitude_force[wheel_index] = (wheel_spring_force.length() * traction_multiplier * friction_coefficient)
 
 	
 	# Traction Calc
 
 	# F_max = μ * F_normal (friction coefficient × normal force)
-	var friction_coefficient = 1.0  # Typical tire friction
+
 
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force.length()
 	
@@ -389,14 +397,15 @@ func _get_wheel_traction(ray: RayCast3D):
 
 
 func _get_wheel_angular_velocity(delta: float):
+	var wheel_inertia = 0.5 * wheel_mass * wheel_radius * wheel_radius
 	for i in range(4):
 		if not wheels[i].is_colliding():
-			# Wheel in air - free spin with damping
-			wheel_angular_velocity[i] *= 0.99
+			# Free spin - minimal air resistance
+			var air_drag_torque = 0.001 * wheel_angular_velocity[i] * abs(wheel_angular_velocity[i])
+			var angular_decel = air_drag_torque / wheel_inertia
+			wheel_angular_velocity[i] -= angular_decel * delta
 			continue
 		
-		# Real physics: τ = I * α
-		var wheel_inertia = 0.5 * wheel_mass * wheel_radius * wheel_radius
 		
 		# Net torque = engine torque - brake torque
 		var net_torque = wheel_engine_torque[i] - wheel_brake_torque[i]

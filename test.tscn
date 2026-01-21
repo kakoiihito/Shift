@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://dpu35v4g0f3s4"]
 
-[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_37kl0"]
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Tracks/Miata.tscn" id="1_37kl0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -80,6 +80,7 @@ mesh = SubResource("BoxMesh_37kl0")
 [node name="Functional" type="Node3D" parent="."]
 
 [node name="Node3D" parent="Functional" instance=ExtResource("1_37kl0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.97921, 0)
 mass = 1000.0
 gravity_scale = 9.8
 

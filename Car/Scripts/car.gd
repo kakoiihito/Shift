@@ -18,6 +18,8 @@ extends RigidBody3D
 @onready var fr_wheel = $WheelFrontRight
 @onready var rr_wheel = $WheelRearRight
 @onready var rl_wheel = $WheelRearLeft
+var wheel_base = 4.0
+var track = 2.0
 
 	########################
 	# SUSPENSION VARIABLES #
@@ -25,10 +27,10 @@ extends RigidBody3D
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length: float = 0.4
+var rest_length: float = 0.25
 var spring_stiffness: float = 40000.0
-var max_compression: float = 0.4
-var wheel_spring_force: Vector3
+var max_compression: float = 0.35
+var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
 	# STEERING VARIABLES #
@@ -37,9 +39,8 @@ var wheel_spring_force: Vector3
 # The value changes how aggresive it turns. Less is slower but more precise.
 # More is faster but harder to control.
 
-var turnStrength: float = 10.0
-var max_tire_turn_radius = 90.0
-var tire_turn_speed = 10.0
+var max_tire_turn_radius = 40.0
+var tire_turn_speed = 1.0
 
 # Variables used to calculate torque, used to power the car's wheels to go forward.
 
@@ -47,7 +48,7 @@ var tire_turn_speed = 10.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 200.0 # How much the car can brake
+var max_brake_torque = 100.0 # How much the car can brake
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var brake_torque: float
 
@@ -67,12 +68,13 @@ var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produ
 
 
 
+
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
-var FR_torque_engine = true
-var FL_torque_engine = true
-var RR_torque_engine = false
-var RL_torque_engine = false
+var FR_torque_engine = false
+var FL_torque_engine = false
+var RR_torque_engine = true
+var RL_torque_engine = true
 
 var FR_torque_brake = true
 var FL_torque_brake = true
@@ -127,13 +129,15 @@ func _ready() -> void:
 	rr_wheel.set_meta("wheel_index", 3)
 
 func _physics_process(delta: float) -> void:
+	var speed = linear_velocity.length() * 2.237
+	print("Speed: ", speed, " MPH")
 	
 	for wheel in wheels:
 		suspension_proccess(wheel)
 	for wheel in wheels:
 		_get_wheel_traction(wheel)
-	
-	_get_wheel_angular_velocity(delta)
+		_get_wheel_angular_velocity(wheel, delta)
+
 	
 	steering_proccess(delta)
 	brake_proccess(delta)
@@ -178,7 +182,7 @@ func motor_process() -> void:
 	var engine_rpm = wheel_rpm * gear_ratio * final_drive
 	
 	engine_rpm = clamp(engine_rpm, idle_rpm, max_rpm)
-
+	
 	# curve used to scale the rpm levels and now torque.
 	
 	var normalized_rpm = engine_rpm / max_rpm
@@ -259,27 +263,49 @@ func steering_proccess(delta: float) -> void:
 	# So, we can base the direction the car steers on that.
 	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength('SteerRight')
-	
+	var steering_amount = input_turn * max_tire_turn_radius
+	print(steering_amount)
 	# Since the turn strength is multiplied by the turn it will turn based on the input, and since its multipled
 	# delta, it will turn gradually.
-	
-	if input_turn != 0:
-		fl_wheel.rotation.y += deg_to_rad(turnStrength * input_turn) * delta
-		fr_wheel.rotation.y += deg_to_rad(turnStrength * input_turn) * delta
 
-		fl_wheel.rotation.y = clamp(fl_wheel.rotation.y, deg_to_rad(-max_tire_turn_radius), deg_to_rad(max_tire_turn_radius))
-		fr_wheel.rotation.y = clamp(fr_wheel.rotation.y, deg_to_rad(-max_tire_turn_radius), deg_to_rad(max_tire_turn_radius))
-	else:
-		
-		## to reset wheel to starting position smoothly
-		
+	if abs(steering_amount) < 0.0001:
 		fl_wheel.rotation.y = move_toward(fl_wheel.rotation.y, 0.0, tire_turn_speed * delta)
 		fr_wheel.rotation.y = move_toward(fr_wheel.rotation.y, 0.0, tire_turn_speed * delta)
+		return
+	var L = wheel_base
+	var W = track
+	var R = L / tan(abs(steering_amount))
+
+	var inner = atan(L / (R - W * 0.5))
+	var outer = atan(L / (R + W * 0.5))
+	
+	var target_fl := 0.0
+	var target_fr := 0.0
+
+	if steering_amount > 0.0:
+		# Turning left
+		target_fl = inner
+		target_fr = outer
+	else:
+		# Turning right
+		target_fl = -outer
+		target_fr = -inner
 		
+	fl_wheel.rotation.y = move_toward(
+		fl_wheel.rotation.y,
+		target_fl,
+		tire_turn_speed * delta
+	)
+	fr_wheel.rotation.y = move_toward(
+		fr_wheel.rotation.y,
+		target_fr,
+		tire_turn_speed * delta
+	)
 		
 func suspension_proccess(ray: RayCast3D):
 	
 	# If the ray is not touching anything its pointless to attempt to calculate anything
+	var wheel_index = ray.get_meta("wheel_index")
 	
 	if ray.is_colliding():
 		
@@ -295,25 +321,27 @@ func suspension_proccess(ray: RayCast3D):
 		var compression = sign(rest_length - hit_distance)
 		compression = clamp(compression, 0, max_compression)  
 
-		# This section is used to calculate dampning. Based on the spring's velocity calculated in the function below,
-		# it is multiplied with how much the spring should be dampned. The spring dampning calculates how much the spring should not move.
-		# So more dampning is softer and plush, but less dampning is harsh and rough.
-		var damper_ratio = 0.5
+		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
+		# To get the coefficent, a damper ratio and critical dampning variable are needed.
+		# once we get the coefficent, we multiply by spring speed and the dampning is found.
+		var damper_ratio = 0.3
 		
 		var world_vel = _get_point_velocity(hit)
 		var relative_vel = up_dir_spring.dot(world_vel)
+		
 		var c_crit = 2.0 * sqrt(spring_stiffness * mass / wheels.size())
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * relative_vel
+		
 		# This section is used to calculate how much force and where the force should be applied to mimic a car suspension.
-		# The spring force is calculated via how fast the spring moves (spring_stiffness) and how much it should move (compression).
+		# The spring force is calculated via how fast the spring will move (spring_stiffness) and how much it is compressed or extended (compression).
 		# Then, based on spring_force, we subtract how much movement based on dampning and multiply the force by the direction it should move in.
 		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
 		var spring_force = spring_stiffness * compression
-		wheel_spring_force = (spring_force - spring_dampning) * up_dir_spring
+		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
 		var wheel_force_area = hit - ray.global_position
-		apply_force(wheel_spring_force, wheel_force_area)
+		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 
 func _get_point_velocity(point: Vector3) -> Vector3:
 	# A physics forumla used to calculate dampning.
@@ -330,9 +358,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
-	var velocity_at_wheel = linear_velocity + angular_velocity.cross(
-		ray.global_position - global_position
-	)
+	var velocity_at_wheel = _get_point_velocity(ray.global_position)
 	
 
 	
@@ -348,7 +374,7 @@ func _get_wheel_traction(ray: RayCast3D):
 		slip_angle = atan2(side_velocity, abs(car_speed))
 	
 	var cornering_stiffness = 400.0 
-	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force.length() / 5000.0)  # Normalize to typical load
+	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force[wheel_index].length() / 5000.0)  # Normalize to typical load
 
 	
 	# Longitude Force
@@ -367,7 +393,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	if abs(car_speed) < 0.1 and abs(wheel_surface_speed) < 0.1:
 		traction_multiplier = 0.0
 	
-	longitude_force[wheel_index] = (wheel_spring_force.length() * traction_multiplier * friction_coefficient)
+	longitude_force[wheel_index] = (wheel_spring_force[wheel_index].length() * traction_multiplier * friction_coefficient)
 
 	
 	# Traction Calc
@@ -375,7 +401,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	# F_max = μ * F_normal (friction coefficient × normal force)
 
 
-	F_max[wheel_index] = friction_coefficient * wheel_spring_force.length()
+	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 	
 # Get the specific force values for THIS wheel
 	var current_long_force = longitude_force[wheel_index]  # Get float from array
@@ -396,7 +422,8 @@ func _get_wheel_traction(ray: RayCast3D):
 	apply_force(combined_force, force_pos)
 
 
-func _get_wheel_angular_velocity(delta: float):
+func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
+	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	var wheel_inertia = 0.5 * wheel_mass * wheel_radius * wheel_radius
 	for i in range(4):
 		if not wheels[i].is_colliding():
@@ -417,7 +444,7 @@ func _get_wheel_angular_velocity(delta: float):
 		wheel_angular_velocity[i] += angular_acceleration * delta
 		
 		# Rolling resistance (simplified)
-		var rolling_resistance = 0.01 * abs(wheel_spring_force.length()) * wheel_radius
+		var rolling_resistance = 0.01 * abs(wheel_spring_force[wheel_index].length()) * wheel_radius
 		wheel_angular_velocity[i] -= sign(wheel_angular_velocity[i]) * rolling_resistance * delta
 		
 		

@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_70ppv"]
 
 [sub_resource type="Curve" id="Curve_nnsko"]
-_data = [Vector2(0.135802, 0.258427), 0.0, 0.0, 0, 0, Vector2(0.290123, 0.483146), 0.0, 0.0, 0, 0, Vector2(0.425926, 0.696629), 0.0, 0.0, 0, 0, Vector2(0.574, 0.88), 0.0, 0.0, 0, 0, Vector2(0.71, 1), 0.0, 0.0, 0, 0, Vector2(0.86, 0.96), 0.0, 0.0, 0, 0, Vector2(1, 0.83), 0.0, 0.0, 0, 0]
-point_count = 7
+_data = [Vector2(0, 0.314607), 0.0, 0.0, 0, 0, Vector2(0.154321, 0.617978), 1.0618, 1.0618, 0, 0, Vector2(0.777778, 1), 0.0, 0.0, 0, 0, Vector2(0.925926, 0.94382), 0.0, 0.0, 0, 0, Vector2(1, 0.685393), 0.0, 0.0, 0, 0]
+point_count = 5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -358,7 +358,7 @@ wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("Whe
 torque_curve = SubResource("Curve_nnsko")
 
 [node name="WheelFrontLeft" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.7, -1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.6, -1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -370,7 +370,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelFrontRight" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.7, -1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.6, -1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -382,7 +382,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearLeft" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.7, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.6, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -394,7 +394,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearRight" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.7, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.6, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -460,4 +460,4 @@ transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.
 shape = SubResource("ConcavePolygonShape3D_xphiq")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6145, 5.9188)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.132044, 2.74881, 6.30844)

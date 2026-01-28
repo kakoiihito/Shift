@@ -358,7 +358,7 @@ wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("Whe
 torque_curve = SubResource("Curve_nnsko")
 
 [node name="WheelFrontLeft" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.6, -1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.67, -1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -370,7 +370,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelFrontRight" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.6, -1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.67, -1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -382,7 +382,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearLeft" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0.6, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.67, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -394,7 +394,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearRight" type="RayCast3D" parent="."]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0.6, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.67, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -460,4 +460,4 @@ transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.
 shape = SubResource("ConcavePolygonShape3D_xphiq")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.132044, 2.74881, 6.30844)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65547, 6.11209)

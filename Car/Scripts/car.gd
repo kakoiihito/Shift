@@ -29,7 +29,7 @@ var track = 2.0
 
 var rest_length: float = 0.25
 var spring_stiffness: float = 40000.0
-var max_compression: float = 0.35
+var max_compression: float = 0.37
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
@@ -60,7 +60,9 @@ var brake_torque: float
 var max_torque = 200.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7000.0 # Max amount of engine rotations
 var idle_rpm = 1000.0 # Lowest amount of engine rotations
-var gear_ratio = 4.1 # Current power multiplyer of gear
+var gear_ratio = [-3.1, 0.0, 3.1, 4.9, 5.3, 6.0, 7.8] # power multiplyer for engine
+var current_gear_ratio: float
+var current_gear: int
 var final_drive = 3.63 # Final gear to multiple torque.
 var drive_train_efficeny = 0.85
 
@@ -142,7 +144,7 @@ func _physics_process(delta: float) -> void:
 	steering_proccess(delta)
 	brake_proccess(delta)
 
-	
+	transmission_process()
 	motor_process()
 	
 	if FR_torque_engine == true:
@@ -179,7 +181,7 @@ func motor_process() -> void:
 		return
 		
 	var wheel_rpm = (angular_velocity_sum / driven_count) * 60.0 / (2.0 * PI)
-	var engine_rpm = wheel_rpm * gear_ratio * final_drive
+	var engine_rpm = wheel_rpm * current_gear_ratio * final_drive
 	
 	engine_rpm = clamp(engine_rpm, idle_rpm, max_rpm)
 	
@@ -191,7 +193,7 @@ func motor_process() -> void:
 	
 	var engine_torque = (torque_curve.sample(normalized_rpm) * max_torque) * throttle_input # in N·m
 	
-	var wheel_torque = (engine_torque * gear_ratio * final_drive * drive_train_efficeny) / active_wheels_engine
+	var wheel_torque = (engine_torque * current_gear_ratio * final_drive * drive_train_efficeny) / active_wheels_engine
 	
 	# Apply engine braking when throttle is zero
 	var engine_braking_torque := 0.0
@@ -343,6 +345,19 @@ func suspension_proccess(ray: RayCast3D):
 		var wheel_force_area = hit - ray.global_position
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 
+
+func transmission_process():
+	
+	if Input.is_action_just_pressed("ShiftUp") and Input.is_action_pressed("Clutch"):
+		if current_gear < gear_ratio.size() - 1:
+			current_gear += 1
+			current_gear_ratio = gear_ratio[current_gear]
+			
+	if Input.is_action_just_pressed("ShiftDown") and Input.is_action_pressed("Clutch"):
+		if current_gear < gear_ratio.size() - 0:
+			current_gear -= 1
+			current_gear_ratio = gear_ratio[current_gear]
+
 func _get_point_velocity(point: Vector3) -> Vector3:
 	# A physics forumla used to calculate dampning.
 	return linear_velocity + angular_velocity.cross(point - global_position)
@@ -354,7 +369,7 @@ func _get_point_velocity(point: Vector3) -> Vector3:
 
 func _get_wheel_traction(ray: RayCast3D):
 	
-	var friction_coefficient = 1.0  # Typical tire friction
+	var friction_coefficient = 0.75  # Typical tire friction
 	
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
@@ -384,7 +399,7 @@ func _get_wheel_traction(ray: RayCast3D):
 		slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed) # slip ratio decides whether wheel is spinning same, less, or more than the speed of car
 	
   # Better traction curve
-	var optimal_slip = 0.1
+	var optimal_slip = 0.08
 	var slip_sign = sign(slip_ratio)
 	var normalized_slip = abs(slip_ratio) / optimal_slip
 	var traction_multiplier = (2.0 * normalized_slip) / (1.0 + normalized_slip * normalized_slip)

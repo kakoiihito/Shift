@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://fqe7ggtqnvel"]
+
+[ext_resource type="Script" uid="uid://bjw4gnvhm58t1" path="res://UI/Editor.gd" id="1_gxr3w"]
+
+[node name="Editor" type="Control"]
+layout_direction = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gxr3w")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_direction = 1
+layout_mode = 0
+offset_right = 1156.0
+offset_bottom = 648.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_direction = 1
+layout_mode = 2

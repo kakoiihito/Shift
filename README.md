@@ -1,4 +1,4 @@
-## Shift: The Car Simulation
+## Shift: The Car Simulatior
 
   ### Highlights
   * Ready to use vehicle dynamics

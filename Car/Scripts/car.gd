@@ -27,9 +27,9 @@ var track = 2.0
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length: float = 0.25
-var spring_stiffness: float = 40000.0
-var max_compression: float = 0.37
+var rest_length: float = 0.3
+var spring_stiffness: float = 36750.0
+var max_compression: float = 0.391
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
@@ -60,12 +60,15 @@ var brake_torque: float
 var max_torque = 200.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7000.0 # Max amount of engine rotations
 var idle_rpm = 1000.0 # Lowest amount of engine rotations
-var gear_ratio = [-3.1, 0.0, 3.1, 4.9, 5.3, 6.0, 7.8] # power multiplyer for engine
+var gear_ratio = [-3.1, 0.0, 3.2, 2.6, 1.8, 1.5, 1.0]
+ # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear: int
 var final_drive = 3.63 # Final gear to multiple torque.
 var drive_train_efficeny = 0.85
-
+var engine_rpm: float
+var is_shifting = false
+var shift_timer = 0.0
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
 
 
@@ -133,6 +136,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	var speed = linear_velocity.length() * 2.237
 	print("Speed: ", speed, " MPH")
+	print("RPM: ", engine_rpm)
 	
 	for wheel in wheels:
 		suspension_proccess(wheel)
@@ -144,8 +148,8 @@ func _physics_process(delta: float) -> void:
 	steering_proccess(delta)
 	brake_proccess(delta)
 
-	transmission_process()
-	motor_process()
+	transmission_process(delta)
+	motor_process(delta)
 	
 	if FR_torque_engine == true:
 		gas_proccess(fr_wheel)
@@ -157,7 +161,7 @@ func _physics_process(delta: float) -> void:
 		gas_proccess(rl_wheel)
 		
 		
-func motor_process() -> void:
+func motor_process(delta: float) -> void:
 	# To calculate power neccessary, we must first calculate how fast the wheel must rotate (wheel_rpm),
 	# then calculate how fast the engine is moving (engine_rpm), next calculate the engine torque via using a torque curve and converting to proper newton force.
 	# Again, we calculate how much the wheel produces power (wheel_torque). Finally, we calculate the force neccesary to push the wheels.
@@ -181,7 +185,16 @@ func motor_process() -> void:
 		return
 		
 	var wheel_rpm = (angular_velocity_sum / driven_count) * 60.0 / (2.0 * PI)
-	var engine_rpm = wheel_rpm * current_gear_ratio * final_drive
+	var target_rpm = wheel_rpm * current_gear_ratio * final_drive
+
+# Smooth RPM change via clutch
+	if is_shifting:
+	# engine spins free during shift
+		engine_rpm = lerp(engine_rpm, idle_rpm, delta * 0.1)
+	else:
+	# smooth RPM ramp based on clutch
+		engine_rpm = lerp(engine_rpm, target_rpm, (1.0 - Input.get_action_strength("Clutch")) * delta * 0.1)
+
 	
 	engine_rpm = clamp(engine_rpm, idle_rpm, max_rpm)
 	
@@ -191,7 +204,11 @@ func motor_process() -> void:
 	
 	# use the curve and scale it using max_torque. Then based on input apply throttle
 	
-	var engine_torque = (torque_curve.sample(normalized_rpm) * max_torque) * throttle_input # in N·m
+	var engine_torque = torque_curve.sample(normalized_rpm) * max_torque * throttle_input
+	if is_shifting:
+		engine_torque = 0.0
+	engine_torque *= (1.0 - Input.get_action_strength("Clutch"))
+
 	
 	var wheel_torque = (engine_torque * current_gear_ratio * final_drive * drive_train_efficeny) / active_wheels_engine
 	
@@ -266,7 +283,6 @@ func steering_proccess(delta: float) -> void:
 	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength('SteerRight')
 	var steering_amount = input_turn * max_tire_turn_radius
-	print(steering_amount)
 	# Since the turn strength is multiplied by the turn it will turn based on the input, and since its multipled
 	# delta, it will turn gradually.
 
@@ -346,17 +362,33 @@ func suspension_proccess(ray: RayCast3D):
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 
 
-func transmission_process():
-	
-	if Input.is_action_just_pressed("ShiftUp") and Input.is_action_pressed("Clutch"):
-		if current_gear < gear_ratio.size() - 1:
-			current_gear += 1
-			current_gear_ratio = gear_ratio[current_gear]
-			
-	if Input.is_action_just_pressed("ShiftDown") and Input.is_action_pressed("Clutch"):
-		if current_gear < gear_ratio.size() - 0:
-			current_gear -= 1
-			current_gear_ratio = gear_ratio[current_gear]
+func transmission_process(delta: float):
+	var target_clutch = 1.0 - Input.get_action_strength("Clutch")
+
+	# --- SHIFT INPUT ---
+	if not is_shifting and target_clutch < 1.0:
+		if Input.is_action_just_pressed("ShiftUp"):
+			if current_gear < gear_ratio.size() - 1:
+				current_gear += 1
+				current_gear_ratio = gear_ratio[current_gear]
+				is_shifting = true
+				shift_timer = 0.15  # realistic shift time in seconds
+
+		if Input.is_action_just_pressed("ShiftDown"):
+			if current_gear > 0:
+				current_gear -= 1
+				current_gear_ratio = gear_ratio[current_gear]
+				is_shifting = true
+				shift_timer = 0.15  # realistic shift time
+
+	# --- SHIFT TIMER COUNTDOWN ---
+	if is_shifting:
+		shift_timer -= delta
+		if shift_timer <= 0.0:
+			is_shifting = false
+
+				
+	print("Gear: ", current_gear)
 
 func _get_point_velocity(point: Vector3) -> Vector3:
 	# A physics forumla used to calculate dampning.

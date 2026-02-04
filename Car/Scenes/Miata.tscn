@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_70ppv"]
 
 [sub_resource type="Curve" id="Curve_nnsko"]
-_data = [Vector2(0, 0.314607), 0.0, 0.0, 0, 0, Vector2(0.154321, 0.617978), 1.0618, 1.0618, 0, 0, Vector2(0.777778, 1), 0.0, 0.0, 0, 0, Vector2(0.925926, 0.94382), 0.0, 0.0, 0, 0, Vector2(1, 0.685393), 0.0, 0.0, 0, 0]
-point_count = 5
+_data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.08, 0.45), 0.0, 0.0, 0, 0, Vector2(0.17, 0.55), 0.0, 0.0, 0, 0, Vector2(0.25, 0.7), 0.0, 0.0, 0, 0, Vector2(0.33, 0.8), 0.0, 0.0, 0, 0, Vector2(0.42, 0.9), 0.0, 0.0, 0, 0, Vector2(0.5, 0.95), 0.0, 0.0, 0, 0, Vector2(0.58, 0.98), 0.0, 0.0, 0, 0, Vector2(0.67, 1), 0.0, 0.0, 0, 0, Vector2(0.75, 0.98), 0.0, 0.0, 0, 0, Vector2(0.92, 0.8), 0.0, 0.0, 0, 0, Vector2(1, 0.6), 0.0, 0.0, 0, 0]
+point_count = 12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -371,6 +371,7 @@ skeleton = NodePath("")
 
 [node name="WheelFrontRight" type="RayCast3D" parent="."]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.65, -1.9)
+target_position = Vector3(0, -0.5, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 

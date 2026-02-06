@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://c7epypda8yfxx"]
+[gd_scene format=4 uid="uid://c7epypda8yfxx"]
 
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_70ppv"]
@@ -352,113 +352,113 @@ shadow_mesh = SubResource("ArrayMesh_cplvt")
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_xphiq"]
 data = PackedVector3Array(2.7315, 0.7541, 1.1828, 2.74, 0.7254, 1.2515, 2.7485, 0.7541, 1.3203, 2.7485, 0.7541, 1.3203, 2.728, 0.8233, 1.1543, 2.7315, 0.7541, 1.1828, 2.7485, 0.7541, 1.3203, 2.752, 0.8233, 1.3487, 2.728, 0.8233, 1.1543, 2.752, 0.8233, 1.3487, 2.7315, 0.8926, 1.1828, 2.728, 0.8233, 1.1543, 2.752, 0.8233, 1.3487, 2.7485, 0.8926, 1.3203, 2.7315, 0.8926, 1.1828, 2.7485, 0.8926, 1.3203, 2.74, 0.9213, 1.2515, 2.7315, 0.8926, 1.1828, 2.7315, -0.9026, 1.1828, 2.74, -0.9313, 1.2515, 2.7485, -0.9026, 1.3203, 2.7485, -0.9026, 1.3203, 2.728, -0.8334, 1.1543, 2.7315, -0.9026, 1.1828, 2.7485, -0.9026, 1.3203, 2.752, -0.8334, 1.3487, 2.728, -0.8334, 1.1543, 2.752, -0.8334, 1.3487, 2.7315, -0.7641, 1.1828, 2.728, -0.8334, 1.1543, 2.752, -0.8334, 1.3487, 2.7485, -0.7641, 1.3203, 2.7315, -0.7641, 1.1828, 2.7485, -0.7641, 1.3203, 2.74, -0.7354, 1.2515, 2.7315, -0.7641, 1.1828)
 
-[node name="Node3D" type="RigidBody3D" node_paths=PackedStringArray("wheels")]
+[node name="Node3D" type="RigidBody3D" unique_id=1502971588 node_paths=PackedStringArray("wheels")]
 script = ExtResource("1_70ppv")
 wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("WheelRearLeft"), NodePath("WheelRearRight")]
 torque_curve = SubResource("Curve_nnsko")
 
-[node name="WheelFrontLeft" type="RayCast3D" parent="."]
+[node name="WheelFrontLeft" type="RayCast3D" parent="." unique_id=2052019363]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.65, -1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
-[node name="FrontLeftWheel" type="Node3D" parent="WheelFrontLeft"]
+[node name="FrontLeftWheel" type="Node3D" parent="WheelFrontLeft" unique_id=585656182]
 
-[node name="wheel_frontLeft" type="MeshInstance3D" parent="WheelFrontLeft/FrontLeftWheel"]
+[node name="wheel_frontLeft" type="MeshInstance3D" parent="WheelFrontLeft/FrontLeftWheel" unique_id=1796671113]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
-[node name="WheelFrontRight" type="RayCast3D" parent="."]
+[node name="WheelFrontRight" type="RayCast3D" parent="." unique_id=1038542688]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.65, -1.9)
 target_position = Vector3(0, -0.5, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
-[node name="FrontRightWheel" type="Node3D" parent="WheelFrontRight"]
+[node name="FrontRightWheel" type="Node3D" parent="WheelFrontRight" unique_id=346997846]
 
-[node name="wheel_frontRight" type="MeshInstance3D" parent="WheelFrontRight/FrontRightWheel"]
+[node name="wheel_frontRight" type="MeshInstance3D" parent="WheelFrontRight/FrontRightWheel" unique_id=1402629533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
-[node name="WheelRearLeft" type="RayCast3D" parent="."]
+[node name="WheelRearLeft" type="RayCast3D" parent="." unique_id=2031816737]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.65, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
-[node name="RearLeftWheel" type="Node3D" parent="WheelRearLeft"]
+[node name="RearLeftWheel" type="Node3D" parent="WheelRearLeft" unique_id=460100754]
 
-[node name="wheel_backLeft" type="MeshInstance3D" parent="WheelRearLeft/RearLeftWheel"]
+[node name="wheel_backLeft" type="MeshInstance3D" parent="WheelRearLeft/RearLeftWheel" unique_id=694878425]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
-[node name="WheelRearRight" type="RayCast3D" parent="."]
+[node name="WheelRearRight" type="RayCast3D" parent="." unique_id=305259289]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.65, 1.9)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
-[node name="RearRightWheel" type="Node3D" parent="WheelRearRight"]
+[node name="RearRightWheel" type="Node3D" parent="WheelRearRight" unique_id=1779066980]
 
-[node name="wheel_backRight" type="MeshInstance3D" parent="WheelRearRight/RearRightWheel"]
+[node name="wheel_backRight" type="MeshInstance3D" parent="WheelRearRight/RearRightWheel" unique_id=1586398132]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
-[node name="Object_2" type="MeshInstance3D" parent="."]
+[node name="Object_2" type="MeshInstance3D" parent="." unique_id=144286694]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_taojr")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=195448548]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_03rhi")
 
-[node name="Object_4" type="MeshInstance3D" parent="."]
+[node name="Object_4" type="MeshInstance3D" parent="." unique_id=804883341]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_70ppv")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=1185054328]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_nnsko")
 
-[node name="Object_5" type="MeshInstance3D" parent="."]
+[node name="Object_5" type="MeshInstance3D" parent="." unique_id=760497289]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_d6hpf")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." unique_id=1159187188]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_dmnhh")
 
-[node name="Object_6" type="MeshInstance3D" parent="."]
+[node name="Object_6" type="MeshInstance3D" parent="." unique_id=1292107560]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_wo0ka")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." unique_id=1276928853]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_37x55")
 
-[node name="Object_7" type="MeshInstance3D" parent="."]
+[node name="Object_7" type="MeshInstance3D" parent="." unique_id=1636003799]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_dq2ll")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." unique_id=959110753]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_7a0ag")
 
-[node name="Object_10" type="MeshInstance3D" parent="."]
+[node name="Object_10" type="MeshInstance3D" parent="." unique_id=1781958649]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 mesh = SubResource("ArrayMesh_7o7ul")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." unique_id=1767441614]
 transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_xphiq")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=591093353]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65547, 6.11209)

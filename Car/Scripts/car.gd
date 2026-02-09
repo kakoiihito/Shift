@@ -28,9 +28,9 @@ var track = 2.0
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length: float = 0.3
+var rest_length: float = 0.25
 var spring_stiffness: float = 36800.0
-var max_compression: float = 0.391
+var max_compression: float = 0.381
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
@@ -40,8 +40,8 @@ var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 # The value changes how aggresive it turns. Less is slower but more precise.
 # More is faster but harder to control.
 
-var max_tire_turn_radius = 40.0
-var tire_turn_speed = 1.0
+var max_tire_turn_angle = 40.0
+var tire_turn_speed = 2.0
 
 # Variables used to calculate torque, used to power the car's wheels to go forward.
 
@@ -58,14 +58,13 @@ var brake_torque: float
 	####################
 
 @export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
-var max_torque = 200.0 # used to convert the torque value on the curve to a proper force amount.
+var max_torque = 400.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7500.0 # Max amount of engine rotations
 var idle_rpm = 850.0 # Lowest amount of engine rotations
 var engine_rpm: float
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
-var engine_angular_velocity = idle_rpm * TAU / 60.0
-var engine_inertia := 0.25  # kg·m² (reasonable for small NA engine)
-var rpm_lock_rate = 6.0  # tune this
+var engine_angular_velocity: float
+var engine_inertia := 0.25  # kg * m^2
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
 var FR_torque_engine = false
@@ -142,21 +141,18 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var speed = linear_velocity.length() * 2.237
-	print("Speed: ", speed, " MPH")
-	print("RPM: ", engine_rpm)
+	print("Speed: ", round(speed), " MPH")
+	print("RPM: ", round(engine_rpm))
 	
 	for wheel in wheels:
 		suspension_proccess(wheel)
-	for wheel in wheels:
-		_get_wheel_traction(wheel)
 		_get_wheel_angular_velocity(wheel, delta)
-
+		_get_wheel_traction(wheel)
 	
 	steering_proccess(delta)
 	brake_proccess(delta)
-
-	transmission_process(delta)
 	motor_process(delta)
+	transmission_process(delta)
 	
 	if FR_torque_engine == true:
 		gas_proccess(fr_wheel)
@@ -173,17 +169,15 @@ func motor_process(delta: float) -> void:
 	# then calculate how fast the engine is moving (engine_rpm), next calculate the engine torque via using a torque curve and converting to proper newton force.
 	# Again, we calculate how much the wheel produces power (wheel_torque). Finally, we calculate the force neccesary to push the wheels.
 	
-	var angular_velocity_sum: float
-	var driven_count: int
+	var angular_velocity_sum: float = 0.0
+	var driven_count: int = 0
 	var throttle_input := Input.get_action_strength("Gas")
 	var clutch_input := Input.get_action_strength("Clutch")
-	var clutch_engagement = 1.0 - clutch_input
+	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
 	var clutch_torque := 0.0
-	
-	# more linear clutch engagement
-	clutch_engagement = clutch_engagement * clutch_engagement
-	
+	var drivetrain_ratio = current_gear_ratio * final_drive
+
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
@@ -194,11 +188,14 @@ func motor_process(delta: float) -> void:
 	# wheel rpm calc (wheel rotations per minute). Here the total rad is averaged out, converted to revs, then converted to rpm.
 	
 	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * gear_ratio[current_gear] * final_drive
+		target_engine_ang_vel = (angular_velocity_sum / driven_count) * current_gear_ratio
 		clutch_torque = (target_engine_ang_vel - engine_angular_velocity) * clutch_stiffness
 		clutch_torque = clamp(clutch_torque, -max_clutch_torque, max_clutch_torque)
+		
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
-
+	
+	if engine_rpm < idle_rpm and clutch_engagement < 0.5:
+		throttle_input = max(throttle_input, 0.3)  # Auto-throttle to maintain idle
 	
 	# curve used to scale the rpm levels and now torque.
 	
@@ -208,15 +205,15 @@ func motor_process(delta: float) -> void:
 	var engine_torque: float
 	if is_shifting == false: # if shifting you dont have torque due to engine not being in use
 		engine_torque = torque_curve.sample(normalized_rpm) * max_torque * throttle_input
-	
+	else:
+		clutch_engagement = 0.0
+		engine_torque = 0.0
+		
 	# engine experiences losses with each rotation
 	var base_friction = 0.02 * max_torque
 	var linear_friction = 0.03 * max_torque * normalized_rpm
 	var quadratic_friction = 0.02 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
-	
-	var drivetrain_ratio = current_gear_ratio * final_drive
-
 	
 
 	# how fast the pistons in the engine are moving. used to calcualte rpm
@@ -224,13 +221,13 @@ func motor_process(delta: float) -> void:
 	var net_engine_torque =engine_torque- engine_friction+ clutch_torque
 	var engine_angular_accel = net_engine_torque / engine_inertia
 	engine_angular_velocity += engine_angular_accel * delta
-
 	
 	# recompute rpm due to key variable change
+	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
-	engine_rpm = clamp(engine_rpm, idle_rpm, max_rpm)
 	
 	# final calc
+	
 	var drive_torque = engine_torque * drivetrain_ratio * drive_train_efficeny * clutch_engagement
 
 	var per_wheel_torque = drive_torque / active_wheels_engine
@@ -278,14 +275,14 @@ func transmission_process(delta: float):
 			if current_gear < gear_ratio.size() - 1:
 				current_gear += 1
 				is_shifting = true
-				shift_timer = 0.15  # realistic shift time in seconds
+				shift_timer = 0.3  # realistic shift time in seconds
 
 # down shift
 		if Input.is_action_just_pressed("ShiftDown"):
 			if current_gear > 0:
 				current_gear -= 1
 				is_shifting = true
-				shift_timer = 0.15  # realistic shift time
+				shift_timer = 0.3  # realistic shift time
 
 # countdown system before another shift can be made
 	if is_shifting:
@@ -323,12 +320,12 @@ func steering_proccess(delta: float) -> void:
 	# When you check the strength it returns a number value and either Right or Left are assigned a value.
 	# So, we can base the direction the car steers on that.
 	
-	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength('SteerRight')
-	var steering_amount = input_turn * max_tire_turn_radius
+	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
+	var steering_amount = input_turn * max_tire_turn_angle
 	# Since the turn strength is multiplied by the turn it will turn based on the input, and since its multipled
 	# delta, it will turn gradually.
 
-	if abs(steering_amount) < 0.0001:
+	if abs(input_turn) < 0.01:
 		fl_wheel.rotation.y = move_toward(fl_wheel.rotation.y, 0.0, tire_turn_speed * delta)
 		fr_wheel.rotation.y = move_toward(fr_wheel.rotation.y, 0.0, tire_turn_speed * delta)
 		return
@@ -344,12 +341,12 @@ func steering_proccess(delta: float) -> void:
 
 	if steering_amount > 0.0:
 		# Turning left
-		target_fl = inner
-		target_fr = outer
+		target_fr = -inner
+		target_fl = -outer
 	else:
 		# Turning right
-		target_fl = -outer
-		target_fr = -inner
+		target_fl = inner
+		target_fr = outer
 		
 	fl_wheel.rotation.y = move_toward(
 		fl_wheel.rotation.y,
@@ -361,6 +358,7 @@ func steering_proccess(delta: float) -> void:
 		target_fr,
 		tire_turn_speed * delta
 	)
+
 		
 func suspension_proccess(ray: RayCast3D):
 	

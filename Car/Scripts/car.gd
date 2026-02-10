@@ -58,7 +58,7 @@ var brake_torque: float
 	####################
 
 @export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
-var max_torque = 400.0 # used to convert the torque value on the curve to a proper force amount.
+var max_torque = 800.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7500.0 # Max amount of engine rotations
 var idle_rpm = 850.0 # Lowest amount of engine rotations
 var engine_rpm: float
@@ -88,8 +88,8 @@ var final_drive = 3.63 # Final gear to multiple torque.
 var gear_ratio = [-3.1, 0.0, 3.2, 2.6, 1.8, 1.5, 1.0] # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var clutch_stiffness = 80.0
-var max_clutch_torque = 650.0
+var clutch_stiffness = 100.0
+var max_clutch_torque = 250.0
 
 
 	###################
@@ -169,39 +169,32 @@ func motor_process(delta: float) -> void:
 	# then calculate how fast the engine is moving (engine_rpm), next calculate the engine torque via using a torque curve and converting to proper newton force.
 	# Again, we calculate how much the wheel produces power (wheel_torque). Finally, we calculate the force neccesary to push the wheels.
 	
+	var clutch_torque_on_engine := 0.0
 	var angular_velocity_sum: float = 0.0
 	var driven_count: int = 0
 	var throttle_input := Input.get_action_strength("Gas")
 	var clutch_input := Input.get_action_strength("Clutch")
 	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
-	var clutch_torque := 0.0
 	var drivetrain_ratio = current_gear_ratio * final_drive
-
+	
+	# get total angular velocity from each wheel and add a counter to how many wheels are being used
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i]:
 			angular_velocity_sum += wheel_angular_velocity[i]
 			driven_count += 1
-
-	# wheel rpm calc (wheel rotations per minute). Here the total rad is averaged out, converted to revs, then converted to rpm.
-	
-	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * current_gear_ratio
-		clutch_torque = (target_engine_ang_vel - engine_angular_velocity) * clutch_stiffness
-		clutch_torque = clamp(clutch_torque, -max_clutch_torque, max_clutch_torque)
+		
+	# engine rpm calc and refresh
 		
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	
 	if engine_rpm < idle_rpm and clutch_engagement < 0.5:
 		throttle_input = max(throttle_input, 0.3)  # Auto-throttle to maintain idle
 	
-	# curve used to scale the rpm levels and now torque.
-	
-	var normalized_rpm = engine_rpm / max_rpm
-	
 	# use the curve and scale it using max_torque. Then based on input apply throttle
+	var normalized_rpm = engine_rpm / max_rpm
 	var engine_torque: float
 	if is_shifting == false: # if shifting you dont have torque due to engine not being in use
 		engine_torque = torque_curve.sample(normalized_rpm) * max_torque * throttle_input
@@ -215,22 +208,45 @@ func motor_process(delta: float) -> void:
 	var quadratic_friction = 0.02 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
+	if throttle_input < 0.1:
+		engine_friction += 15.0 * max_torque * normalized_rpm  # engine braking
 
-	# how fast the pistons in the engine are moving. used to calcualte rpm
-
-	var net_engine_torque =engine_torque- engine_friction+ clutch_torque
-	var engine_angular_accel = net_engine_torque / engine_inertia
-	engine_angular_velocity += engine_angular_accel * delta
+	# clutch_torque calc
 	
+	if driven_count > 0:
+		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
+		var speed_difference = target_engine_ang_vel - engine_angular_velocity
+		
+		# Clutch tries to match speeds with a spring-like torque
+		var clutch_slip_torque = speed_difference * clutch_stiffness * clutch_engagement
+		clutch_slip_torque = clamp(clutch_slip_torque, -max_clutch_torque, max_clutch_torque)
+		
+		clutch_torque_on_engine = clutch_slip_torque
+	else:
+		clutch_torque_on_engine = 0.0
+
+		
+		# Clutch slip creates a torque that tries to match speeds
+		var speed_difference = target_engine_ang_vel - engine_angular_velocity
+		var clutch_slip_torque = speed_difference * clutch_stiffness
+		clutch_slip_torque = clamp(clutch_slip_torque, -max_clutch_torque, max_clutch_torque)
+		
+		# Apply clutch torque based on engagement (partially engaged = partial torque transfer)
+		clutch_torque_on_engine = clutch_slip_torque * clutch_engagement
+	
+	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine	
+	var engine_angular_accel = net_engine_torque / engine_inertia
+	engine_angular_velocity += engine_angular_accel * delta # how fast the pistons in the engine are moving. used to calcualte rpm
+	 
 	# recompute rpm due to key variable change
 	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	
 	# final calc
 	
-	var drive_torque = engine_torque * drivetrain_ratio * drive_train_efficeny * clutch_engagement
-
-	var per_wheel_torque = drive_torque / active_wheels_engine
+	var engine_torque_at_wheels = engine_torque * drivetrain_ratio * drive_train_efficeny * clutch_engagement
+	var per_wheel_torque = engine_torque_at_wheels / active_wheels_engine # for each wheel
+	
 
 		#spread the torque across wheels.
 	for i in range(4):

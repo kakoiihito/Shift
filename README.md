@@ -12,7 +12,7 @@
 
   ### Usage
 
-    Requirements: Operating System Supporting Godot 4.+
+    Requirements: Operating System Supporting Godot 4.6
     
     . Download the project (gh repo clone kakoiihito/Shift)
     . Open Godot

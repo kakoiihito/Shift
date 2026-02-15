@@ -3,7 +3,7 @@
   ### Highlights
   * Ready to use vehicle dynamics
   * Physics derived from the real formulas
-  * 60 Hz engine
+  * 240 Hz engine
 
   ### Overview
 

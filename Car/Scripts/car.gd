@@ -49,7 +49,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 100.0 # How much the car can brake
+var max_brake_torque = 75.0 # How much the car can brake
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var brake_torque: float
 
@@ -58,7 +58,7 @@ var brake_torque: float
 	####################
 
 @export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
-var max_torque = 800.0 # used to convert the torque value on the curve to a proper force amount.
+var max_torque = 151.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7500.0 # Max amount of engine rotations
 var idle_rpm = 850.0 # Lowest amount of engine rotations
 var engine_rpm: float
@@ -85,11 +85,11 @@ var is_shifting = false
 var shift_timer = 0.0
 var drive_train_efficeny = 0.85
 var final_drive = 3.63 # Final gear to multiple torque.
-var gear_ratio = [-3.1, 0.0, 3.2, 2.6, 1.8, 1.5, 1.0] # power multiplyer for engine
+var gear_ratio = [-3.1, 0.0, 3.1, 1.8, 1.3, 1.0, 0.8] # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var clutch_stiffness = 100.0
-var max_clutch_torque = 250.0
+var clutch_stiffness = 1.0
+var max_clutch_torque = 151.0 # max amount of engine torque that can be transfered to the wheels
 
 
 	###################
@@ -109,30 +109,23 @@ var slip_ratio: float # how much the wheel is slipping from the ground
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var rolling_resistance_coeff = 0.01
+var friction_coefficient = 0.7
 
 func _ready() -> void:
 	
 	# If you want torque to be applied to a wheel, it will add it to an active wheel counter to divide
 	# Wheel torque per wheel in gas_process
 	
-	if FR_torque_engine == true:
-		active_wheels_engine += 1
-	if FL_torque_engine == true:
-		active_wheels_engine += 1
-	if RR_torque_engine == true:
-		active_wheels_engine += 1
-	if RL_torque_engine == true:
-		active_wheels_engine+= 1
-		
-	if FR_torque_brake == true:
-		active_wheels_brake += 1
-	if FL_torque_brake == true:
-		active_wheels_brake += 1
-	if RR_torque_brake == true:
-		active_wheels_brake += 1
-	if RL_torque_brake == true:
-		active_wheels_brake+= 1
-		
+	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
+	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
+	
+	for i in range(4):
+		if driven_wheels[i] == true:
+			active_wheels_engine += 1
+	for i in range(4):
+		if brake_wheels[i] == true:
+			active_wheels_brake += 1
+	
 	# Set metadeta so other function can easily spot out the wheel when needed.
 	
 	fl_wheel.set_meta("wheel_index", 0)
@@ -152,7 +145,7 @@ func _physics_process(delta: float) -> void:
 		_get_wheel_traction(wheel)
 	
 	steering_proccess(delta)
-	brake_proccess(delta)
+	brake_proccess()
 	
 	# Apply forces
 	if FR_torque_engine == true:
@@ -237,7 +230,6 @@ func motor_process(delta: float) -> void:
 	var clutch_torque_to_wheels = -clutch_torque_on_engine
 	var torque_at_wheels = clutch_torque_to_wheels * drivetrain_ratio * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
-	
 
 		#spread the torque across wheels.
 	for i in range(4):
@@ -299,23 +291,25 @@ func transmission_process(delta: float):
 				
 	print("Gear: ", current_gear)
 	
-func brake_proccess(delta: float) -> void:
+func brake_proccess() -> void:
 	
-	var wheel_inertia = 0.5 * wheel_mass * pow(wheel_radius, 2) # How much the wheel resists torque/motion
+	# actual braking is done in wheel angular velocity calculation
 	
-	if Input.is_action_pressed("Brake"):
-		
-		var input_brake = Input.get_action_strength("Brake") # strength of input
+	var brake_wheels = [FR_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
+	var input_brake = Input.get_action_strength("Brake") # strength of input
+	
+	if input_brake > 0.0:
 		
 		brake_torque = (input_brake * max_brake_torque) / active_wheels_brake # formula of torque divided by wheels using it
 		
-		# If brake torque is enabled on that wheel, it will send a value to that wheel value which will be used in calculations.
-		
 		for i in range(4):
-			if (i == 0 and FR_torque_brake) or (i == 1 and FL_torque_brake) or (i == 2 and RR_torque_brake) or (i == 3 and RL_torque_brake):
-				wheel_brake_torque[i] = brake_torque
-				wheel_angular_velocity[i] = max(wheel_angular_velocity[i] - wheel_brake_torque[i] / wheel_inertia * delta, 0)
-
+			if brake_wheels[i] == true:
+				var brake_direction = 1.0
+				if wheel_angular_velocity[i] != 0.0:
+					brake_direction = sign(wheel_angular_velocity[i])
+				else:
+					brake_direction = 0.0
+				wheel_brake_torque[i] = brake_torque * brake_direction
 	else:
 		for i in range(4):
 			wheel_brake_torque[i] = 0.0 # to reset any power when not in use
@@ -420,7 +414,7 @@ func _get_point_velocity(point: Vector3) -> Vector3:
 
 func _get_wheel_traction(ray: RayCast3D):
 	
-	var friction_coefficient = 0.70  # Typical tire friction
+	  # Typical tire friction
 	
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
@@ -480,29 +474,32 @@ func _get_wheel_traction(ray: RayCast3D):
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
-	var wheel_inertia = 0.8 * wheel_mass * wheel_radius * wheel_radius
-	for i in range(4):
-		if not wheels[i].is_colliding():
-			# Free spin - minimal air resistance
-			var air_drag_torque = 0.001 * wheel_angular_velocity[i] * abs(wheel_angular_velocity[i])
-			var angular_decel = air_drag_torque / wheel_inertia
-			wheel_angular_velocity[i] -= angular_decel * delta
-			continue
-		
+	var wheel_inertia = 0.55 * wheel_mass * wheel_radius * wheel_radius
+	
+	if not wheels[wheel_index].is_colliding():
+		var air_drag_torque = 0.001 * wheel_angular_velocity[wheel_index] * abs(wheel_angular_velocity[wheel_index])
+		var angular_decel = air_drag_torque / wheel_inertia
+		wheel_angular_velocity[wheel_index] -= angular_decel * delta
+	else:
 		var normal_force = wheel_spring_force[wheel_index].y
-		var rolling_resistance = rolling_resistance_coeff * normal_force * wheel_radius
-
-		var ground_reaction_torque = longitude_force[i] * wheel_radius
-		var net_torque = wheel_engine_torque[i] - wheel_brake_torque[i] - ground_reaction_torque - rolling_resistance
+		var rolling_resistance = rolling_resistance_coeff * normal_force * wheel_radius * sign(wheel_angular_velocity[wheel_index])
 		
-		# Angular acceleration = τ / I
+		if wheel_angular_velocity[wheel_index] == 0.0:
+			rolling_resistance = 0.0
+			
+		var ground_reaction_torque = longitude_force[wheel_index] * wheel_radius
+		var net_torque = wheel_engine_torque[wheel_index] - wheel_brake_torque[wheel_index] - ground_reaction_torque - rolling_resistance
+		
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
 		
-		# Update angular velocity: ω = ω₀ + α * Δt
-		wheel_angular_velocity[i] += angular_acceleration * delta
+		wheel_angular_velocity[wheel_index] += angular_acceleration * delta
 		
+	if abs(wheel_angular_velocity[wheel_index]) < 0.1:
+		wheel_angular_velocity[wheel_index] = 0.0
+
 
 		
-		
+		# wheel angular velocity is the root problem. brake causes it to go into the negatives which then moves the car backwards.
+		# motor process then uses it which causes it's torque to go backwards. whole problem is the brake torque.
 
 	

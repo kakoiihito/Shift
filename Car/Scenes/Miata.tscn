@@ -360,6 +360,7 @@ torque_curve = SubResource("Curve_nnsko")
 
 [node name="WheelFrontLeft" type="RayCast3D" parent="." unique_id=2052019363]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.65, -1.9)
+target_position = Vector3(0, -0.71, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -372,6 +373,7 @@ skeleton = NodePath("")
 
 [node name="WheelFrontRight" type="RayCast3D" parent="." unique_id=1038542688]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.65, -1.9)
+target_position = Vector3(0, -0.71, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -383,7 +385,8 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearLeft" type="RayCast3D" parent="." unique_id=2031816737]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.65, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.25, 0.61513555, 1.9)
+target_position = Vector3(0, -0.71, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -395,7 +398,8 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearRight" type="RayCast3D" parent="." unique_id=305259289]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.65, 1.9)
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.25, 0.61513555, 1.9)
+target_position = Vector3(0, -0.71, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
 
@@ -412,7 +416,7 @@ mesh = SubResource("ArrayMesh_taojr")
 skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=195448548]
-transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, 0, 0)
+transform = Transform3D(-4.37114e-08, -1, 1.19249e-08, 0, 1.19249e-08, 1, -1, 4.37114e-08, -5.21253e-16, 0, -0.034864426, 0)
 shape = SubResource("ConcavePolygonShape3D_03rhi")
 
 [node name="Object_4" type="MeshInstance3D" parent="." unique_id=804883341]

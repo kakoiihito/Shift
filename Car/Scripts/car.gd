@@ -30,7 +30,7 @@ var track = 2.0
 
 var rest_length: float = 0.25
 var spring_stiffness: float = 36800.0
-var max_compression: float = 0.381
+var max_compression: float = 0.364
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
@@ -49,7 +49,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 100060.0 # How much the car can brake
+var max_brake_torque = 2000.0 # How much the car can brake
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var brake_torque: float
 
@@ -88,8 +88,8 @@ var final_drive = 3.63 # Final gear to multiple torque.
 var gear_ratio = [-3.1, 0.0, 3.1, 1.8, 1.3, 1.0, 0.8] # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var clutch_stiffness = 150.0
-var max_clutch_torque = 101.0 # max amount of engine torque that can be transfered to the wheels
+var clutch_dampning = 1000.0
+var max_clutch_torque = 220.0 # max amount of engine torque that can be transfered to the wheels
 var lock_threshold = 0.2
 
 	###################
@@ -99,7 +99,7 @@ var lock_threshold = 0.2
 var road_resistance_torque: float # reistance against the road (rolling friction)
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
-var wheel_radius = 0.2 # How big the wheel is.
+var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
 var tire_stiffness = 800.0 # Changes how much grip the tire has, makes turning more or less.
@@ -109,7 +109,7 @@ var slip_ratio: float # how much the wheel is slipping from the ground
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var rolling_resistance_coeff = 0.015
-var friction_coefficient = 0.7
+var friction_coefficient = 1.0
 
 func _ready() -> void:
 	
@@ -174,6 +174,9 @@ func motor_process(delta: float) -> void:
 	
 	# get total angular velocity from each wheel and add a counter to how many wheels are being used
 	
+	if Input.is_action_pressed("Ignition"):
+		engine_rpm = 5000.0
+	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i]:
@@ -199,7 +202,6 @@ func motor_process(delta: float) -> void:
 	var quadratic_friction = 0.008 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
-	engine_friction += 0.2 * max_torque * normalized_rpm  # engine braking (constant)
 
 	# clutch_torque calc (basically how much torque will be used from engine), dry model
 	
@@ -209,7 +211,7 @@ func motor_process(delta: float) -> void:
 		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio # needed speed to transfer
 		var speed_difference = engine_angular_velocity - target_engine_ang_vel # is it faster or slower than the target
 		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # if clutch is fully connected
-			var torque_to_sync = speed_difference * clutch_stiffness
+			var torque_to_sync = speed_difference * clutch_dampning
 			clutch_torque_on_engine = clamp(torque_to_sync, -max_transferable_torque, max_transferable_torque)
 		else:
 			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # when slipping
@@ -224,7 +226,7 @@ func motor_process(delta: float) -> void:
 	
 	# final calc
 	
-	var clutch_torque_to_wheels = -clutch_torque_on_engine
+	var clutch_torque_to_wheels = clutch_torque_on_engine
 	var torque_at_wheels = clutch_torque_to_wheels * drivetrain_ratio * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
 
@@ -247,7 +249,6 @@ func gas_proccess(ray: RayCast3D) -> void:
 	if not ray.is_colliding():
 		return  # Don't apply force if wheel is off ground
 	
-
 	var wheel_index = ray.get_meta("wheel_index")
 	var forward = -ray.global_transform.basis.z
 
@@ -438,6 +439,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius # how fast the wheel is moving based on the ground
 	if abs(car_speed) > 0.5:
 		slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed) # slip ratio decides whether wheel is spinning same, less, or more than the speed of car
+	else: slip_ratio = 0.0
 	
 	var optimal_slip = 0.08
 	var slip_sign = sign(slip_ratio)
@@ -470,21 +472,22 @@ func _get_wheel_traction(ray: RayCast3D):
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
-	var wheel_inertia = 0.55 * wheel_mass * wheel_radius * wheel_radius
+	var wheel_inertia = 0.8 * wheel_mass * wheel_radius * wheel_radius
 	
 	if not wheels[wheel_index].is_colliding():
 		var air_drag_torque = 0.001 * wheel_angular_velocity[wheel_index] * abs(wheel_angular_velocity[wheel_index])
 		var angular_decel = air_drag_torque / wheel_inertia
 		wheel_angular_velocity[wheel_index] -= angular_decel * delta
 	else:
-		var normal_force = wheel_spring_force[wheel_index].y
+		var normal_force = wheel_spring_force[wheel_index].length()
 		var rolling_resistance = rolling_resistance_coeff * normal_force * wheel_radius * sign(wheel_angular_velocity[wheel_index])
 		
 		if wheel_angular_velocity[wheel_index] == 0.0:
 			rolling_resistance = 0.0
 			
 		var ground_reaction_torque = longitude_force[wheel_index] * wheel_radius
-		var net_torque = wheel_engine_torque[wheel_index] - wheel_brake_torque[wheel_index] - ground_reaction_torque - rolling_resistance
+		var signed_brake_torque = wheel_brake_torque[wheel_index] * sign(wheel_angular_velocity[wheel_index])
+		var net_torque = wheel_engine_torque[wheel_index] - signed_brake_torque - ground_reaction_torque - rolling_resistance
 		
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
 		

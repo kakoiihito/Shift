@@ -21,9 +21,6 @@ tonemap_mode = 2
 [sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
 size = Vector3(100, 3, 300)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_yhjd6"]
-size = Vector3(4.6538086, 29.005737, 1)
-
 [sub_resource type="BoxMesh" id="BoxMesh_37kl0"]
 
 [node name="Test" type="Node3D" unique_id=1300905328]
@@ -71,16 +68,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 mesh = SubResource("CylinderMesh_8uh7m")
 
 [node name="Floor" type="StaticBody3D" parent="Scenery&Level" unique_id=1049420459]
-transform = Transform3D(1, 0, 0, 0, 0.99999845, 0.0017453283, 0, -0.0017453283, 0.99999845, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor" unique_id=1405423850]
 shape = SubResource("BoxShape3D_37kl0")
-
-[node name="Ramp" type="StaticBody3D" parent="Scenery&Level" unique_id=385239580]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Ramp" unique_id=784072816]
-transform = Transform3D(1, 0, 0, 0, 0.03489949, -0.9993907, 0, 0.9993907, 0.03489949, -0.457, 3.514, 9)
-shape = SubResource("BoxShape3D_yhjd6")
 
 [node name="RenderTest" type="MeshInstance3D" parent="Scenery&Level" unique_id=783264161]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.53986, 3.87743, -5.5925)
@@ -89,7 +80,7 @@ mesh = SubResource("BoxMesh_37kl0")
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
 
 [node name="Node3D" parent="Functional" unique_id=1475845789 instance=ExtResource("1_yhjd6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0400667, 20.50635)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0400667, 19.011797)
 mass = 940.0
 gravity_scale = 9.8
 

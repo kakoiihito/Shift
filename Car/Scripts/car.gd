@@ -28,9 +28,9 @@ var track = 2.0
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length: float = 0.25
-var spring_stiffness: float = 36800.0
-var max_compression: float = 0.364
+var rest_length = [0.25, 0.25, 0.23, 0.23]
+var spring_stiffness = [45800.0, 45800.0, 44800.0, 44800.0]
+var max_compression = [0.304, 0.304, 0.304, 0.304]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 
 	######################
@@ -49,7 +49,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 2000.0 # How much the car can brake
+var max_brake_torque = 200.0 # How much the car can brake
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var brake_torque: float
 
@@ -64,7 +64,7 @@ var idle_rpm = 850.0 # Lowest amount of engine rotations
 var engine_rpm: float
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
 var engine_angular_velocity: float
-var engine_inertia := 0.25  # kg * m^2
+var engine_inertia := 0.25
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
 var FR_torque_engine = false
@@ -88,7 +88,7 @@ var final_drive = 3.63 # Final gear to multiple torque.
 var gear_ratio = [-3.1, 0.0, 3.1, 1.8, 1.3, 1.0, 0.8] # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var clutch_dampning = 1000.0
+var clutch_dampning = 150.0
 var max_clutch_torque = 220.0 # max amount of engine torque that can be transfered to the wheels
 var lock_threshold = 0.2
 
@@ -360,6 +360,7 @@ func suspension_proccess(ray: RayCast3D):
 	
 	# If the ray is not touching anything its pointless to attempt to calculate anything
 	var wheel_index = ray.get_meta("wheel_index")
+	var driven_wheels = [$WheelFrontRight/FrontRightWheel, $WheelFrontLeft/FrontLeftWheel, $WheelRearLeft/RearLeftWheel, $WheelRearRight/RearRightWheel]
 	
 	if ray.is_colliding():
 		
@@ -372,8 +373,8 @@ func suspension_proccess(ray: RayCast3D):
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		var compression = sign(rest_length - hit_distance)
-		compression = clamp(compression, 0, max_compression)  
+		var compression = sign(rest_length[wheel_index] - hit_distance) # incorrect but car wont move if i change it (sign part)
+		compression = clamp(compression, 0, max_compression[wheel_index])  
 
 		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
 		# To get the coefficent, a damper ratio and critical dampning variable are needed.
@@ -383,7 +384,7 @@ func suspension_proccess(ray: RayCast3D):
 		var world_vel = _get_point_velocity(hit)
 		var relative_vel = up_dir_spring.dot(world_vel)
 		
-		var c_crit = 2.0 * sqrt(spring_stiffness * mass / wheels.size())
+		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * mass / wheels.size())
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * relative_vel
 		
@@ -392,11 +393,11 @@ func suspension_proccess(ray: RayCast3D):
 		# Then, based on spring_force, we subtract how much movement based on dampning and multiply the force by the direction it should move in.
 		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
-		var spring_force = spring_stiffness * compression
+		var spring_force = spring_stiffness[wheel_index] * compression
 		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
 		var wheel_force_area = hit - ray.global_position
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
-
+		driven_wheels[wheel_index].position = wheel_force_area
 
 
 

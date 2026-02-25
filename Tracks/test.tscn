@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
+
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_yhjd6"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_8uh7m"]
+sky_material = SubResource("ProceduralSkyMaterial_37kl0")
+
+[sub_resource type="Environment" id="Environment_6uqi0"]
+background_mode = 2
+sky = SubResource("Sky_8uh7m")
+tonemap_mode = 2
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_37kl0"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8uh7m"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
+size = Vector3(100, 3, 300)
+
+[sub_resource type="BoxMesh" id="BoxMesh_37kl0"]
+
+[node name="Test" type="Node3D" unique_id=1300905328]
+
+[node name="Lighting&Enviorment" type="Node3D" parent="." unique_id=705270786]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Lighting&Enviorment" unique_id=1814475033]
+environment = SubResource("Environment_6uqi0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Lighting&Enviorment" unique_id=475219111]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Scenery&Level" type="Node3D" parent="." unique_id=38368424]
+
+[node name="Bump" type="StaticBody3D" parent="Scenery&Level" unique_id=559140122]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.758417, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bump" unique_id=1272663136]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bump" unique_id=1282092686]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump2" type="StaticBody3D" parent="Scenery&Level" unique_id=1251657788]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.758417, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bump2" unique_id=2069394748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bump2" unique_id=1095308092]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump3" type="StaticBody3D" parent="Scenery&Level" unique_id=2051649741]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.758417, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bump3" unique_id=1947867299]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bump3" unique_id=700245316]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Floor" type="StaticBody3D" parent="Scenery&Level" unique_id=1049420459]
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor" unique_id=1405423850]
+shape = SubResource("BoxShape3D_37kl0")
+
+[node name="RenderTest" type="MeshInstance3D" parent="Scenery&Level" unique_id=783264161]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.53986, 3.87743, -5.5925)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="Functional" type="Node3D" parent="." unique_id=2031553437]
+
+[node name="Node3D" parent="Functional" unique_id=1475845789 instance=ExtResource("1_yhjd6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29.321175, 19.011797)
+mass = 940.0
+gravity_scale = 9.8
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
+transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)

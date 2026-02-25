@@ -9,7 +9,10 @@ func _process(_float) -> void:
 	car_velocity = car.linear_velocity.length()
 	var speed = car_velocity * 2.237
 	
+	# Gear
+	var gear = car.current_gear
+	
 	# RPM
 	var engine_rpm = car.engine_rpm
 	
-	info_label.text = "%d MPH | %d RPM" % [int(speed), int(engine_rpm)]
+	info_label.text = "%d MPH | %d RPM | %d Gear" % [int(speed), int(engine_rpm), int(gear)]

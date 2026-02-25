@@ -28,10 +28,11 @@ var track = 2.0
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length = [0.25, 0.25, 0.23, 0.23]
+var rest_length = [0.17, 0.17, 0.18, 0.18]
 var spring_stiffness = [45800.0, 45800.0, 44800.0, 44800.0]
-var max_compression = [0.304, 0.304, 0.304, 0.304]
+var max_compression = [0.3, 0.3, 0.3, 0.3]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
+var weight_distribution = [0.26, 0.26, 0.24, 0.24]
 
 	######################
 	# STEERING VARIABLES #
@@ -96,20 +97,20 @@ var lock_threshold = 0.2
 	# WHEEL VARIABLES #
 	###################
 	
-var road_resistance_torque: float # reistance against the road (rolling friction)
+
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
+var slip_ratio: float # how much the wheel is slipping from the ground
 var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
-var tire_stiffness = 800.0 # Changes how much grip the tire has, makes turning more or less.
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
 var wheel_force = [0.0, 0.0, 0.0, 0.0] # How much the wheel gives force
-var slip_ratio: float # how much the wheel is slipping from the ground
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var rolling_resistance_coeff = 0.015
 var friction_coefficient = 1.0
+
 
 func _ready() -> void:
 	
@@ -373,18 +374,21 @@ func suspension_proccess(ray: RayCast3D):
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		var compression = sign(rest_length[wheel_index] - hit_distance) # incorrect but car wont move if i change it (sign part)
-		compression = clamp(compression, 0, max_compression[wheel_index])  
+		var spring_length = hit_distance - wheel_radius
+		var compression = rest_length[wheel_index] - spring_length
+	
+		compression = clamp(compression, 0.0, max_compression[wheel_index])  
 
 		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
 		# To get the coefficent, a damper ratio and critical dampning variable are needed.
 		# once we get the coefficent, we multiply by spring speed and the dampning is found.
-		var damper_ratio = 0.3
+		var damper_ratio = 0.5
 		
 		var world_vel = _get_point_velocity(hit)
 		var relative_vel = up_dir_spring.dot(world_vel)
 		
-		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * mass / wheels.size())
+		var sprung_mass = mass * weight_distribution[wheel_index]
+		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * sprung_mass)
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * relative_vel
 		
@@ -394,7 +398,8 @@ func suspension_proccess(ray: RayCast3D):
 		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
 		var spring_force = spring_stiffness[wheel_index] * compression
-		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
+		if compression > 0.0:
+			wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
 		var wheel_force_area = hit - ray.global_position
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 		driven_wheels[wheel_index].position = wheel_force_area

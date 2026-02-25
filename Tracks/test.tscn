@@ -80,7 +80,7 @@ mesh = SubResource("BoxMesh_37kl0")
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
 
 [node name="Node3D" parent="Functional" unique_id=1475845789 instance=ExtResource("1_yhjd6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0400667, 19.011797)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29.321175, 19.011797)
 mass = 940.0
 gravity_scale = 9.8
 

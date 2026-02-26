@@ -33,6 +33,7 @@ var spring_stiffness = [45800.0, 45800.0, 44800.0, 44800.0]
 var max_compression = [0.3, 0.3, 0.3, 0.3]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.26, 0.26, 0.24, 0.24]
+var velocity_exponent = 1.3
 
 	######################
 	# STEERING VARIABLES #
@@ -175,18 +176,13 @@ func motor_process(delta: float) -> void:
 	
 	# get total angular velocity from each wheel and add a counter to how many wheels are being used
 	
-	if Input.is_action_pressed("Ignition"):
-		engine_rpm = 5000.0
-	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i]:
 			angular_velocity_sum += wheel_angular_velocity[i]
 			driven_count += 1
 		
-	# engine rpm calc and refresh
-		
-	engine_rpm = engine_angular_velocity * 60.0 / TAU
+
 	
 	# use the curve and scale it using max_torque. Then based on input apply throttle
 	var normalized_rpm = engine_rpm / max_rpm
@@ -206,16 +202,16 @@ func motor_process(delta: float) -> void:
 
 	# clutch_torque calc (basically how much torque will be used from engine), dry model
 	
-	var max_transferable_torque = max_clutch_torque * clutch_engagement #max amount of torque that can be used
+	var max_transferable_torque = max_clutch_torque * clutch_engagement #max amount of torque that can be transffered
 	
 	if driven_count > 0:
 		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio # needed speed to transfer
 		var speed_difference = engine_angular_velocity - target_engine_ang_vel # is it faster or slower than the target
-		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # if clutch is fully connected
+		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # if clutch is fully connected and spinning with engine
 			var torque_to_sync = speed_difference * clutch_dampning
 			clutch_torque_on_engine = clamp(torque_to_sync, -max_transferable_torque, max_transferable_torque)
 		else:
-			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # when slipping
+			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # when slipping (clutch gear couldnt keep up with the engine speed)
 		
 	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / engine_inertia
@@ -366,22 +362,19 @@ func suspension_proccess(ray: RayCast3D):
 	if ray.is_colliding():
 		
 		# Here we use the ray to calculate the distance from the ground to the wheel and and subtract that
-		# from the rest length since that will tell us if the wheel should extend or contract.
-		
-		# To explain further, the rest length means 0. If we add to that it will contract and subtracting will
-		# extend it. the subtracting and adding are the hit distance and the rest length factors where and how the spring will react.
+		# from the rest length since that tells us the amount the spring is extending or compressing (compression var).
+		# An offset is used since the top of the raycast must be centered to the middle of the wheel.
 		
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
 		var spring_length = hit_distance - wheel_radius
 		var compression = rest_length[wheel_index] - spring_length
-	
 		compression = clamp(compression, 0.0, max_compression[wheel_index])  
 
 		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
 		# To get the coefficent, a damper ratio and critical dampning variable are needed.
-		# once we get the coefficent, we multiply by spring speed and the dampning is found.
+		
 		var damper_ratio = 0.5
 		
 		var world_vel = _get_point_velocity(hit)
@@ -390,17 +383,20 @@ func suspension_proccess(ray: RayCast3D):
 		var sprung_mass = mass * weight_distribution[wheel_index]
 		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * sprung_mass)
 		var c = damper_ratio * c_crit
-		var spring_dampning = c * relative_vel
 		
-		# This section is used to calculate how much force and where the force should be applied to mimic a car suspension.
-		# The spring force is calculated via how fast the spring will move (spring_stiffness) and how much it is compressed or extended (compression).
+		var spring_dampning = c * pow(abs(relative_vel), velocity_exponent) * sign(relative_vel) # f = c * v^a (exponential damper)
+		
+		# This section is used to calculate how much force and where the force should be applied.
+		# The spring force is calculated from spring_stiffness (force multiplyer) and compression (the extension or compression)
 		# Then, based on spring_force, we subtract how much movement based on dampning and multiply the force by the direction it should move in.
 		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
 		var spring_force = spring_stiffness[wheel_index] * compression
+		var wheel_force_area = hit - ray.global_position
 		if compression > 0.0:
 			wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
-		var wheel_force_area = hit - ray.global_position
+		else:
+			wheel_spring_force[wheel_index] = Vector3.ZERO
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 		driven_wheels[wheel_index].position = wheel_force_area
 
@@ -458,21 +454,41 @@ func _get_wheel_traction(ray: RayCast3D):
 	
 	longitude_force[wheel_index] = (wheel_spring_force[wheel_index].length() * traction_multiplier * friction_coefficient)
 
+# Pacejka (Long)
+
+	var D1 = 1100.0
+	var C1 = 1.5
+	var B1 = 4.0
+	var E1 = 0.97
+
+	var longitude_f = D1 * sin(C1 * atan(B1 * slip_ratio - E1 * (B1 * slip_ratio - atan(B1 * slip_ratio))))
+	
+# Pacejka (Lat)
+
+	var D2 = 1100.0
+	var C2 = 1.5
+	var B2 = 3.0
+	var E2 = 0.97
+	
+	var lateral_f = D2 * sin(C2 * atan(B2 * slip_angle - E2 * (B2 * slip_angle - atan(B2 * slip_angle))))
+
+
+
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 	
 
-	var current_long_force = longitude_force[wheel_index] 
+	var current_long_force = longitude_f
 
-	var current_lat_force = lateral_force[wheel_index]
+	var current_lat_force = lateral_f
 
 # Now create Vector2 with floats
 	var force_2d = Vector2(current_long_force, current_lat_force)
 	if force_2d.length() > F_max[wheel_index]:
 		force_2d = force_2d.normalized() * F_max[wheel_index]
-		longitude_force[wheel_index] = force_2d.x  
-		lateral_force[wheel_index] = force_2d.y    
+		longitude_f = force_2d.x  
+		lateral_f = force_2d.y    
 	# Final calc
-	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
+	var combined_force = (longitude_f * -ray.global_transform.basis.z) + (lateral_f * side_dir) # both vectors combined
 	var force_pos = ray.global_position - global_position
 	apply_force(combined_force, force_pos)
 

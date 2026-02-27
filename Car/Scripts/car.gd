@@ -108,9 +108,11 @@ var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction u
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
 var wheel_force = [0.0, 0.0, 0.0, 0.0] # How much the wheel gives force
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
+var longitude_f: float
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var rolling_resistance_coeff = 0.015
 var friction_coefficient = 1.0
+var camber = 0.0
 
 
 func _ready() -> void:
@@ -418,8 +420,9 @@ func _get_wheel_traction(ray: RayCast3D):
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
 	var velocity_at_wheel = _get_point_velocity(ray.global_position)
-	
-
+	var Fz = wheel_spring_force[wheel_index].length() / 1000.0
+	if Fz < 1.0:
+		return 0.0
 	
 	# Steering is applied through here. When you steer the wheel is not doing the steering all for you.
 	# A force pushes the car in the direction of the side of the wheel. This results in the car turning
@@ -431,6 +434,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	var slip_angle = 0.0
 	if abs(car_speed) > 0.1: 
 		slip_angle = atan2(side_velocity, abs(car_speed))
+	
 	
 	var cornering_stiffness = 400.0 
 	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force[wheel_index].length() / 5000.0)  # Normalize to typical load
@@ -456,25 +460,71 @@ func _get_wheel_traction(ray: RayCast3D):
 
 # Pacejka (Long)
 
-	var D1 = 1100.0
-	var C1 = 1.5
-	var B1 = 4.0
-	var E1 = 0.97
+	var b0 = 1.5
+	var b1 = 0
+	var b2 = 1100
+	var b3 = 0
+	var b4 = 300
+	var b5 = 0
+	var b6 = 0
+	var b7 = 0
+	var b8 = -2
+	var b9 = 0
+	var b10 = 0
+	var b11 = 0
+	var b12 = 0
+	var b13 = 0
 
-	var longitude_f = D1 * sin(C1 * atan(B1 * slip_ratio - E1 * (B1 * slip_ratio - atan(B1 * slip_ratio))))
+	var D = Fz * (b1 * Fz + b2)
+	var BCD = (b3 * pow(Fz, 2) + b4 * Fz) * exp(-b5 * Fz)
+	var C = b0
+	var B = 0.0
+	if C * D != 0.0:
+		B = BCD / (C * D)
+	var H = b9 * Fz + b10
+	var E = (b6 * pow(Fz, 2) + b7 * Fz + b8) * (1 - b13 * sign(slip_ratio +H))
+	var V = b11 * Fz + b12
+	var Bx1 = B * (slip_ratio * 100 + H)
 	
-# Pacejka (Lat)
-
-	var D2 = 1100.0
-	var C2 = 1.5
-	var B2 = 3.0
-	var E2 = 0.97
+	longitude_f = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1)))) + V
 	
-	var lateral_f = D2 * sin(C2 * atan(B2 * slip_angle - E2 * (B2 * slip_angle - atan(B2 * slip_angle))))
+# Pacejka (lateral)
+
+	var a0 = 1.4
+	var a1 = 0
+	var a2 = 1100
+	var a3 = 1100
+	var a4 = 10
+	var a5 = 0
+	var a6 = 0
+	var a7 = -2
+	var a8 = 0
+	var a9 = 0
+	var a10 = 0
+	var a11 = 0
+	var a12 = 0
+	var a13 = 0
+	var a14 = 0
+	var a15 = 0
+	var a16 = 0
+	var a17 = 0
+	
+	var D2 = Fz * (a1 * Fz + a2) * (1 - a15 * pow(camber, 2))
+	var BCD2 = a3 * sin(atan(Fz / a4) * 2) * (1 - a5 * abs(camber))
+	var C2 = a0
+	var B2 = 0.0
+	if C2 * D2 != 0.0:
+		B2 = BCD2 / (C2 * D2)
+	var H2 = a8 * Fz + a9 + a10 * camber
+	var E2 = (a6 * Fz + a7) * (1 - (a16 * camber + a17) * sign(rad_to_deg(slip_angle) + H2))
+	var V2 = a11 * Fz + a12 + (a13 * Fz + a14) * camber * Fz
+	var Bx12 = B2 * (rad_to_deg(slip_angle) + H2)
+	
+	var lateral_f = D2 * sin(C2 * atan(Bx12 - E2 * (Bx12 - atan(Bx12)))) + V2
 
 
 
-	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
+	F_max[wheel_index] = friction_coefficient * D
 	
 
 	var current_long_force = longitude_f
@@ -490,7 +540,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	# Final calc
 	var combined_force = (longitude_f * -ray.global_transform.basis.z) + (lateral_f * side_dir) # both vectors combined
 	var force_pos = ray.global_position - global_position
-	apply_force(combined_force, force_pos)
+	apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
@@ -507,8 +557,8 @@ func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 		if wheel_angular_velocity[wheel_index] == 0.0:
 			rolling_resistance = 0.0
 			
-		var ground_reaction_torque = longitude_force[wheel_index] * wheel_radius
-		var signed_brake_torque = wheel_brake_torque[wheel_index] * sign(wheel_angular_velocity[wheel_index])
+		var ground_reaction_torque = longitude_f * wheel_radius
+		var signed_brake_torque = min(wheel_brake_torque[wheel_index], abs(wheel_angular_velocity[wheel_index]) / delta) * sign(wheel_angular_velocity[wheel_index])
 		var net_torque = wheel_engine_torque[wheel_index] - signed_brake_torque - ground_reaction_torque - rolling_resistance
 		
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0

@@ -28,12 +28,12 @@ var track = 2.0
 
 # These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
 
-var rest_length = [0.17, 0.17, 0.18, 0.18]
-var spring_stiffness = [45800.0, 45800.0, 44800.0, 44800.0]
-var max_compression = [0.3, 0.3, 0.3, 0.3]
+var rest_length = [0.2, 0.2, 0.2, 0.2]
+var spring_stiffness = [23800.0, 23800.0, 15500.0, 15500.0]
+var max_compression = [0.15, 0.15, 0.15, 0.15]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.26, 0.26, 0.24, 0.24]
-var velocity_exponent = 1.3
+var velocity_exponent = 1.1
 
 	######################
 	# STEERING VARIABLES #
@@ -51,7 +51,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 200.0 # How much the car can brake
+var max_brake_torque = 20.0 # How much the car can brake
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var brake_torque: float
 
@@ -69,8 +69,8 @@ var engine_angular_velocity: float
 var engine_inertia := 0.25
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
-var FR_torque_engine = false
-var FL_torque_engine = false
+var FR_torque_engine = true
+var FL_torque_engine = true
 var RR_torque_engine = true
 var RL_torque_engine = true
 
@@ -87,12 +87,14 @@ var is_shifting = false
 var shift_timer = 0.0
 var drive_train_efficeny = 0.85
 var final_drive = 3.63 # Final gear to multiple torque.
-var gear_ratio = [-3.1, 0.0, 3.1, 1.8, 1.3, 1.0, 0.8] # power multiplyer for engine
+var gear_ratio = [-3.27, 0.0, 3.64, 2.19, 1.53, 1.16, 0.94]   # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
 var clutch_dampning = 150.0
-var max_clutch_torque = 220.0 # max amount of engine torque that can be transfered to the wheels
-var lock_threshold = 0.2
+var clutch_stiffness = 800.0
+var max_clutch_torque = 250.0 # max amount of engine torque that can be transfered to the wheels
+var lock_threshold = 5.0
+var clutch_angle_error: float
 
 	###################
 	# WHEEL VARIABLES #
@@ -102,16 +104,16 @@ var lock_threshold = 0.2
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
 var slip_ratio: float # how much the wheel is slipping from the ground
-var wheel_radius = 0.3 # How big the wheel is.
-var wheel_mass = 20.0 # How much the wheel takes up
+var longitude_f: float
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
 var wheel_force = [0.0, 0.0, 0.0, 0.0] # How much the wheel gives force
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
-var longitude_f: float
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
+var wheel_radius = 0.3 # How big the wheel is.
+var wheel_mass = 20.0 # How much the wheel takes up
 var rolling_resistance_coeff = 0.015
-var friction_coefficient = 1.0
+var friction_coefficient = 1.5
 var camber = 0.0
 
 
@@ -161,7 +163,6 @@ func _physics_process(delta: float) -> void:
 	if RL_torque_engine == true:
 		gas_proccess(rl_wheel)
 		
-		
 func motor_process(delta: float) -> void:
 	# To calculate power neccessary, we must first calculate how fast the wheel must rotate (wheel_rpm),
 	# then calculate how fast the engine is moving (engine_rpm), next calculate the engine torque via using a torque curve and converting to proper newton force.
@@ -210,9 +211,11 @@ func motor_process(delta: float) -> void:
 		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio # needed speed to transfer
 		var speed_difference = engine_angular_velocity - target_engine_ang_vel # is it faster or slower than the target
 		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # if clutch is fully connected and spinning with engine
-			var torque_to_sync = speed_difference * clutch_dampning
+			clutch_angle_error += speed_difference * delta
+			var torque_to_sync = clutch_angle_error * clutch_stiffness + speed_difference * clutch_dampning
 			clutch_torque_on_engine = clamp(torque_to_sync, -max_transferable_torque, max_transferable_torque)
 		else:
+			clutch_angle_error = 0.0
 			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # when slipping (clutch gear couldnt keep up with the engine speed)
 		
 	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
@@ -228,7 +231,7 @@ func motor_process(delta: float) -> void:
 	var clutch_torque_to_wheels = clutch_torque_on_engine
 	var torque_at_wheels = clutch_torque_to_wheels * drivetrain_ratio * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
-
+	
 		#spread the torque across wheels.
 	for i in range(4):
 		if driven_wheels[i]:
@@ -370,14 +373,13 @@ func suspension_proccess(ray: RayCast3D):
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		var spring_length = hit_distance - wheel_radius
-		var compression = rest_length[wheel_index] - spring_length
+		var compression = rest_length[wheel_index] - hit_distance
 		compression = clamp(compression, 0.0, max_compression[wheel_index])  
 
 		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
 		# To get the coefficent, a damper ratio and critical dampning variable are needed.
 		
-		var damper_ratio = 0.5
+		var damper_ratio = 0.65
 		
 		var world_vel = _get_point_velocity(hit)
 		var relative_vel = up_dir_spring.dot(world_vel)
@@ -421,8 +423,6 @@ func _get_wheel_traction(ray: RayCast3D):
 	
 	var velocity_at_wheel = _get_point_velocity(ray.global_position)
 	var Fz = wheel_spring_force[wheel_index].length() / 1000.0
-	if Fz < 1.0:
-		return 0.0
 	
 	# Steering is applied through here. When you steer the wheel is not doing the steering all for you.
 	# A force pushes the car in the direction of the side of the wheel. This results in the car turning
@@ -527,18 +527,18 @@ func _get_wheel_traction(ray: RayCast3D):
 	F_max[wheel_index] = friction_coefficient * D
 	
 
-	var current_long_force = longitude_f
+	var current_long_force = longitude_force[wheel_index]
 
-	var current_lat_force = lateral_f
+	var current_lat_force = lateral_force[wheel_index]
 
 # Now create Vector2 with floats
 	var force_2d = Vector2(current_long_force, current_lat_force)
 	if force_2d.length() > F_max[wheel_index]:
 		force_2d = force_2d.normalized() * F_max[wheel_index]
-		longitude_f = force_2d.x  
-		lateral_f = force_2d.y    
+		longitude_force[wheel_index] = force_2d.x  
+		lateral_force[wheel_index] = force_2d.y    
 	# Final calc
-	var combined_force = (longitude_f * -ray.global_transform.basis.z) + (lateral_f * side_dir) # both vectors combined
+	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
 	var force_pos = ray.global_position - global_position
 	apply_force(combined_force , force_pos)
 

@@ -71,7 +71,6 @@ Ignition={
 
 [physics]
 
-common/physics_ticks_per_second=240
 3d/physics_engine="Jolt Physics"
 
 [rendering]

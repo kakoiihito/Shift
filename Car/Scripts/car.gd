@@ -30,10 +30,10 @@ var track = 2.0
 
 var rest_length = [0.2, 0.2, 0.2, 0.2]
 var spring_stiffness = [23800.0, 23800.0, 15500.0, 15500.0]
-var max_compression = [0.15, 0.15, 0.15, 0.15]
+var max_compression = [0.07, 0.07, 0.07, 0.07]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.26, 0.26, 0.24, 0.24]
-var velocity_exponent = 1.1
+var velocity_exponent = 1.0
 
 	######################
 	# STEERING VARIABLES #
@@ -90,11 +90,8 @@ var final_drive = 3.63 # Final gear to multiple torque.
 var gear_ratio = [-3.27, 0.0, 3.64, 2.19, 1.53, 1.16, 0.94]   # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var clutch_dampning = 150.0
-var clutch_stiffness = 800.0
 var max_clutch_torque = 250.0 # max amount of engine torque that can be transfered to the wheels
-var lock_threshold = 5.0
-var clutch_angle_error: float
+var lock_threshold = 0.5
 
 	###################
 	# WHEEL VARIABLES #
@@ -164,9 +161,6 @@ func _physics_process(delta: float) -> void:
 		gas_proccess(rl_wheel)
 		
 func motor_process(delta: float) -> void:
-	# To calculate power neccessary, we must first calculate how fast the wheel must rotate (wheel_rpm),
-	# then calculate how fast the engine is moving (engine_rpm), next calculate the engine torque via using a torque curve and converting to proper newton force.
-	# Again, we calculate how much the wheel produces power (wheel_torque). Finally, we calculate the force neccesary to push the wheels.
 	
 	var clutch_torque_on_engine := 0.0
 	var angular_velocity_sum: float = 0.0
@@ -177,17 +171,13 @@ func motor_process(delta: float) -> void:
 	var target_engine_ang_vel: float
 	var drivetrain_ratio = current_gear_ratio * final_drive
 	
-	# get total angular velocity from each wheel and add a counter to how many wheels are being used
-	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i]:
 			angular_velocity_sum += wheel_angular_velocity[i]
 			driven_count += 1
-		
-
 	
-	# use the curve and scale it using max_torque. Then based on input apply throttle
+ # torque
 	var normalized_rpm = engine_rpm / max_rpm
 	var engine_torque: float
 	if is_shifting == false:
@@ -196,33 +186,28 @@ func motor_process(delta: float) -> void:
 		clutch_engagement = 0.0
 		engine_torque = 0.0
 		
-	# engine experiences losses with each rotation
 	var base_friction = 0.005 * max_torque
 	var linear_friction = 0.015 * max_torque * normalized_rpm
 	var quadratic_friction = 0.008 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
 
-	# clutch_torque calc (basically how much torque will be used from engine), dry model
+	# clutch_torque calc, dry model
 	
-	var max_transferable_torque = max_clutch_torque * clutch_engagement #max amount of torque that can be transffered
+	var max_transferable_torque = max_clutch_torque * clutch_engagement
 	
 	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio # needed speed to transfer
-		var speed_difference = engine_angular_velocity - target_engine_ang_vel # is it faster or slower than the target
-		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # if clutch is fully connected and spinning with engine
-			clutch_angle_error += speed_difference * delta
-			var torque_to_sync = clutch_angle_error * clutch_stiffness + speed_difference * clutch_dampning
-			clutch_torque_on_engine = clamp(torque_to_sync, -max_transferable_torque, max_transferable_torque)
+		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
+		var speed_difference = engine_angular_velocity - target_engine_ang_vel 
+		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # locked
+				engine_angular_velocity = target_engine_ang_vel  # force sync
+				clutch_torque_on_engine = engine_torque - engine_friction  # exactly what's needed to maintain it
 		else:
-			clutch_angle_error = 0.0
-			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # when slipping (clutch gear couldnt keep up with the engine speed)
+			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # slipping
 		
 	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / engine_inertia
-	engine_angular_velocity += engine_angular_accel * delta # how fast the pistons in the engine are moving. used to calcualte rpm
-	 
-	# recompute rpm due to key variable change
+	engine_angular_velocity += engine_angular_accel * delta
 	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	
@@ -232,14 +217,14 @@ func motor_process(delta: float) -> void:
 	var torque_at_wheels = clutch_torque_to_wheels * drivetrain_ratio * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
 	
-		#spread the torque across wheels.
+	print(per_wheel_torque)
+	
 	for i in range(4):
 		if driven_wheels[i]:
 			wheel_engine_torque[i] = per_wheel_torque
 		else:
 			wheel_engine_torque[i] = 0.0
 	
-	#limit wheel forces
 	for i in range(4):
 		wheel_force[i] = clamp(
 			wheel_engine_torque[i] / wheel_radius,
@@ -272,14 +257,14 @@ func transmission_process(delta: float):
 			if current_gear < gear_ratio.size() - 1:
 				current_gear += 1
 				is_shifting = true
-				shift_timer = 0.3  # realistic shift time in seconds
+				shift_timer = 0.2  # realistic shift time in seconds
 
 # down shift
 		if Input.is_action_just_pressed("ShiftDown"):
 			if current_gear > 0:
 				current_gear -= 1
 				is_shifting = true
-				shift_timer = 0.3  # realistic shift time
+				shift_timer = 0.2  # realistic shift time
 
 # countdown system before another shift can be made
 	if is_shifting:
@@ -524,7 +509,7 @@ func _get_wheel_traction(ray: RayCast3D):
 
 
 
-	F_max[wheel_index] = friction_coefficient * D
+	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 	
 
 	var current_long_force = longitude_force[wheel_index]
@@ -557,7 +542,7 @@ func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 		if wheel_angular_velocity[wheel_index] == 0.0:
 			rolling_resistance = 0.0
 			
-		var ground_reaction_torque = longitude_f * wheel_radius
+		var ground_reaction_torque = longitude_force[wheel_index] * wheel_radius
 		var signed_brake_torque = min(wheel_brake_torque[wheel_index], abs(wheel_angular_velocity[wheel_index]) / delta) * sign(wheel_angular_velocity[wheel_index])
 		var net_torque = wheel_engine_torque[wheel_index] - signed_brake_torque - ground_reaction_torque - rolling_resistance
 		

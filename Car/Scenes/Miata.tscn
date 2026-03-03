@@ -354,7 +354,6 @@ shadow_mesh = SubResource("ArrayMesh_cplvt")
 points = PackedVector3Array(2.751977, 0.8231825, 1.3487251, 2.7399833, 0.92128795, 1.2515185, 2.748462, 0.8924548, 1.3202424, 2.751977, -0.8335492, 1.3487251, 2.72799, 0.8231825, 1.15435, 2.7315025, 0.8924548, 1.1828138, 2.7399833, -0.931292, 1.2515185, 2.748462, -0.9026401, 1.3202424, 2.72799, -0.8335492, 1.15435, 2.7315025, -0.9026401, 1.1828138)
 
 [node name="Node3D" type="RigidBody3D" unique_id=1502971588 node_paths=PackedStringArray("wheels")]
-mass = 940.0
 script = ExtResource("1_70ppv")
 wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("WheelRearLeft"), NodePath("WheelRearRight")]
 torque_curve = SubResource("Curve_nnsko")

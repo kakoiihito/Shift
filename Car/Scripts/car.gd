@@ -4,15 +4,9 @@
 extends RigidBody3D
 
 
-
-# work on adding rev matching for gears. finally you wont be stuck at max rpm.
-
 	##########
 	# WHEELS #
 	##########
-
-# To give access to the wheels/raycasts. These will be used to calculate suspension physics, tire physics,
-# and much more.
 
 @export var wheels: Array[RayCast3D]
 @onready var fl_wheel = $WheelFrontLeft
@@ -26,8 +20,6 @@ var track = 2.0
 	# SUSPENSION VARIABLES #
 	########################
 
-# These are used in calculation for the formula of the force per wheel to lift up or down for the suspension.
-
 var rest_length = [0.2, 0.2, 0.2, 0.2]
 var spring_stiffness = [23800.0, 23800.0, 15500.0, 15500.0]
 var max_compression = [0.07, 0.07, 0.07, 0.07]
@@ -39,21 +31,16 @@ var velocity_exponent = 1.0
 	# STEERING VARIABLES #
 	######################
 
-# The value changes how aggresive it turns. Less is slower but more precise.
-# More is faster but harder to control.
-
 var max_tire_turn_angle = 40.0
 var tire_turn_speed = 3.0
-
-# Variables used to calculate torque, used to power the car's wheels to go forward.
 
 	###################
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 20.0 # How much the car can brake
-var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
-var brake_torque: float
+var max_brake_torque = 0.0 # How much the car can brake
+var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0] # stored brake torque values
+var brake_torque: float # storing brake torque for calculation (single wheel)
 
 	####################
 	# ENGINE VARIABLES #
@@ -69,8 +56,8 @@ var engine_angular_velocity: float
 var engine_inertia := 0.25
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
-var FR_torque_engine = true
-var FL_torque_engine = true
+var FR_torque_engine = false
+var FL_torque_engine = false
 var RR_torque_engine = true
 var RL_torque_engine = true
 
@@ -92,6 +79,7 @@ var current_gear_ratio: float
 var current_gear = 1
 var max_clutch_torque = 250.0 # max amount of engine torque that can be transfered to the wheels
 var lock_threshold = 0.5
+
 
 	###################
 	# WHEEL VARIABLES #
@@ -138,27 +126,22 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 
-	motor_process(delta)
-	transmission_process(delta)
-	
+	transmission_process(delta)   # independent
 
 	for wheel in wheels:
 		suspension_proccess(wheel)
 		_get_wheel_angular_velocity(wheel, delta)
 		_get_wheel_traction(wheel)
-	
+
+	motor_process(delta)
+
 	steering_proccess(delta)
 	brake_proccess()
-	
-	# Apply forces
-	if FR_torque_engine == true:
-		gas_proccess(fr_wheel)
-	if FL_torque_engine == true:
-		gas_proccess(fl_wheel)
-	if RR_torque_engine == true:
-		gas_proccess(rr_wheel)
-	if RL_torque_engine == true:
-		gas_proccess(rl_wheel)
+
+	if FR_torque_engine: gas_proccess(fr_wheel)
+	if FL_torque_engine: gas_proccess(fl_wheel)
+	if RR_torque_engine: gas_proccess(rr_wheel)
+	if RL_torque_engine: gas_proccess(rl_wheel)
 		
 func motor_process(delta: float) -> void:
 	
@@ -173,7 +156,7 @@ func motor_process(delta: float) -> void:
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
-		if driven_wheels[i]:
+		if driven_wheels[i] == true:
 			angular_velocity_sum += wheel_angular_velocity[i]
 			driven_count += 1
 	
@@ -195,29 +178,33 @@ func motor_process(delta: float) -> void:
 	# clutch_torque calc, dry model
 	
 	var max_transferable_torque = max_clutch_torque * clutch_engagement
+	var is_locked = false
 	
 	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
+		target_engine_ang_vel = (angular_velocity_sum / driven_count) * (drivetrain_ratio)
+		print(target_engine_ang_vel)
 		var speed_difference = engine_angular_velocity - target_engine_ang_vel 
 		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # locked
-				engine_angular_velocity = target_engine_ang_vel  # force sync
-				clutch_torque_on_engine = engine_torque - engine_friction  # exactly what's needed to maintain it
+				is_locked = true
+				engine_angular_velocity = target_engine_ang_vel
+				clutch_torque_on_engine = engine_torque - engine_friction
 		else:
 			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # slipping
+			
+	if is_locked == false:
+		var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
+		var engine_angular_accel = net_engine_torque / engine_inertia
+		engine_angular_velocity += engine_angular_accel * delta
 		
-	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
-	var engine_angular_accel = net_engine_torque / engine_inertia
-	engine_angular_velocity += engine_angular_accel * delta
 	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	
 	# final calc
 	
 	var clutch_torque_to_wheels = clutch_torque_on_engine
-	var torque_at_wheels = clutch_torque_to_wheels * drivetrain_ratio * drive_train_efficeny
+	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
 	
-	print(per_wheel_torque)
 	
 	for i in range(4):
 		if driven_wheels[i]:
@@ -542,20 +529,19 @@ func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 		if wheel_angular_velocity[wheel_index] == 0.0:
 			rolling_resistance = 0.0
 			
-		var ground_reaction_torque = longitude_force[wheel_index] * wheel_radius
-		var signed_brake_torque = min(wheel_brake_torque[wheel_index], abs(wheel_angular_velocity[wheel_index]) / delta) * sign(wheel_angular_velocity[wheel_index])
-		var net_torque = wheel_engine_torque[wheel_index] - signed_brake_torque - ground_reaction_torque - rolling_resistance
+		var ground_reaction_torque = -longitude_force[wheel_index] * wheel_radius
+		var net_torque = wheel_engine_torque[wheel_index] - wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
 		
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
 		
+		var prev_sign = sign(wheel_angular_velocity[wheel_index])
 		wheel_angular_velocity[wheel_index] += angular_acceleration * delta
 		
+		if wheel_brake_torque[wheel_index] > 0 and sign(wheel_angular_velocity[wheel_index]) != prev_sign:
+			wheel_angular_velocity[wheel_index] = 0.0
+			
 	if abs(wheel_angular_velocity[wheel_index]) < 0.1:
 		wheel_angular_velocity[wheel_index] = 0.0
-
-
-		
-		# wheel angular velocity is the root problem. brake causes it to go into the negatives which then moves the car backwards.
-		# motor process then uses it which causes it's torque to go backwards. whole problem is the brake torque.
+			
 
 	

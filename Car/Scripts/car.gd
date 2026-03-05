@@ -22,7 +22,7 @@ var track = 2.0
 
 var rest_length = [0.2, 0.2, 0.2, 0.2]
 var spring_stiffness = [23800.0, 23800.0, 15500.0, 15500.0]
-var max_compression = [0.07, 0.07, 0.07, 0.07]
+var max_compression = [0.12, 0.12, 0.12, 0.12]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.26, 0.26, 0.24, 0.24]
 var velocity_exponent = 1.0
@@ -53,7 +53,7 @@ var idle_rpm = 850.0 # Lowest amount of engine rotations
 var engine_rpm: float
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
 var engine_angular_velocity: float
-var engine_inertia := 0.25
+var engine_inertia := 0.75
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 
 var FR_torque_engine = false
@@ -72,13 +72,14 @@ var RL_torque_brake = true
 	
 var is_shifting = false
 var shift_timer = 0.0
-var drive_train_efficeny = 0.85
+var drive_train_efficeny = 0.9
 var final_drive = 3.63 # Final gear to multiple torque.
-var gear_ratio = [-3.27, 0.0, 3.64, 2.19, 1.53, 1.16, 0.94]   # power multiplyer for engine
+var gear_ratio = [-3.27, 0.0, 3.64, 2.6, 1.53, 1.16, 0.94]   # power multiplyer for engine
 var current_gear_ratio: float
 var current_gear = 1
-var max_clutch_torque = 250.0 # max amount of engine torque that can be transfered to the wheels
-var lock_threshold = 0.5
+var max_clutch_torque = 302.0 # max amount of engine torque that can be transfered to the wheels
+var lock_threshold = 39.27
+var lock_stiffness = 20.0 
 
 
 	###################
@@ -98,7 +99,7 @@ var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up
 var rolling_resistance_coeff = 0.015
-var friction_coefficient = 1.5
+var friction_coefficient = 1.0
 var camber = 0.0
 
 
@@ -169,36 +170,30 @@ func motor_process(delta: float) -> void:
 		clutch_engagement = 0.0
 		engine_torque = 0.0
 		
-	var base_friction = 0.005 * max_torque
-	var linear_friction = 0.015 * max_torque * normalized_rpm
-	var quadratic_friction = 0.008 * max_torque * normalized_rpm * normalized_rpm
+	var base_friction = 0.01 * max_torque
+	var linear_friction = 0.03 * max_torque * normalized_rpm
+	var quadratic_friction = 0.02 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
-
 	# clutch_torque calc, dry model
 	
 	var max_transferable_torque = max_clutch_torque * clutch_engagement
-	var is_locked = false
 	
 	if driven_count > 0:
 		target_engine_ang_vel = (angular_velocity_sum / driven_count) * (drivetrain_ratio)
-		print(target_engine_ang_vel)
 		var speed_difference = engine_angular_velocity - target_engine_ang_vel 
 		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # locked
-				is_locked = true
-				engine_angular_velocity = target_engine_ang_vel
 				clutch_torque_on_engine = engine_torque - engine_friction
+				engine_angular_velocity = lerp(engine_angular_velocity, target_engine_ang_vel, lock_stiffness * delta)
 		else:
-			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque # slipping
+			var slip_factor = clamp(abs(speed_difference) / lock_threshold, 0.0, 1.0)
+			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque * slip_factor # slipping
 			
-	if is_locked == false:
-		var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
-		var engine_angular_accel = net_engine_torque / engine_inertia
-		engine_angular_velocity += engine_angular_accel * delta
-		
+	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
+	var engine_angular_accel = net_engine_torque / engine_inertia
+	engine_angular_velocity += engine_angular_accel * delta
 	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
-	
 	# final calc
 	
 	var clutch_torque_to_wheels = clutch_torque_on_engine
@@ -259,6 +254,7 @@ func transmission_process(delta: float):
 		if shift_timer <= 0.0:
 			current_gear_ratio = gear_ratio[current_gear]
 			is_shifting = false
+			
 
 				
 	

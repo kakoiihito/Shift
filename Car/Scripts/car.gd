@@ -78,9 +78,10 @@ var gear_ratio = [-3.27, 0.0, 3.64, 2.6, 1.53, 1.16, 0.94]   # power multiplyer 
 var current_gear_ratio: float
 var current_gear = 1
 var max_clutch_torque = 302.0 # max amount of engine torque that can be transfered to the wheels
-var lock_threshold = 39.27
-var lock_stiffness = 20.0 
-
+var lock_threshold = 5.0
+var unlock_threshold = 12.0
+var clutch_stiffness = 64.0
+var is_clutch_locked: bool
 
 	###################
 	# WHEEL VARIABLES #
@@ -151,9 +152,10 @@ func motor_process(delta: float) -> void:
 	var driven_count: int = 0
 	var throttle_input := Input.get_action_strength("Gas")
 	var clutch_input := Input.get_action_strength("Clutch")
-	var clutch_engagement = (1.0 - clutch_input)
+	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
 	var drivetrain_ratio = current_gear_ratio * final_drive
+	
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
@@ -176,27 +178,37 @@ func motor_process(delta: float) -> void:
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
 	# clutch_torque calc, dry model
-	
-	var max_transferable_torque = max_clutch_torque * clutch_engagement
-	
-	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * (drivetrain_ratio)
-		var speed_difference = engine_angular_velocity - target_engine_ang_vel 
-		if abs(speed_difference) < lock_threshold and clutch_engagement > 0.9: # locked
-				clutch_torque_on_engine = engine_torque - engine_friction
-				engine_angular_velocity = lerp(engine_angular_velocity, target_engine_ang_vel, lock_stiffness * delta)
-		else:
-			var slip_factor = clamp(abs(speed_difference) / lock_threshold, 0.0, 1.0)
-			clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque * slip_factor # slipping
 			
-	var net_engine_torque = engine_torque - engine_friction - clutch_torque_on_engine
+	if driven_count > 0:
+		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
+		var speed_difference = engine_angular_velocity - target_engine_ang_vel
+		var max_transferable_torque = max_clutch_torque * clutch_engagement
+	
+		if is_clutch_locked:
+			if abs(speed_difference) > unlock_threshold:
+				is_clutch_locked = false
+		else:
+			if abs(speed_difference) < lock_threshold and clutch_engagement > 0.95:
+					is_clutch_locked = true
+					
+		if is_clutch_locked:
+			clutch_torque_on_engine = clamp(
+				-speed_difference * clutch_stiffness,
+				-max_transferable_torque,
+				max_transferable_torque
+			)
+			engine_angular_velocity = target_engine_ang_vel
+		else:
+			clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
+			
+	var net_engine_torque = engine_torque - engine_friction + clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / engine_inertia
 	engine_angular_velocity += engine_angular_accel * delta
 	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	# final calc
 	
-	var clutch_torque_to_wheels = clutch_torque_on_engine
+	var clutch_torque_to_wheels = -clutch_torque_on_engine
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
 	
@@ -425,72 +437,6 @@ func _get_wheel_traction(ray: RayCast3D):
 		traction_multiplier = 0.0
 	
 	longitude_force[wheel_index] = (wheel_spring_force[wheel_index].length() * traction_multiplier * friction_coefficient)
-
-# Pacejka (Long)
-
-	var b0 = 1.5
-	var b1 = 0
-	var b2 = 1100
-	var b3 = 0
-	var b4 = 300
-	var b5 = 0
-	var b6 = 0
-	var b7 = 0
-	var b8 = -2
-	var b9 = 0
-	var b10 = 0
-	var b11 = 0
-	var b12 = 0
-	var b13 = 0
-
-	var D = Fz * (b1 * Fz + b2)
-	var BCD = (b3 * pow(Fz, 2) + b4 * Fz) * exp(-b5 * Fz)
-	var C = b0
-	var B = 0.0
-	if C * D != 0.0:
-		B = BCD / (C * D)
-	var H = b9 * Fz + b10
-	var E = (b6 * pow(Fz, 2) + b7 * Fz + b8) * (1 - b13 * sign(slip_ratio +H))
-	var V = b11 * Fz + b12
-	var Bx1 = B * (slip_ratio * 100 + H)
-	
-	longitude_f = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1)))) + V
-	
-# Pacejka (lateral)
-
-	var a0 = 1.4
-	var a1 = 0
-	var a2 = 1100
-	var a3 = 1100
-	var a4 = 10
-	var a5 = 0
-	var a6 = 0
-	var a7 = -2
-	var a8 = 0
-	var a9 = 0
-	var a10 = 0
-	var a11 = 0
-	var a12 = 0
-	var a13 = 0
-	var a14 = 0
-	var a15 = 0
-	var a16 = 0
-	var a17 = 0
-	
-	var D2 = Fz * (a1 * Fz + a2) * (1 - a15 * pow(camber, 2))
-	var BCD2 = a3 * sin(atan(Fz / a4) * 2) * (1 - a5 * abs(camber))
-	var C2 = a0
-	var B2 = 0.0
-	if C2 * D2 != 0.0:
-		B2 = BCD2 / (C2 * D2)
-	var H2 = a8 * Fz + a9 + a10 * camber
-	var E2 = (a6 * Fz + a7) * (1 - (a16 * camber + a17) * sign(rad_to_deg(slip_angle) + H2))
-	var V2 = a11 * Fz + a12 + (a13 * Fz + a14) * camber * Fz
-	var Bx12 = B2 * (rad_to_deg(slip_angle) + H2)
-	
-	var lateral_f = D2 * sin(C2 * atan(Bx12 - E2 * (Bx12 - atan(Bx12)))) + V2
-
-
 
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 	

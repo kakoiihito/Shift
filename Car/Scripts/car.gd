@@ -20,11 +20,11 @@ var track = 2.0
 	# SUSPENSION VARIABLES #
 	########################
 
-var rest_length = [0.2, 0.2, 0.2, 0.2]
-var spring_stiffness = [23800.0, 23800.0, 15500.0, 15500.0]
+var rest_length = [0.18, 0.18, 0.18, 0.18]
+var spring_stiffness = [28700.0, 28700.0, 17000.0, 17000.0]
 var max_compression = [0.12, 0.12, 0.12, 0.12]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
-var weight_distribution = [0.26, 0.26, 0.24, 0.24]
+var weight_distribution = [0.25, 0.25, 0.25, 0.25]
 var velocity_exponent = 1.0
 
 	######################
@@ -90,18 +90,16 @@ var is_clutch_locked: bool
 
 var active_wheels_engine: int # How many wheels are using engine
 var active_wheels_brake: int # How many wheels are using brakes
-var slip_ratio: float # how much the wheel is slipping from the ground
+
 var longitude_f: float
 var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
 var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
-var wheel_force = [0.0, 0.0, 0.0, 0.0] # How much the wheel gives force
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
 var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up
 var rolling_resistance_coeff = 0.015
 var friction_coefficient = 1.0
-var camber = 0.0
 
 
 func _ready() -> void:
@@ -140,10 +138,7 @@ func _physics_process(delta: float) -> void:
 	steering_proccess(delta)
 	brake_proccess()
 
-	if FR_torque_engine: gas_proccess(fr_wheel)
-	if FL_torque_engine: gas_proccess(fl_wheel)
-	if RR_torque_engine: gas_proccess(rr_wheel)
-	if RL_torque_engine: gas_proccess(rl_wheel)
+
 		
 func motor_process(delta: float) -> void:
 	
@@ -197,7 +192,6 @@ func motor_process(delta: float) -> void:
 				-max_transferable_torque,
 				max_transferable_torque
 			)
-			engine_angular_velocity = target_engine_ang_vel
 		else:
 			clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
 			
@@ -218,28 +212,8 @@ func motor_process(delta: float) -> void:
 			wheel_engine_torque[i] = per_wheel_torque
 		else:
 			wheel_engine_torque[i] = 0.0
-	
-	for i in range(4):
-		wheel_force[i] = clamp(
-			wheel_engine_torque[i] / wheel_radius,
-			-F_max[i],
-			F_max[i]
-		)
 					
-func gas_proccess(ray: RayCast3D) -> void:
-	if not ray.is_colliding():
-		return  # Don't apply force if wheel is off ground
-	
-	var wheel_index = ray.get_meta("wheel_index")
-	var forward = -ray.global_transform.basis.z
 
-	var requested_force = wheel_force[wheel_index]
-	
-	 # find the place to apply and direction and do it
-	var wheel_force_vector = requested_force * forward
-	var wheel_force_pos = ray.global_position - global_position
-	apply_force(wheel_force_vector, wheel_force_pos)
-		
 		
 func transmission_process(delta: float):
 	var target_clutch = Input.get_action_strength("Clutch")
@@ -376,13 +350,10 @@ func suspension_proccess(ray: RayCast3D):
 		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
 		var spring_force = spring_stiffness[wheel_index] * compression
-		var wheel_force_area = hit - ray.global_position
-		if compression > 0.0:
-			wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
-		else:
-			wheel_spring_force[wheel_index] = Vector3.ZERO
+		var wheel_force_area = hit - global_position
+		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
-		driven_wheels[wheel_index].position = wheel_force_area
+		driven_wheels[wheel_index].position = hit - ray.global_position
 
 
 
@@ -402,30 +373,29 @@ func _get_wheel_traction(ray: RayCast3D):
 	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
 	var velocity_at_wheel = _get_point_velocity(ray.global_position)
-	var Fz = wheel_spring_force[wheel_index].length() / 1000.0
 	
 	# Steering is applied through here. When you steer the wheel is not doing the steering all for you.
 	# A force pushes the car in the direction of the side of the wheel. This results in the car turning
 
 	var side_dir = ray.global_transform.basis.x # The speed to the direction to the side of the car
 	var side_velocity = velocity_at_wheel.dot(side_dir) # How fast the car is going from the side.
-	var car_speed = velocity_at_wheel.dot(-ray.transform.basis.z) # car speed in forward direction
+	var car_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z) # car speed in forward direction
 	
 	var slip_angle = 0.0
 	if abs(car_speed) > 0.1: 
-		slip_angle = atan2(side_velocity, abs(car_speed))
+		slip_angle = atan2(side_velocity, abs(car_speed)) * sign(car_speed)
 	
 	
-	var cornering_stiffness = 400.0 
-	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force[wheel_index].length() / 5000.0)  # Normalize to typical load
+	var cornering_stiffness = 60000.0
+	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force[wheel_index].length() / 2500.0)  # Normalize to typical load
 
 	
 	# Longitude Force
-
+	var slip_ratio: float
 	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius # how fast the wheel is moving based on the ground
-	if abs(car_speed) > 0.5:
-		slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed) # slip ratio decides whether wheel is spinning same, less, or more than the speed of car
-	else: slip_ratio = 0.0
+
+	slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed) # slip ratio decides whether wheel is spinning same, less, or more than the speed of car
+
 	
 	var optimal_slip = 0.08
 	var slip_sign = sign(slip_ratio)
@@ -439,7 +409,6 @@ func _get_wheel_traction(ray: RayCast3D):
 	longitude_force[wheel_index] = (wheel_spring_force[wheel_index].length() * traction_multiplier * friction_coefficient)
 
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
-	
 
 	var current_long_force = longitude_force[wheel_index]
 
@@ -454,6 +423,7 @@ func _get_wheel_traction(ray: RayCast3D):
 	# Final calc
 	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
 	var force_pos = ray.global_position - global_position
+	print(combined_force)
 	apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):

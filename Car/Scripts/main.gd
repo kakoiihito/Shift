@@ -3,110 +3,113 @@
 # Note: idk man i just work here
 extends RigidBody3D
 
+	###########
+	# SCRIPTS #
+	###########
+	
+var SuspensionScript = load("res://Car/Scripts/suspension.gd")
+var MotorScript = load("res://Car/Scripts/motor.gd")
+var SteeringScript = load("res://Car/Scripts/steering.gd")
+var TransmissionScript = load("res://Car/Scripts/transmission.gd")
+var WheelProcessScript = load("res://Car/Scripts/wheel.gd")
+var BrakeScript = load("res://Car/Scripts/brake.gd")
+
+var Suspension = SuspensionScript.new()
+var Motor = MotorScript.new()
+var Steering = SteeringScript.new()
+var Transmission = TransmissionScript.new()
+var WheelProcess = WheelProcessScript.new()
+var Brake = BrakeScript.new()
+
 
 	##########
 	# WHEELS #
 	##########
-
 @export var wheels: Array[RayCast3D]
 @onready var fl_wheel = $WheelFrontLeft
 @onready var fr_wheel = $WheelFrontRight
 @onready var rr_wheel = $WheelRearRight
 @onready var rl_wheel = $WheelRearLeft
-var wheel_base = 4.0
-var track = 2.0
-
+var wheel_base = Values.wheel_base
+var track = Values.track
 	########################
 	# SUSPENSION VARIABLES #
 	########################
-
-var rest_length = [0.18, 0.18, 0.18, 0.18]
-var spring_stiffness = [28700.0, 28700.0, 17000.0, 17000.0]
-var max_compression = [0.12, 0.12, 0.12, 0.12]
-var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
-var weight_distribution = [0.25, 0.25, 0.25, 0.25]
-var velocity_exponent = 1.1
-
+var rest_length = Values.rest_length
+var spring_stiffness = Values.spring_stiffness
+var max_compression = Values.max_compression
+var wheel_spring_force = Values.wheel_spring_force
+var weight_distribution = Values.weight_distribution
+var velocity_exponent = Values.velocity_exponent
 	######################
 	# STEERING VARIABLES #
 	######################
-
-var max_tire_turn_angle = 40.0
-var tire_turn_speed = 3.0
-
+var max_tire_turn_angle = Values.max_tire_turn_angle
+var tire_turn_speed = Values.tire_turn_speed
 	###################
 	# BRAKE VARIABLES #
 	###################
-	
-var max_brake_torque = 200.0 # How much the car can brake
-var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0] # stored brake torque values
-var brake_torque: float # storing brake torque for calculation (single wheel)
-
+var max_brake_torque = Values.max_brake_torque
+var wheel_brake_torque = Values.wheel_brake_torque
+var brake_torque: float
 	####################
 	# ENGINE VARIABLES #
 	####################
-
-@export var torque_curve: Curve  # Used to calculate how the car accelerates and how fast it goes.
-var max_torque = 151.0 # used to convert the torque value on the curve to a proper force amount.
-var max_rpm = 7500.0 # Max amount of engine rotations
-var idle_rpm = 850.0 # Lowest amount of engine rotations
+@export var torque_curve: Curve
+var max_torque = Values.max_torque
+var max_rpm = Values.max_rpm
+var idle_rpm = Values.idle_rpm
 var engine_rpm: float
-var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
+var wheel_engine_torque = Values.wheel_engine_torque
 var engine_angular_velocity: float
-var engine_inertia := 0.75
-# Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
-
-var FR_torque_engine = false
-var FL_torque_engine = false
-var RR_torque_engine = true
-var RL_torque_engine = true
-
-var FR_torque_brake = true
-var FL_torque_brake = true
-var RR_torque_brake = true
-var RL_torque_brake = true
-
+var engine_inertia = Values.engine_inertia
+var FR_torque_engine = Values.FR_torque_engine
+var FL_torque_engine = Values.FL_torque_engine
+var RR_torque_engine = Values.RR_torque_engine
+var RL_torque_engine = Values.RL_torque_engine
+var FR_torque_brake = Values.FR_torque_brake
+var FL_torque_brake = Values.FL_torque_brake
+var RR_torque_brake = Values.RR_torque_brake
+var RL_torque_brake = Values.RL_torque_brake
 	##########################
 	# TRANSMISSION VARIABLES #
 	##########################
 	
-var is_shifting = false
-var shift_timer = 0.0
-var drive_train_efficeny = 0.9
-var final_drive = 3.63 # Final gear to multiple torque.
-var gear_ratio = [-3.27, 0.0, 3.64, 2.6, 1.53, 1.16, 0.94]   # power multiplyer for engine
+var is_shifting = Values.is_shifting
+var shift_timer = Values.shift_timer
+var drive_train_efficeny = Values.drive_train_efficeny
+var final_drive = Values.final_drive
+var gear_ratio = Values.gear_ratio
 var current_gear_ratio: float
-var current_gear = 1
-var max_clutch_torque = 302.0 # max amount of engine torque that can be transfered to the wheels
-var lock_threshold = 5.0
-var unlock_threshold = 12.0
-var clutch_stiffness = 64.0
+var current_gear = Values.current_gear
+var max_clutch_torque = Values.max_clutch_torque
+var lock_threshold = Values.lock_threshold
+var unlock_threshold = Values.unlock_threshold
+var clutch_stiffness = Values.clutch_stiffness
 var is_clutch_locked: bool
-
 	###################
 	# WHEEL VARIABLES #
 	###################
-	
-
-var active_wheels_engine: int # How many wheels are using engine
-var active_wheels_brake: int # How many wheels are using brakes
-
+var active_wheels_engine: int
+var active_wheels_brake: int
 var longitude_f: float
-var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
-var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
-var longitude_force = [0.0, 0.0, 0.0, 0.0]
-var lateral_force = [0.0, 0.0, 0.0, 0.0]
-var wheel_radius = 0.3 # How big the wheel is.
-var wheel_mass = 20.0 # How much the wheel takes up
-var rolling_resistance_coeff = 0.015
-var friction_coefficient = 1.1
-var cornering_stiffness = 60000.0
-var wheel_inertia = 0.8 * wheel_mass * wheel_radius * wheel_radius
+var wheel_angular_velocity = Values.wheel_angular_velocity
+var F_max = Values.F_max
+var longitude_force = Values.longitude_force
+var lateral_force = Values.lateral_force
+var wheel_radius = Values.wheel_radius
+var wheel_mass = Values.wheel_mass
+var rolling_resistance_coeff = Values.rolling_resistance_coeff
+var friction_coefficient = Values.friction_coefficient
+var cornering_stiffness = Values.cornering_stiffness
+var wheel_inertia = Values.wheel_inertia
 
 func _ready() -> void:
 	
 	# If you want torque to be applied to a wheel, it will add it to an active wheel counter to divide
 	# Wheel torque per wheel in gas_process
+	Suspension.car = self
+	
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
@@ -128,17 +131,16 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 
-	transmission_process(delta)
-
+	transmission_process(delta) #ind
+	steering_proccess(delta) #ind
+	
 	for wheel in wheels:
-		suspension_proccess(wheel)
-		_get_wheel_angular_velocity(wheel, delta)
-		_get_wheel_forces(wheel)
+		suspension_proccess(wheel) # ind
+		_get_wheel_angular_velocity(wheel, delta) # relies wheel force and suspension
+		_get_wheel_forces(wheel) # relies wheel ang and suspension
 
-	motor_process(delta)
-
-	steering_proccess(delta)
-	brake_proccess()
+	motor_process(delta) # relies wheel ang and forces
+	brake_proccess() #relies wheel ang
 
 
 		
@@ -264,14 +266,9 @@ func brake_proccess() -> void:
 		
 func steering_proccess(delta: float) -> void:
 	
-	# When you check the strength it returns a number value and either Right or Left are assigned a value.
-	# So, we can base the direction the car steers on that.
-	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
 	var steering_amount = input_turn * max_tire_turn_angle
-	# Since the turn strength is multiplied by the turn it will turn based on the input, and since its multipled
-	# delta, it will turn gradually.
-
+	
 	if abs(input_turn) < 0.01:
 		fl_wheel.rotation.y = move_toward(fl_wheel.rotation.y, 0.0, tire_turn_speed * delta)
 		fr_wheel.rotation.y = move_toward(fr_wheel.rotation.y, 0.0, tire_turn_speed * delta)
@@ -309,15 +306,11 @@ func steering_proccess(delta: float) -> void:
 		
 func suspension_proccess(ray: RayCast3D):
 	
-	# If the ray is not touching anything its pointless to attempt to calculate anything
 	var wheel_index = ray.get_meta("wheel_index")
 	var driven_wheels = [$WheelFrontRight/FrontRightWheel, $WheelFrontLeft/FrontLeftWheel, $WheelRearLeft/RearLeftWheel, $WheelRearRight/RearRightWheel]
 	
 	if ray.is_colliding():
 		
-		# Here we use the ray to calculate the distance from the ground to the wheel and and subtract that
-		# from the rest length since that tells us the amount the spring is extending or compressing (compression var).
-		# An offset is used since the top of the raycast must be centered to the middle of the wheel.
 		
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
@@ -325,9 +318,6 @@ func suspension_proccess(ray: RayCast3D):
 		var compression = rest_length[wheel_index] - hit_distance
 		compression = clamp(compression, 0.0, max_compression[wheel_index])  
 
-		# Spring dampning is calculated by the spring's speed and dampning coefficent (amount).
-		# To get the coefficent, a damper ratio and critical dampning variable are needed.
-		
 		var damper_ratio = 0.5
 		
 		var world_vel = _get_point_velocity(hit)
@@ -336,12 +326,8 @@ func suspension_proccess(ray: RayCast3D):
 		var sprung_mass = mass * weight_distribution[wheel_index]
 		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * sprung_mass)
 		var c = damper_ratio * c_crit
-		var spring_dampning = c * pow(abs(relative_vel), velocity_exponent) * sign(relative_vel) # f = c * v^a (exponential damper)
+		var spring_dampning = c * pow(abs(relative_vel), velocity_exponent) * sign(relative_vel)
 		
-		# This section is used to calculate how much force and where the force should be applied.
-		# The spring force is calculated from spring_stiffness (force multiplyer) and compression (the extension or compression)
-		# Then, based on spring_force, we subtract how much movement based on dampning and multiply the force by the direction it should move in.
-		# Finally we calculate the area the force should be in and apply both wheel_force and the force area (wheel_force_area) to have a result of suspension.
 		
 		var spring_force = spring_stiffness[wheel_index] * compression
 		var wheel_force_area = hit - global_position
@@ -349,11 +335,7 @@ func suspension_proccess(ray: RayCast3D):
 		driven_wheels[wheel_index].position = hit - ray.global_position
 		apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 		
-
-
-
 func _get_point_velocity(point: Vector3) -> Vector3:
-	# A physics forumla used to calculate dampning.
 	return linear_velocity + angular_velocity.cross(point - global_position)
 	
 	
@@ -416,8 +398,8 @@ func _get_wheel_forces(ray: RayCast3D):
 	apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
-	var wheel_index = ray.get_meta("wheel_index") # wheel meta data
 	
+	var wheel_index = ray.get_meta("wheel_index") 
 	
 	if not wheels[wheel_index].is_colliding():
 		var air_drag_torque = 0.001 * wheel_angular_velocity[wheel_index] * abs(wheel_angular_velocity[wheel_index])

@@ -19,6 +19,10 @@ run/main_scene="uid://dpu35v4g0f3s4"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Values="*uid://rj0v3jri7dxo"
+
 [input]
 
 Gas={

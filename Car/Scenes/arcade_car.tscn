@@ -1,6 +1,6 @@
-[gd_scene load_steps=18 format=4 uid="uid://c8hy24blg5tii"]
+[gd_scene format=4 uid="uid://c8hy24blg5tii"]
 
-[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_juk4w"]
+[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_juk4w"]
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="2_nefah"]
 [ext_resource type="PackedScene" uid="uid://bd17ofs482viu" path="res://sdfs.tscn" id="3_8cnik"]
 

@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dim7t0bf1io42"]
+[gd_scene format=3 uid="uid://dim7t0bf1io42"]
 
-[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_7822p"]
+[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_7822p"]
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="2_jiwsa"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_njov2"]

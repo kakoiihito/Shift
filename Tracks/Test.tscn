@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dua2qv1av0j0e"]
+[gd_scene format=3 uid="uid://dua2qv1av0j0e"]
 
-[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/car.gd" id="1_myinc"]
+[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_myinc"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_njov2"]
 

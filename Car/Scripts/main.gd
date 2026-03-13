@@ -38,7 +38,7 @@ var track = Values.track
 var rest_length = Values.rest_length
 var spring_stiffness = Values.spring_stiffness
 var max_compression = Values.max_compression
-var wheel_spring_force = Values.wheel_spring_force
+var wheel_spring_force = Data.wheel_spring_force
 var weight_distribution = Values.weight_distribution
 var velocity_exponent = Values.velocity_exponent
 	######################
@@ -50,7 +50,7 @@ var tire_turn_speed = Values.tire_turn_speed
 	# BRAKE VARIABLES #
 	###################
 var max_brake_torque = Values.max_brake_torque
-var wheel_brake_torque = Values.wheel_brake_torque
+var wheel_brake_torque = Data.wheel_brake_torque
 var brake_torque: float
 	####################
 	# ENGINE VARIABLES #
@@ -60,7 +60,7 @@ var max_torque = Values.max_torque
 var max_rpm = Values.max_rpm
 var idle_rpm = Values.idle_rpm
 var engine_rpm: float
-var wheel_engine_torque = Values.wheel_engine_torque
+var wheel_engine_torque = Data.wheel_engine_torque
 var engine_angular_velocity: float
 var engine_inertia = Values.engine_inertia
 var FR_torque_engine = Values.FR_torque_engine
@@ -93,10 +93,10 @@ var is_clutch_locked: bool
 var active_wheels_engine: int
 var active_wheels_brake: int
 var longitude_f: float
-var wheel_angular_velocity = Values.wheel_angular_velocity
-var F_max = Values.F_max
-var longitude_force = Values.longitude_force
-var lateral_force = Values.lateral_force
+var wheel_angular_velocity = Data.wheel_angular_velocity
+var F_max = Data.F_max
+var longitude_force = Data.longitude_force
+var lateral_force = Data.lateral_force
 var wheel_radius = Values.wheel_radius
 var wheel_mass = Values.wheel_mass
 var rolling_resistance_coeff = Values.rolling_resistance_coeff
@@ -109,6 +109,10 @@ func _ready() -> void:
 	# If you want torque to be applied to a wheel, it will add it to an active wheel counter to divide
 	# Wheel torque per wheel in gas_process
 	Suspension.car = self
+	Transmission.car = self
+	Steering.car = self
+	WheelProcess.car = self
+	Motor.car = self
 	
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
@@ -131,15 +135,15 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 
-	transmission_process(delta) #ind
-	steering_proccess(delta) #ind
+	Transmission.transmission_process(delta) #ind
+	Steering.steering_proccess(delta) #ind
 	
 	for wheel in wheels:
-		suspension_proccess(wheel) # ind
-		_get_wheel_angular_velocity(wheel, delta) # relies wheel force and suspension
-		_get_wheel_forces(wheel) # relies wheel ang and suspension
+		Suspension.suspension_proccess(wheel) # ind
+		WheelProcess._get_wheel_angular_velocity(wheel, delta) # relies wheel force and suspension
+		WheelProcess._get_wheel_forces(wheel) # relies wheel ang and suspension
 
-	motor_process(delta) # relies wheel ang and forces
+	Motor.motor_process(delta) # relies wheel ang and forces
 	brake_proccess() #relies wheel ang
 
 

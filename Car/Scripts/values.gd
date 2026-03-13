@@ -31,7 +31,7 @@ var tire_turn_speed = 3.0
 	###################
 	
 var max_brake_torque = 200.0 # How much the car can brake
-var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0] # stored brake torque values
+
 
 
 	####################
@@ -41,7 +41,7 @@ var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0] # stored brake torque values
 var max_torque = 151.0 # used to convert the torque value on the curve to a proper force amount.
 var max_rpm = 7500.0 # Max amount of engine rotations
 var idle_rpm = 850.0 # Lowest amount of engine rotations
-var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0] # How much power the engine produces
+
 
 var engine_inertia = 0.75
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
@@ -77,10 +77,7 @@ var clutch_stiffness = 64.0
 	###################
 	
 
-var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0] # wheel speed in a direction using rads
-var F_max = [0.0, 0.0, 0.0, 0.0] # max amount of traction
-var longitude_force = [0.0, 0.0, 0.0, 0.0]
-var lateral_force = [0.0, 0.0, 0.0, 0.0]
+
 var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up
 var rolling_resistance_coeff = 0.015

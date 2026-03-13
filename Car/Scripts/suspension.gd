@@ -1,22 +1,19 @@
 extends Node
 
-var rest_length = [0.18, 0.18, 0.18, 0.18]
-var spring_stiffness = [28700.0, 28700.0, 17000.0, 17000.0]
-var max_compression = [0.12, 0.12, 0.12, 0.12]
-var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
-var weight_distribution = [0.25, 0.25, 0.25, 0.25]
-var velocity_exponent = 1.1
-
 @export var car: RigidBody3D
 
+var rest_length = Values.rest_length
+var spring_stiffness = Values.spring_stiffness
+var max_compression = Values.max_compression
+var wheel_spring_force = Data.wheel_spring_force
+var weight_distribution = Values.weight_distribution
+var velocity_exponent = Values.velocity_exponent
 
 func suspension_proccess(ray: RayCast3D):
 	
 	var wheel_index = ray.get_meta("wheel_index")
 	
-	
 	if ray.is_colliding():
-		
 		
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
@@ -33,7 +30,6 @@ func suspension_proccess(ray: RayCast3D):
 		var c_crit = 2.0 * sqrt(spring_stiffness[wheel_index] * sprung_mass)
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * pow(abs(relative_vel), velocity_exponent) * sign(relative_vel)
-		
 		
 		var spring_force = spring_stiffness[wheel_index] * compression
 		var wheel_force_area = hit - car.global_position

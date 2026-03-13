@@ -2,11 +2,12 @@
 
   ### Highlights
   
-  * Simplifed Pacejka Tire Model
+  * Linear Tire Model
   * Raycast Wheels
   * Rigid Body Car
   * Curve Based Engine Torque Model
   * Dry Clutch Model
+  * Basic Brake Model
   * Basic Transmission Model
   * Linear Suspension Model
   * Ackermman Steering Model

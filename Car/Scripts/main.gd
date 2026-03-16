@@ -7,18 +7,22 @@ extends RigidBody3D
 	# SCRIPTS #
 	###########
 	
-var SuspensionScript = load("res://Car/Scripts/suspension.gd")
-var MotorScript = load("res://Car/Scripts/motor.gd")
+
+
 var SteeringScript = load("res://Car/Scripts/steering.gd")
 var TransmissionScript = load("res://Car/Scripts/transmission.gd")
+var SuspensionScript = load("res://Car/Scripts/suspension.gd")
 var WheelProcessScript = load("res://Car/Scripts/wheel.gd")
+var MotorScript = load("res://Car/Scripts/motor.gd")
 var BrakeScript = load("res://Car/Scripts/brake.gd")
 
-var Suspension = SuspensionScript.new()
-var Motor = MotorScript.new()
+
+
 var Steering = SteeringScript.new()
 var Transmission = TransmissionScript.new()
+var Suspension = SuspensionScript.new()
 var WheelProcess = WheelProcessScript.new()
+var Motor = MotorScript.new()
 var Brake = BrakeScript.new()
 
 
@@ -75,18 +79,16 @@ var RL_torque_brake = Values.RL_torque_brake
 	# TRANSMISSION VARIABLES #
 	##########################
 	
-var is_shifting = Values.is_shifting
-var shift_timer = Values.shift_timer
+var is_shifting = Data.is_shifting
+var shift_timer = Data.shift_timer
 var drive_train_efficeny = Values.drive_train_efficeny
 var final_drive = Values.final_drive
 var gear_ratio = Values.gear_ratio
-var current_gear_ratio: float
-var current_gear = Values.current_gear
+var current_gear_ratio = Data.current_gear_ratio
+var current_gear = Data.current_gear
 var max_clutch_torque = Values.max_clutch_torque
-var lock_threshold = Values.lock_threshold
 var unlock_threshold = Values.unlock_threshold
 var clutch_stiffness = Values.clutch_stiffness
-var is_clutch_locked: bool
 	###################
 	# WHEEL VARIABLES #
 	###################
@@ -134,16 +136,17 @@ func _ready() -> void:
 	rr_wheel.set_meta("wheel_index", 3)
 
 func _physics_process(delta: float) -> void:
-
-	Transmission.transmission_process(delta) #ind
+	
+	
 	Steering.steering_proccess(delta) #ind
+	transmission_process(delta) #ind # cannot work properly 
 	
 	for wheel in wheels:
 		Suspension.suspension_proccess(wheel) # ind
 		WheelProcess._get_wheel_angular_velocity(wheel, delta) # relies wheel force and suspension
 		WheelProcess._get_wheel_forces(wheel) # relies wheel ang and suspension
 
-	Motor.motor_process(delta) # relies wheel ang and forces
+	motor_process(delta) # relies wheel ang and forces # motor process is not able to get updated values
 	brake_proccess() #relies wheel ang
 
 
@@ -163,7 +166,8 @@ func motor_process(delta: float) -> void:
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i] == true:
-			angular_velocity_sum += wheel_angular_velocity[i]
+			angular_velocity_sum += Data.wheel_angular_velocity[i]
+			
 			driven_count += 1
 	
  # torque
@@ -223,15 +227,15 @@ func transmission_process(delta: float):
 # upshift
 	if not is_shifting and target_clutch > 0.3:
 		if Input.is_action_just_pressed("ShiftUp"):
-			if current_gear < gear_ratio.size() - 1:
-				current_gear += 1
+			if Data.current_gear < gear_ratio.size() - 1:
+				Data.current_gear += 1
 				is_shifting = true
 				shift_timer = 0.2  # realistic shift time in seconds
 
 # down shift
 		if Input.is_action_just_pressed("ShiftDown"):
-			if current_gear > 0:
-				current_gear -= 1
+			if Data.current_gear > 0:
+				Data.current_gear -= 1
 				is_shifting = true
 				shift_timer = 0.2  # realistic shift time
 
@@ -239,10 +243,9 @@ func transmission_process(delta: float):
 	if is_shifting:
 		shift_timer -= delta
 		if shift_timer <= 0.0:
-			current_gear_ratio = gear_ratio[current_gear]
+			Motor.current_gear_ratio = gear_ratio[Data.current_gear]
 			is_shifting = false
 			
-
 				
 	
 func brake_proccess() -> void:

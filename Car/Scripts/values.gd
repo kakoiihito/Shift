@@ -1,5 +1,7 @@
 extends Node
 
+# used for tuning the car's behavior, data.gd is for real time calculation
+
 	#######
 	# CAR #
 	#######

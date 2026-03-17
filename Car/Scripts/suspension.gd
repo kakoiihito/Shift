@@ -8,6 +8,13 @@ var max_compression = Values.max_compression
 var wheel_spring_force = Data.wheel_spring_force
 var weight_distribution = Values.weight_distribution
 var velocity_exponent = Values.velocity_exponent
+var front_antiroll_bar = Values.front_antiroll_bar
+var rear_antiroll_bar = Values.rear_antiroll_bar
+var front_antiroll_bar_stiffness = Values.front_antiroll_bar_stiffness
+var rear_antiroll_bar_stiffness = Values.rear_antiroll_bar_stiffness
+
+var compression = [0.0, 0.0, 0.0, 0.0]
+var arb_force = [0.0, 0.0, 0.0, 0.0]
 
 func suspension_proccess(ray: RayCast3D):
 	
@@ -18,8 +25,19 @@ func suspension_proccess(ray: RayCast3D):
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		var compression = rest_length[wheel_index] - hit_distance
-		compression = clamp(compression, 0.0, max_compression[wheel_index])  
+		compression[wheel_index] = clamp(rest_length[wheel_index] - hit_distance, 0.0, max_compression[wheel_index]) 
+
+		if front_antiroll_bar == true:
+			var arb = front_antiroll_bar_stiffness * (compression[0] - compression[1])
+		
+			arb_force[0]  += -arb
+			arb_force[1] +=  arb
+
+		if rear_antiroll_bar == true:
+			var arb = rear_antiroll_bar_stiffness * (compression[2] - compression[3])
+
+			arb_force[2]  += -arb
+			arb_force[3] +=  arb
 
 		var damper_ratio = 0.5
 		
@@ -31,7 +49,7 @@ func suspension_proccess(ray: RayCast3D):
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * pow(abs(relative_vel), velocity_exponent) * sign(relative_vel)
 		
-		var spring_force = spring_stiffness[wheel_index] * compression
+		var spring_force = spring_stiffness[wheel_index] * compression[wheel_index]
 		var wheel_force_area = hit - car.global_position
 		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
 		

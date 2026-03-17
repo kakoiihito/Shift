@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
 [ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_yhjd6"]
+[ext_resource type="Curve" uid="uid://c6dn4db5wuv2o" path="res://Car/new_curve.tres" id="2_lbp5j"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -82,6 +83,7 @@ mesh = SubResource("BoxMesh_37kl0")
 [node name="Node3D" parent="Functional" unique_id=1475845789 instance=ExtResource("1_yhjd6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 43.196335, 19.011797)
 mass = 1000.0
+torque_curve = ExtResource("2_lbp5j")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
 transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)

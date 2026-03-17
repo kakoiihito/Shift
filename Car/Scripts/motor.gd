@@ -23,9 +23,6 @@ var wheel_angular_velocity = Data.wheel_angular_velocity
 var is_shifting = Data.is_shifting
 var drive_train_efficeny = Values.drive_train_efficeny
 var final_drive = Values.final_drive
-var gear_ratio = Values.gear_ratio
-var current_gear = Data.current_gear
-var current_gear_ratio = Data.current_gear_ratio
 var max_clutch_torque = Values.max_clutch_torque
 var unlock_threshold = Values.unlock_threshold
 var clutch_stiffness = Values.clutch_stiffness
@@ -43,8 +40,6 @@ func motor_process(delta: float) -> void:
 	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
 	var drivetrain_ratio = Data.current_gear_ratio * Values.final_drive
-	print(Data.current_gear_ratio)
-
 	
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
@@ -62,9 +57,9 @@ func motor_process(delta: float) -> void:
 		clutch_engagement = 0.0
 		engine_torque = 0.0
 		
-	var base_friction = 0.01 * max_torque
-	var linear_friction = 0.03 * max_torque * normalized_rpm
-	var quadratic_friction = 0.02 * max_torque * normalized_rpm * normalized_rpm
+	var base_friction = 0.001 * max_torque
+	var linear_friction = 0.003 * max_torque * normalized_rpm
+	var quadratic_friction = 0.002 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
 	# clutch_torque calc, dry model

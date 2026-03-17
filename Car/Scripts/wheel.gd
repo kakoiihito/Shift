@@ -92,7 +92,7 @@ func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 			rolling_resistance = 0.0
 			
 		var ground_reaction_torque = -longitude_force[wheel_index] * wheel_radius
-		var net_torque = Data.wheel_engine_torque[wheel_index] - Data.wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
+		var net_torque = wheel_engine_torque[wheel_index] - wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
 		
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
 		

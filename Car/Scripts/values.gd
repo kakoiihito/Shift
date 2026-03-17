@@ -20,6 +20,10 @@ var max_compression = [0.12, 0.12, 0.12, 0.12]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.25, 0.25, 0.25, 0.25]
 var velocity_exponent = 1.1
+var rear_antiroll_bar = true
+var front_antiroll_bar = true
+var rear_antiroll_bar_stiffness = 2870.0
+var front_antiroll_bar_stiffness = 1700.0
 
 	######################
 	# STEERING VARIABLES #
@@ -33,8 +37,6 @@ var tire_turn_speed = 3.0
 	###################
 	
 var max_brake_torque = 200.0 # How much the car can brake
-
-
 
 	####################
 	# ENGINE VARIABLES #
@@ -78,7 +80,6 @@ var clutch_stiffness = 64.0
 	# WHEEL VARIABLES #
 	###################
 	
-
 
 var wheel_radius = 0.3 # How big the wheel is.
 var wheel_mass = 20.0 # How much the wheel takes up

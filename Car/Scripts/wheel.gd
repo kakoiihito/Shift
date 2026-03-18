@@ -26,41 +26,39 @@ func _get_wheel_forces(ray: RayCast3D):
 	
 	var wheel_index = ray.get_meta("wheel_index")
 	
-	var velocity_at_wheel = _get_point_velocity(ray.global_position)
+	var velocity_at_wheel = _get_point_velocity(ray.get_collision_point())
 	var side_dir = ray.global_transform.basis.x #
 	var side_velocity = velocity_at_wheel.dot(side_dir)
-	var car_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z) 
+	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z) 
 	
 	var slip_angle = 0.0
-	if abs(car_speed) > 0.1: 
-		slip_angle = atan2(side_velocity, abs(car_speed)) * sign(car_speed)
+	if abs(forward_speed) > 2.0: 
+		slip_angle = (atan2(side_velocity, abs(forward_speed)))
 	
-	lateral_force[wheel_index] = -slip_angle * cornering_stiffness * (wheel_spring_force[wheel_index].length() / 2500.0)
-	
-	# Longitude Force
 	var slip_ratio: float
 	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius
 
-	if abs(car_speed) < 0.5:
+	if abs(forward_speed) < 0.5:
 		if abs(wheel_surface_speed) > 0.5:
 			slip_ratio = sign(wheel_surface_speed) * 1.0
 		else:
 			slip_ratio = 0.0
 	else:
-		slip_ratio = (wheel_surface_speed - car_speed) / abs(car_speed)
+		slip_ratio = (wheel_surface_speed - forward_speed) / max(abs(forward_speed), abs(wheel_surface_speed) + 0.1)
 		slip_ratio = clamp(slip_ratio, -1.0, 1.0)
 	
-	var optimal_slip = 0.08
-	var slip_sign = sign(slip_ratio)
-	var normalized_slip = clamp(abs(slip_ratio) / optimal_slip, 0.0, 1.0)
-	var traction_multiplier = slip_sign * normalized_slip
 	
-	if abs(car_speed) < 0.1 and abs(wheel_surface_speed) < 0.1:
-		traction_multiplier = 0.0
-		
-	longitude_force[wheel_index] = (wheel_spring_force[wheel_index].length() * traction_multiplier * friction_coefficient)
+	
+	var B = 10.0
+	var C = 1.9
+	var D = friction_coefficient
+	var E = 0.97
+	
+	longitude_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * slip_ratio - E *(B * slip_ratio - atan(B * slip_ratio))))
+	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * -slip_angle - E *(B * -slip_angle - atan(B * -slip_angle))))
 	
 	# Traction Circle
+  
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 
 	var current_long_force = longitude_force[wheel_index]
@@ -70,14 +68,14 @@ func _get_wheel_forces(ray: RayCast3D):
 	if force_2d.length() > F_max[wheel_index]:
 		force_2d = force_2d.normalized() * F_max[wheel_index]
 		longitude_force[wheel_index] = force_2d.x  
-		lateral_force[wheel_index] = force_2d.y    
+		lateral_force[wheel_index] = force_2d.y  
+
 	# Final calc
 	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
 	var force_pos = ray.global_position - car.global_position
 	car.apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
-	
 	var wheel_index = ray.get_meta("wheel_index") 
 	
 	if not car.wheels[wheel_index].is_colliding():

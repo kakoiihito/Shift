@@ -9,24 +9,15 @@ var FL_torque_brake = Values.FL_torque_brake
 var RR_torque_brake = Values.RR_torque_brake
 var RL_torque_brake = Values.RL_torque_brake
 
-var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
-
-var active_wheels_brake: int
-
-func _ready() -> void:
-	for i in range(4):
-		if brake_wheels[i] == true:
-			active_wheels_brake += 1
-
+		
 func brake_proccess() -> void:
-	
-	# actual braking is done in wheel angular velocity calculation
-	
+
+	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
 	var input_brake = Input.get_action_strength("Brake") # strength of input
 	
 	if input_brake > 0.0:
 		
-		brake_torque = (input_brake * max_brake_torque) / active_wheels_brake # formula of torque divided by wheels using it
+		brake_torque = (input_brake * max_brake_torque) / Data.active_wheels_brake # formula of torque divided by wheels using it
 		
 		for i in range(4):
 			if brake_wheels[i] == true:
@@ -36,6 +27,8 @@ func brake_proccess() -> void:
 				else:
 					brake_direction = 0.0
 				wheel_brake_torque[i] = brake_torque * brake_direction
+				
 	else:
 		for i in range(4):
-			wheel_brake_torque[i] = 0.0 # to reset any power when not in use
+			wheel_brake_torque[i] = 0.0
+			

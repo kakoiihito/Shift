@@ -14,10 +14,10 @@ var front_antiroll_bar_stiffness = Values.front_antiroll_bar_stiffness
 var rear_antiroll_bar_stiffness = Values.rear_antiroll_bar_stiffness
 
 var compression = [0.0, 0.0, 0.0, 0.0]
-var arb_force = [0.0, 0.0, 0.0, 0.0]
+
 
 func suspension_proccess(ray: RayCast3D):
-	
+	var arb_force = [0.0, 0.0, 0.0, 0.0]
 	var wheel_index = ray.get_meta("wheel_index")
 	
 	if ray.is_colliding():
@@ -29,10 +29,10 @@ func suspension_proccess(ray: RayCast3D):
 
 		if front_antiroll_bar == true:
 			var arb = front_antiroll_bar_stiffness * (compression[0] - compression[1])
-		
+			
 			arb_force[0]  += -arb
 			arb_force[1] +=  arb
-
+			
 		if rear_antiroll_bar == true:
 			var arb = rear_antiroll_bar_stiffness * (compression[2] - compression[3])
 
@@ -51,7 +51,7 @@ func suspension_proccess(ray: RayCast3D):
 		
 		var spring_force = spring_stiffness[wheel_index] * compression[wheel_index]
 		var wheel_force_area = hit - car.global_position
-		wheel_spring_force[wheel_index] = (spring_force - spring_dampning) * up_dir_spring
+		wheel_spring_force[wheel_index] = (spring_force - spring_dampning + arb_force[wheel_index]) * up_dir_spring
 		
 		car.apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 		

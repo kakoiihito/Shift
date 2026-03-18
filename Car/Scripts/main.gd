@@ -36,6 +36,15 @@ var Brake = BrakeScript.new()
 	####################
 @export var torque_curve: Curve
 
+	###################
+	# BRAKE VARIABLES #
+	###################
+
+var FR_torque_brake = true
+var FL_torque_brake = true
+var RR_torque_brake = true
+var RL_torque_brake = true
+
 func _ready() -> void:
 
 	Suspension.car = self
@@ -48,6 +57,12 @@ func _ready() -> void:
 	fr_wheel.set_meta("wheel_index", 1)
 	rl_wheel.set_meta("wheel_index", 2)
 	rr_wheel.set_meta("wheel_index", 3)
+
+	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
+	for i in range(4):
+		if brake_wheels[i] == true:
+			Data.active_wheels_brake += 1
+			
 
 func _physics_process(delta: float) -> void:
 	

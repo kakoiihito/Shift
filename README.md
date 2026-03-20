@@ -2,20 +2,21 @@
 
   ### Highlights
   
-  * Linear Tire Model
+  * Simplified Pacejka Tire Model
   * Raycast Wheels
   * Rigid Body Car
   * Curve Based Engine Torque Model
   * Dry Clutch Model
   * Basic Brake Model
   * Basic Transmission Model
-  * Linear Suspension Model
+  * Linear/Exponentional Suspension Model
+  * Antiroll Bar Model
   * Ackermman Steering Model
   * 240 Hz engine
 
   ### Overview
 
-Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to offer top level physics. Made by a broke highschool student, I'm a kid interested in motorsports, attempting to understand them at a deeper level. Shift was made as an alternative to motorsports simulators open to anyone to improve, work on, use for projects, or personal use.
+Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to offer top level physics. Made by a broke highschool student interested in motorsports, This projects aims to understand them at a deeper level. Shift was made as an alternative to motorsports simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Usage
 

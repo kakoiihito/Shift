@@ -32,7 +32,7 @@ func _get_wheel_forces(ray: RayCast3D):
 	
 	var slip_angle = 0.0
 	if abs(forward_speed) > 2.0: 
-		slip_angle = (atan2(side_velocity, abs(forward_speed)))
+		slip_angle = rad_to_deg(atan2(side_velocity, abs(forward_speed)))
 	
 	var slip_ratio: float
 	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius
@@ -47,39 +47,31 @@ func _get_wheel_forces(ray: RayCast3D):
 		slip_ratio = clamp(slip_ratio, -1.0, 1.0)
 	
 	
-	var B = 10.0
-	var C = 1.9
+	#B = 5.2635 
+	#C = 2.4227
+	#D = 0.9 * wheel_spring_force[wheel_index].length()
+	#E = 0.5012
+	
+	var B = 5.2635 
+	var C = 2.4227
 	var D = friction_coefficient
-	var E = 0.97
+	var E = -0.5012
 	
 	longitude_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * slip_ratio - E *(B * slip_ratio - atan(B * slip_ratio))))
 	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * -slip_angle - E *(B * -slip_angle - atan(B * -slip_angle))))
 	
 	# Traction Circle
 	
-	var Bx = 11.0
-	var Cx = 1.1
-	var Ex = 1.0
-	
-	var Gx = cos(Cx * atan(Bx * -slip_angle - Ex *(Bx * -slip_angle - atan(Bx * -slip_angle))))
-	var Gy = cos(Cx * atan(Bx * slip_ratio - Ex *(Bx * slip_ratio - atan(Bx * slip_ratio))))
-	
-	
-	longitude_force[wheel_index] = Gy * longitude_force[wheel_index]
-	lateral_force[wheel_index] = Gx * lateral_force[wheel_index]
-	
-	
-	
-	#F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
+	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 
-	#var current_long_force = longitude_force[wheel_index]
-	#var current_lat_force = lateral_force[wheel_index]
+	var current_long_force = longitude_force[wheel_index]
+	var current_lat_force = lateral_force[wheel_index]
 
-	#var force_2d = Vector2(current_long_force, current_lat_force)
-	#if force_2d.length() > F_max[wheel_index]:
-	#	force_2d = force_2d.normalized() * F_max[wheel_index]
-	#	longitude_force[wheel_index] = force_2d.x  
-	#	lateral_force[wheel_index] = force_2d.y  
+	var force_2d = Vector2(current_long_force, current_lat_force)
+	if force_2d.length() > F_max[wheel_index]:
+		force_2d = force_2d.normalized() * F_max[wheel_index]
+		longitude_force[wheel_index] = force_2d.x  
+		lateral_force[wheel_index] = force_2d.y  
 
 	# Final calc
 	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined

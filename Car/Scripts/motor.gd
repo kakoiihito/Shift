@@ -23,13 +23,10 @@ var wheel_angular_velocity = Data.wheel_angular_velocity
 var is_shifting = Data.is_shifting
 var drive_train_efficeny = Values.drive_train_efficeny
 var final_drive = Values.final_drive
-var gear_ratio = Values.gear_ratio
-var current_gear_ratio = Data.current_gear_ratio
 var max_clutch_torque = Values.max_clutch_torque
-var lock_threshold = Values.lock_threshold
 var unlock_threshold = Values.unlock_threshold
 var clutch_stiffness = Values.clutch_stiffness
-var is_clutch_locked: bool
+
 
 
 func motor_process(delta: float) -> void:
@@ -42,14 +39,13 @@ func motor_process(delta: float) -> void:
 	var clutch_input := Input.get_action_strength("Clutch")
 	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
-	var drivetrain_ratio = current_gear_ratio * final_drive
+	var drivetrain_ratio = Data.current_gear_ratio * Values.final_drive
 	
 	
 	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
 	for i in range(4):
 		if driven_wheels[i] == true:
 			angular_velocity_sum += wheel_angular_velocity[i]
-			
 			driven_count += 1
 	
  # torque
@@ -61,9 +57,9 @@ func motor_process(delta: float) -> void:
 		clutch_engagement = 0.0
 		engine_torque = 0.0
 		
-	var base_friction = 0.01 * max_torque
-	var linear_friction = 0.03 * max_torque * normalized_rpm
-	var quadratic_friction = 0.02 * max_torque * normalized_rpm * normalized_rpm
+	var base_friction = 0.001 * max_torque
+	var linear_friction = 0.003 * max_torque * normalized_rpm
+	var quadratic_friction = 0.002 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
 	# clutch_torque calc, dry model
@@ -89,10 +85,10 @@ func motor_process(delta: float) -> void:
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
 	# final calc
 	
-	var clutch_torque_to_wheels = -clutch_torque_on_engine
+	var clutch_torque_to_wheels = -clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
-	
+
 	
 	for i in range(4):
 		if driven_wheels[i]:

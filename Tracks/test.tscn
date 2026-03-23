@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
 [ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_yhjd6"]
-[ext_resource type="Curve" uid="uid://c6dn4db5wuv2o" path="res://Car/new_curve.tres" id="2_lbp5j"]
+[ext_resource type="Curve" uid="uid://c6dn4db5wuv2o" path="res://Car/roadster_torque_curve.tres" id="2_lbp5j"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)

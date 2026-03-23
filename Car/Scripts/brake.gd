@@ -12,7 +12,7 @@ var RL_torque_brake = Values.RL_torque_brake
 		
 func brake_proccess() -> void:
 
-	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
+	var brake_wheels = [FR_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
 	var input_brake = Input.get_action_strength("Brake") # strength of input
 	
 	if input_brake > 0.0:
@@ -27,6 +27,10 @@ func brake_proccess() -> void:
 				else:
 					brake_direction = 0.0
 				wheel_brake_torque[i] = brake_torque * brake_direction
+				
+				if sign(Data.wheel_angular_velocity[i]) != sign(wheel_brake_torque[i] - brake_torque * brake_direction):
+					wheel_brake_torque[i] = 0.0
+				
 				
 	else:
 		for i in range(4):

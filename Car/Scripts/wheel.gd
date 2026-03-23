@@ -28,11 +28,13 @@ func _get_wheel_forces(ray: RayCast3D):
 	var velocity_at_wheel = _get_point_velocity(ray.get_collision_point())
 	var side_dir = ray.global_transform.basis.x #
 	var side_velocity = velocity_at_wheel.dot(side_dir)
-	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z) 
+	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
+
 	
 	var slip_angle = 0.0
 	if abs(forward_speed) > 2.0: 
-		slip_angle = rad_to_deg(atan2(side_velocity, abs(forward_speed)))
+		slip_angle = (atan2(side_velocity, abs(forward_speed)))
+
 	
 	var slip_ratio: float
 	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius
@@ -52,14 +54,20 @@ func _get_wheel_forces(ray: RayCast3D):
 	#D = 0.9 * wheel_spring_force[wheel_index].length()
 	#E = 0.5012
 	
-	var B = 5.2635 
-	var C = 2.4227
+	var B = 13.6527
+	var C = 1.7379
 	var D = friction_coefficient
 	var E = -0.5012
 	
 	longitude_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * slip_ratio - E *(B * slip_ratio - atan(B * slip_ratio))))
-	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * -slip_angle - E *(B * -slip_angle - atan(B * -slip_angle))))
 	
+	
+	var B1 = 11.2964
+	var C1 = 1.3882
+	var D1 = friction_coefficient
+	var E1 = -0.4809
+	
+	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D1 * sin(C1 * atan(B1 * -slip_angle - E1 *(B1 * -slip_angle - atan(B1 * -slip_angle))))
 	# Traction Circle
 	
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()

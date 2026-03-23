@@ -42,7 +42,7 @@ func motor_process(delta: float) -> void:
 	var drivetrain_ratio = Data.current_gear_ratio * Values.final_drive
 	
 	
-	var driven_wheels = [FR_torque_engine, FL_torque_engine, RR_torque_engine, RL_torque_engine]
+	var driven_wheels = [FL_torque_engine, FR_torque_engine, RL_torque_engine, RR_torque_engine]
 	for i in range(4):
 		if driven_wheels[i] == true:
 			angular_velocity_sum += wheel_angular_velocity[i]
@@ -88,7 +88,6 @@ func motor_process(delta: float) -> void:
 	var clutch_torque_to_wheels = -clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
-
 	
 	for i in range(4):
 		if driven_wheels[i]:

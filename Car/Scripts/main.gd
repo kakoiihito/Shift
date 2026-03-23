@@ -14,6 +14,7 @@ var SuspensionScript = load("res://Car/Scripts/suspension.gd")
 var WheelProcessScript = load("res://Car/Scripts/wheel.gd")
 var MotorScript = load("res://Car/Scripts/motor.gd")
 var BrakeScript = load("res://Car/Scripts/brake.gd")
+var InputFeedbackScript = load("res://Car/Scripts/input_feedback.gd")
 
 var Steering = SteeringScript.new()
 var Transmission = TransmissionScript.new()
@@ -21,6 +22,7 @@ var Suspension = SuspensionScript.new()
 var WheelProcess = WheelProcessScript.new()
 var Motor = MotorScript.new()
 var Brake = BrakeScript.new()
+var InputFeedback = InputFeedbackScript.new()
 
 	##########
 	# WHEELS #
@@ -40,8 +42,8 @@ var Brake = BrakeScript.new()
 	# BRAKE VARIABLES #
 	###################
 
-var FR_torque_brake = true
-var FL_torque_brake = true
+var FR_torque_brake = false
+var FL_torque_brake = false
 var RR_torque_brake = true
 var RL_torque_brake = true
 
@@ -73,6 +75,7 @@ func _physics_process(delta: float) -> void:
 		Suspension.suspension_proccess(wheel) # independent function
 		WheelProcess._get_wheel_angular_velocity(wheel, delta) # relies on wheel force and suspension functions
 		WheelProcess._get_wheel_forces(wheel) # relies on wheel ang and suspension functions
-
+	
+	InputFeedback._input_feedback()
 	Motor.motor_process(delta) # relies on wheel ang and forces functions
 	Brake.brake_proccess() #relies on wheel angular velocity function

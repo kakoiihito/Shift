@@ -10,8 +10,7 @@ func steering_proccess(delta: float) -> void:
 	
 	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
-	var speed_factor = 1.0 / (1.0 + abs(car.linear_velocity.length()) * 0.03)
-	var steering_amount = input_turn * max_tire_turn_angle * speed_factor
+	var steering_amount = input_turn * max_tire_turn_angle
 	
 	if abs(input_turn) < 0.01:
 		car.fl_wheel.rotation.y = move_toward(car.fl_wheel.rotation.y, 0.0, tire_turn_speed * delta)

@@ -2,10 +2,10 @@ extends Node
 
 @export var car: RigidBody3D
 
-
 var max_torque = Values.max_torque
 var max_rpm = Values.max_rpm
 var idle_rpm = Values.idle_rpm
+var stall_rpm = Values.stall_rpm
 var engine_rpm: float
 var wheel_engine_torque = Data.wheel_engine_torque
 var engine_angular_velocity: float
@@ -14,11 +14,11 @@ var FR_torque_engine = Values.FR_torque_engine
 var FL_torque_engine = Values.FL_torque_engine
 var RR_torque_engine = Values.RR_torque_engine
 var RL_torque_engine = Values.RL_torque_engine
+var engine_stalled: bool
+
 	##########################
 	# TRANSMISSION VARIABLES #
 	##########################
-	
-var wheel_angular_velocity = Data.wheel_angular_velocity
 	
 var is_shifting = Data.is_shifting
 var drive_train_efficeny = Values.drive_train_efficeny
@@ -27,20 +27,22 @@ var max_clutch_torque = Values.max_clutch_torque
 var unlock_threshold = Values.unlock_threshold
 var clutch_stiffness = Values.clutch_stiffness
 
-
+var wheel_angular_velocity = Data.wheel_angular_velocity
 
 func motor_process(delta: float) -> void:
 	var torque_curve = car.torque_curve
 	
+	var throttle_input := Input.get_action_strength("Gas")
+	var clutch_input := Input.get_action_strength("Clutch")
+	
 	var clutch_torque_on_engine := 0.0
 	var angular_velocity_sum: float = 0.0
 	var driven_count: int = 0
-	var throttle_input := Input.get_action_strength("Gas")
-	var clutch_input := Input.get_action_strength("Clutch")
-	var clutch_engagement = (1.0 - clutch_input) * (1.0 - clutch_input)
 	var target_engine_ang_vel: float
 	var drivetrain_ratio = Data.current_gear_ratio * Values.final_drive
 	
+	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
+	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized) # smoothstep
 	
 	var driven_wheels = [FL_torque_engine, FR_torque_engine, RL_torque_engine, RR_torque_engine]
 	for i in range(4):
@@ -81,9 +83,18 @@ func motor_process(delta: float) -> void:
 	var net_engine_torque = engine_torque - engine_friction + clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / engine_inertia
 	engine_angular_velocity += engine_angular_accel * delta
-	engine_angular_velocity = clamp(engine_angular_velocity, idle_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
+	engine_angular_velocity = clamp(engine_angular_velocity, stall_rpm * TAU / 60.0, max_rpm * TAU / 60.0)
 	engine_rpm = engine_angular_velocity * 60.0 / TAU
-	# final calc
+	
+	if engine_rpm <= stall_rpm + 50.0 and clutch_engagement > 0.1 and not engine_stalled:
+		engine_stalled = true
+	if engine_stalled:
+		engine_torque = 0.0
+		clutch_engagement = 0.0
+		engine_angular_velocity = 0.0
+	if Input.is_action_pressed("Ignition"):
+		engine_stalled = false
+		engine_angular_velocity = idle_rpm * TAU / 60.0
 	
 	var clutch_torque_to_wheels = -clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny

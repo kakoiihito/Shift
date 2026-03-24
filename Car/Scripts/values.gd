@@ -16,12 +16,12 @@ var track = 2.0
 
 var rest_length = [0.18, 0.18, 0.18, 0.18]
 var spring_stiffness = [28700.0, 28700.0, 17000.0, 17000.0]
-var max_compression = [0.12, 0.12, 0.12, 0.12]
+var max_compression = [0.085, 0.085, 0.090, 0.090]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.25, 0.25, 0.25, 0.25]
 var velocity_exponent = 1.1
-var rear_antiroll_bar = false
-var front_antiroll_bar = false
+var rear_antiroll_bar = true
+var front_antiroll_bar = true
 var rear_antiroll_bar_stiffness = 2870.0
 var front_antiroll_bar_stiffness = 1700.0
 
@@ -36,7 +36,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 2000000.0 
+var max_brake_torque = 200.0 
 
 	####################
 	# ENGINE VARIABLES #
@@ -45,14 +45,14 @@ var max_brake_torque = 2000000.0
 var max_torque = 151.0 
 var max_rpm = 7500.0 
 var idle_rpm = 850.0
+var stall_rpm = 400.0
 var engine_inertia = 0.75
 
 # Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
-
-var FR_torque_engine = false
 var FL_torque_engine = false
-var RR_torque_engine = true
+var FR_torque_engine = false
 var RL_torque_engine = true
+var RR_torque_engine = true
 
 var FR_torque_brake = true
 var FL_torque_brake = true

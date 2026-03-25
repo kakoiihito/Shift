@@ -83,3 +83,14 @@ var wheel_mass = 20.0
 var rolling_resistance_coeff = 0.015
 var friction_coefficient = 1.9
 var wheel_inertia = 0.8 * wheel_mass * wheel_radius * wheel_radius
+
+	#################
+	# LSD VARIABLES #
+	#################
+	
+var TBR = 2.0
+var torsen_lsd = true
+var clutch_lsd = false
+var electronic_lsd = false
+var minimum_lsd_force = 100.0
+var ramp_factor = 1.0

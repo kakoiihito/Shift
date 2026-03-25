@@ -2,6 +2,10 @@ extends Node
 
 @export var car: RigidBody3D
 
+	####################
+	# ENGINE VARIABLES #
+	####################
+
 var max_torque = Values.max_torque
 var max_rpm = Values.max_rpm
 var idle_rpm = Values.idle_rpm
@@ -27,7 +31,25 @@ var max_clutch_torque = Values.max_clutch_torque
 var unlock_threshold = Values.unlock_threshold
 var clutch_stiffness = Values.clutch_stiffness
 
+	###################
+	# WHEEL VARIABLES #
+	###################
+	
 var wheel_angular_velocity = Data.wheel_angular_velocity
+var longitude_force = Data.longitude_force
+	
+	#################
+	# LSD VARIABLES #
+	#################
+	
+var TBR = Values.TBR
+var torsen_lsd = Values.torsen_lsd
+var clutch_lsd = Values.clutch_lsd
+var electronic_lsd = Values.electronic_lsd
+var minimum_lsd_force = Values.minimum_lsd_force
+var ramp_factor = Values.ramp_factor
+
+
 
 func motor_process(delta: float) -> void:
 	var torque_curve = car.torque_curve
@@ -42,7 +64,7 @@ func motor_process(delta: float) -> void:
 	var drivetrain_ratio = Data.current_gear_ratio * Values.final_drive
 	
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
-	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized) # smoothstep
+	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized)
 	
 	var driven_wheels = [FL_torque_engine, FR_torque_engine, RL_torque_engine, RR_torque_engine]
 	for i in range(4):
@@ -50,12 +72,11 @@ func motor_process(delta: float) -> void:
 			angular_velocity_sum += wheel_angular_velocity[i]
 			driven_count += 1
 	
- # torque
 	var normalized_rpm = engine_rpm / max_rpm
 	var engine_torque: float
 	if is_shifting == false:
 		engine_torque = torque_curve.sample(normalized_rpm) * max_torque * throttle_input
-	else: # if shifting you dont have torque due to engine not being in use
+	else:
 		clutch_engagement = 0.0
 		engine_torque = 0.0
 		
@@ -98,7 +119,29 @@ func motor_process(delta: float) -> void:
 	
 	var clutch_torque_to_wheels = -clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
+	
+	#var front_axle = [0,1]
+	#var rear_axle = [0,2]
+	#var driven_axle = []
+	
+	#if FL_torque_engine and FR_torque_engine:
+	#	driven_axle = [front_axle]
+	#elif RL_torque_engine and RR_torque_engine:
+	#	driven_axle = [rear_axle]
+	#elif FL_torque_engine and FR_torque_engine and RL_torque_engine and RR_torque_engine:
+	#	driven_axle =[front_axle, rear_axle]
+	
+	# var T_lock: float
+	# if torsen_clutch:
+	#	T_lock = torque_at_wheels * (TBR-1) / (TBR + 1)
+	# if clutch_clutch:
+	#	T_lock = minimum_lsd_force (torque_at_wheels * ramp_factor)
+	# if electronic_clutch:
+	#	pass # will write logic but not at the moment
+
+	
 	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
+	
 	
 	for i in range(4):
 		if driven_wheels[i]:

@@ -7,8 +7,6 @@ var tire_turn_speed = Values.tire_turn_speed
 
 func steering_proccess(delta: float) -> void:
 	
-	
-	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
 	var steering_amount = input_turn * max_tire_turn_angle
 	

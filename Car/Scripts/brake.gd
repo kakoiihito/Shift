@@ -31,7 +31,6 @@ func brake_proccess() -> void:
 				if sign(Data.wheel_angular_velocity[i]) != sign(wheel_brake_torque[i] - brake_torque * brake_direction):
 					wheel_brake_torque[i] = 0.0
 				
-				
 	else:
 		for i in range(4):
 			wheel_brake_torque[i] = 0.0

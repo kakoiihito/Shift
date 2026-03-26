@@ -67,7 +67,6 @@ func _get_wheel_forces(ray: RayCast3D):
 	var E1 = -0.4809
 	
 	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D1 * sin(C1 * atan(B1 * -slip_angle - E1 *(B1 * -slip_angle - atan(B1 * -slip_angle))))
-	# Traction Circle
 	
 	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 
@@ -79,7 +78,7 @@ func _get_wheel_forces(ray: RayCast3D):
 		force_2d = force_2d.normalized() * F_max[wheel_index]
 		longitude_force[wheel_index] = force_2d.x  
 		lateral_force[wheel_index] = force_2d.y  
-	# Final calc
+
 	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
 	var force_pos = ray.global_position - car.global_position
 	car.apply_force(combined_force , force_pos)

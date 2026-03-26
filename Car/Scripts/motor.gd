@@ -46,8 +46,10 @@ var TBR = Values.TBR
 var torsen_lsd = Values.torsen_lsd
 var clutch_lsd = Values.clutch_lsd
 var electronic_lsd = Values.electronic_lsd
+var open_diff = Values.open_diff
 var minimum_lsd_force = Values.minimum_lsd_force
 var ramp_factor = Values.ramp_factor
+var center_diff_split = Values.center_diff_split
 
 
 
@@ -65,6 +67,10 @@ func motor_process(delta: float) -> void:
 	
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
 	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized)
+	
+	var front_axle = [0,1]
+	var rear_axle = [2,3]
+	var driven_axle = []
 	
 	var driven_wheels = [FL_torque_engine, FR_torque_engine, RL_torque_engine, RR_torque_engine]
 	for i in range(4):
@@ -85,7 +91,6 @@ func motor_process(delta: float) -> void:
 	var quadratic_friction = 0.002 * max_torque * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
-	# clutch_torque calc, dry model
 			
 	if driven_count > 0:
 		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
@@ -109,10 +114,12 @@ func motor_process(delta: float) -> void:
 	
 	if engine_rpm <= stall_rpm + 50.0 and clutch_engagement > 0.1 and not engine_stalled:
 		engine_stalled = true
+		
 	if engine_stalled:
 		engine_torque = 0.0
 		clutch_engagement = 0.0
 		engine_angular_velocity = 0.0
+		
 	if Input.is_action_pressed("Ignition"):
 		engine_stalled = false
 		engine_angular_velocity = idle_rpm * TAU / 60.0
@@ -120,31 +127,51 @@ func motor_process(delta: float) -> void:
 	var clutch_torque_to_wheels = -clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * drive_train_efficeny
 	
-	#var front_axle = [0,1]
-	#var rear_axle = [0,2]
-	#var driven_axle = []
+	if FL_torque_engine and FR_torque_engine and RL_torque_engine and RR_torque_engine:
+		driven_axle =[front_axle, rear_axle]
+	elif FL_torque_engine and FR_torque_engine:
+		driven_axle = [front_axle]
+	elif RL_torque_engine and RR_torque_engine:
+		driven_axle = [rear_axle]
+	else:
+		var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
+		for i in range(4):
+			if driven_wheels[i]:
+				wheel_engine_torque[i] = per_wheel_torque
+			else:
+				wheel_engine_torque[i] = 0.0
 	
-	#if FL_torque_engine and FR_torque_engine:
-	#	driven_axle = [front_axle]
-	#elif RL_torque_engine and RR_torque_engine:
-	#	driven_axle = [rear_axle]
-	#elif FL_torque_engine and FR_torque_engine and RL_torque_engine and RR_torque_engine:
-	#	driven_axle =[front_axle, rear_axle]
-	
-	# var T_lock: float
-	# if torsen_clutch:
-	#	T_lock = torque_at_wheels * (TBR-1) / (TBR + 1)
-	# if clutch_clutch:
-	#	T_lock = minimum_lsd_force (torque_at_wheels * ramp_factor)
-	# if electronic_clutch:
-	#	pass # will write logic but not at the moment
-
-	
-	var per_wheel_torque = torque_at_wheels / driven_count if driven_count > 0 else 0.0
-	
-	
-	for i in range(4):
-		if driven_wheels[i]:
-			wheel_engine_torque[i] = per_wheel_torque
+	for axle in driven_axle:
+		
+		var axle_torque: float
+		if driven_axle.size() == 2:
+			axle_torque = torque_at_wheels * center_diff_split if axle == front_axle else torque_at_wheels * (1.0 - center_diff_split)
 		else:
-			wheel_engine_torque[i] = 0.0
+			axle_torque = torque_at_wheels
+		
+		var slip_a = longitude_force[axle[0]]
+		var slip_b = longitude_force[axle[1]]
+		
+		var T_lock: float
+		
+		if torsen_lsd:
+			T_lock = axle_torque * (TBR-1) / (TBR + 1)
+		elif clutch_lsd:
+			T_lock = minimum_lsd_force + (axle_torque * ramp_factor)
+		elif electronic_lsd:
+			pass # will write logic but not at the moment
+		elif open_diff:
+			T_lock = 0.0
+		
+		var T_high = (axle_torque / 2.0) + T_lock
+		var T_low  = (axle_torque / 2.0) - T_lock
+		
+		if slip_a > slip_b:
+			wheel_engine_torque[axle[0]] = T_low
+			wheel_engine_torque[axle[1]] = T_high
+		elif slip_b > slip_a:
+			wheel_engine_torque[axle[0]] = T_high
+			wheel_engine_torque[axle[1]] = T_low
+		else:
+			wheel_engine_torque[axle[0]] = axle_torque / 2.0
+			wheel_engine_torque[axle[1]] = axle_torque / 2.0

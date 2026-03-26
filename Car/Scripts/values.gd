@@ -5,6 +5,8 @@ extends Node
 	#######
 	# CAR #
 	#######
+	
+var car_value_tres: Resource
 
 var mass = 1000.0
 var wheel_base = 4.0
@@ -48,7 +50,6 @@ var idle_rpm = 850.0
 var stall_rpm = 400.0
 var engine_inertia = 0.75
 
-# Torque can be applied at any of the wheels. So, these vars allow the torque to be applied at any wheels neccessary.
 var FL_torque_engine = false
 var FR_torque_engine = false
 var RL_torque_engine = true
@@ -88,9 +89,17 @@ var wheel_inertia = 0.8 * wheel_mass * wheel_radius * wheel_radius
 	# LSD VARIABLES #
 	#################
 	
+	# lsd does not apply to abnormal drivetrain configurations (Example: Front Right, Left Back Wheel drive)
+	
 var TBR = 2.0
-var torsen_lsd = true
+var torsen_lsd = false
 var clutch_lsd = false
 var electronic_lsd = false
+var open_diff = true
 var minimum_lsd_force = 100.0
 var ramp_factor = 1.0
+var center_diff_split = 0.5 # front bias
+
+func _ready() -> void:
+	if car_value_tres != null:
+		pass # make it so all values are set to the tres ones

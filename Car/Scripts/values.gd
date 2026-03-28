@@ -8,7 +8,7 @@ extends Node
 	
 var car_value_tres: Resource
 
-var mass = 1000.0
+
 var wheel_base = 4.0
 var track = 2.0
 
@@ -21,7 +21,7 @@ var spring_stiffness = [28700.0, 28700.0, 17000.0, 17000.0]
 var max_compression = [0.085, 0.085, 0.090, 0.090]
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var weight_distribution = [0.25, 0.25, 0.25, 0.25]
-var velocity_exponent = 1.1
+var velocity_exponent = 1.0
 var rear_antiroll_bar = true
 var front_antiroll_bar = true
 var rear_antiroll_bar_stiffness = 2870.0

@@ -472,7 +472,7 @@ shape = SubResource("ConvexPolygonShape3D_646s7")
 debug_fill = false
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=591093353]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02609992, 2.3422723, 5.8866215)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9887118, 2.3422723, 5.8866215)
 
 [node name="Info" parent="." unique_id=541806933 node_paths=PackedStringArray("car") instance=ExtResource("3_enp3b")]
 car = NodePath("..")

@@ -32,7 +32,10 @@ var InputFeedback = InputFeedbackScript.new()
 @onready var fr_wheel = $WheelFrontRight
 @onready var rr_wheel = $WheelRearRight
 @onready var rl_wheel = $WheelRearLeft
-
+@onready var fl_wheel_mesh = $WheelFrontLeft/FrontLeftWheel/wheel_frontLeft
+@onready var fr_wheel_mesh = $WheelFrontRight/FrontRightWheel/wheel_frontRight
+@onready var rr_wheel_mesh = $WheelRearRight/RearRightWheel/wheel_backRight
+@onready var rl_wheel_mesh = $WheelRearLeft/RearLeftWheel/wheel_backLeft
 	####################
 	# ENGINE VARIABLES #
 	####################

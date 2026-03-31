@@ -20,6 +20,8 @@ func suspension_proccess(ray: RayCast3D):
 	var arb_force = [0.0, 0.0, 0.0, 0.0]
 	var wheel_index = ray.get_meta("wheel_index")
 	
+	var wheels = [car.fl_wheel_mesh, car.fr_wheel_mesh, car.rl_wheel_mesh, car.rr_wheel_mesh]
+	
 	if ray.is_colliding():
 		
 		var hit = ray.get_collision_point()
@@ -53,6 +55,7 @@ func suspension_proccess(ray: RayCast3D):
 		var wheel_force_area = hit - car.global_position
 		wheel_spring_force[wheel_index] = (spring_force - spring_dampning + arb_force[wheel_index]) * up_dir_spring
 		
+		wheels[wheel_index].position.y = -compression[wheel_index]
 		car.apply_force(wheel_spring_force[wheel_index], wheel_force_area)
 		
 func _get_point_velocity(point: Vector3) -> Vector3:

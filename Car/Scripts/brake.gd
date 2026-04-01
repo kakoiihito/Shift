@@ -17,7 +17,7 @@ func brake_proccess() -> void:
 	
 	if input_brake > 0.0:
 		
-		brake_torque = (input_brake * max_brake_torque) / Data.active_wheels_brake # formula of torque divided by wheels using it
+		brake_torque = (input_brake * 20000) / Data.active_wheels_brake # formula of torque divided by wheels using it
 		
 		for i in range(4):
 			if brake_wheels[i] == true:

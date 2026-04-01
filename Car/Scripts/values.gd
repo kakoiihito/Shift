@@ -38,7 +38,7 @@ var tire_turn_speed = 3.0
 	# BRAKE VARIABLES #
 	###################
 	
-var max_brake_torque = 200.0 
+var max_brake_torque = 20000000000000000000000000000000000.0 
 
 	####################
 	# ENGINE VARIABLES #

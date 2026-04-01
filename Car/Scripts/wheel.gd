@@ -29,55 +29,58 @@ func _get_wheel_forces(ray: RayCast3D):
 	var side_dir = ray.global_transform.basis.x #
 	var side_velocity = velocity_at_wheel.dot(side_dir)
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
-
+	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius
 	
-	var slip_angle = 0.0
-	if abs(forward_speed) > 2.0: 
-		slip_angle = (atan2(side_velocity, abs(forward_speed)))
 
+	var slip_angle = 0.0
+	if abs(forward_speed) > 10.0: 
+		slip_angle = (atan2(side_velocity, abs(forward_speed)))
 	
 	var slip_ratio: float
-	var wheel_surface_speed = wheel_angular_velocity[wheel_index] * wheel_radius
-
-	if abs(forward_speed) < 0.5:
-		if abs(wheel_surface_speed) > 0.5:
-			slip_ratio = sign(wheel_surface_speed) * 1.0
-		else:
-			slip_ratio = 0.0
-	else:
-		slip_ratio = (wheel_surface_speed - forward_speed) / max(abs(forward_speed), abs(wheel_surface_speed) + 0.1)
-		slip_ratio = clamp(slip_ratio, -1.0, 1.0)
+	var speed_threshold = max(abs(forward_speed), abs(wheel_surface_speed), 0.5)
+	slip_ratio = clamp((wheel_surface_speed - forward_speed) / speed_threshold, -1.0, 1.0)
 	
-	
-	#B = 5.2635 
-	#C = 2.4227
-	#D = 0.9 * wheel_spring_force[wheel_index].length()
-	#E = 0.5012
 	
 	var B = 13.6527
 	var C = 1.7379
 	var D = friction_coefficient
 	var E = -0.5012
 	
-	longitude_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * slip_ratio - E *(B * slip_ratio - atan(B * slip_ratio))))
+	#longitude_force[wheel_index] = wheel_spring_force[wheel_index].length() * D * sin(C * atan(B * slip_ratio - E *(B * slip_ratio - atan(B * slip_ratio))))
 	
 	var B1 = 11.2964
 	var C1 = 1.3882
 	var D1 = friction_coefficient
 	var E1 = -0.4809
 	
-	lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D1 * sin(C1 * atan(B1 * -slip_angle - E1 *(B1 * -slip_angle - atan(B1 * -slip_angle))))
+	#lateral_force[wheel_index] = wheel_spring_force[wheel_index].length() * D1 * sin(C1 * atan(B1 * -slip_angle - E1 *(B1 * -slip_angle - atan(B1 * -slip_angle))))
 	
-	F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
+	var theoretical_slip_ratio = slip_ratio / (1.0001 + abs(slip_ratio))
+	var theoretical_slip_angle = tan(clamp(slip_angle, -1.5, 1.5)) / (1.0001 + abs(slip_ratio))
+	
+	var slip_magnitude = sqrt(pow(theoretical_slip_ratio, 2) + pow(theoretical_slip_angle, 2))
+	
+	var Fx0 = (wheel_spring_force[wheel_index].length() / 2) * D * sin(C * atan(B * theoretical_slip_ratio - E *(B * theoretical_slip_ratio - atan(B * theoretical_slip_ratio))))
+	var Fy0 = (wheel_spring_force[wheel_index].length() / 2) * D1 * sin(C1 * atan(B1 * theoretical_slip_angle - E1 *(B1 * theoretical_slip_angle - atan(B1 * theoretical_slip_angle))))
+	
+	if slip_magnitude < 0.0001:
+		longitude_force[wheel_index] = 0.0
+		lateral_force[wheel_index] = 0.0
+	else:
+		longitude_force[wheel_index] = (theoretical_slip_ratio / slip_magnitude) * Fx0
+		lateral_force[wheel_index] = (theoretical_slip_angle / slip_magnitude) * Fy0
+	
+	
+	#F_max[wheel_index] = friction_coefficient * wheel_spring_force[wheel_index].length()
 
-	var current_long_force = longitude_force[wheel_index]
-	var current_lat_force = lateral_force[wheel_index]
+	#var current_long_force = longitude_force[wheel_index]
+	#var current_lat_force = lateral_force[wheel_index]
 
-	var force_2d = Vector2(current_long_force, current_lat_force)
-	if force_2d.length() > F_max[wheel_index]:
-		force_2d = force_2d.normalized() * F_max[wheel_index]
-		longitude_force[wheel_index] = force_2d.x  
-		lateral_force[wheel_index] = force_2d.y  
+	#var force_2d = Vector2(current_long_force, current_lat_force)
+	#if force_2d.length() > F_max[wheel_index]:
+	#	force_2d = force_2d.normalized() * F_max[wheel_index]
+	#	longitude_force[wheel_index] = force_2d.x  
+	#	lateral_force[wheel_index] = force_2d.y  
 
 	var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
 	var force_pos = ray.global_position - car.global_position

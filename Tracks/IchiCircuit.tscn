@@ -37,7 +37,7 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 117.36644, -9.753933, 8
 shape = SubResource("ConcavePolygonShape3D_64vfs")
 
 [node name="Node3D" parent="." unique_id=1502971588 instance=ExtResource("2_o7snf")]
-transform = Transform3D(0.41987982, 0, 0.9075797, 0, 1, 0, -0.9075797, 0, 0.41987982, 173.75504, -18.059729, 135.48984)
+transform = Transform3D(0.41987982, 0, 0.9075797, 0, 1, 0, -0.9075797, 0, 0.41987982, 131.47083, -9.47821, 109.96935)
 mass = 1000.0
 
 [editable path="IchiCircuit"]

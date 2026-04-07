@@ -1,7 +1,7 @@
 extends Control
 
 @onready var info_label: Label = $VBoxContainer/HBoxContainer/Label
-@export var car: Node3D # yar
+@export var car: Node3D
 var car_velocity: float
 
 func _process(_float) -> void:

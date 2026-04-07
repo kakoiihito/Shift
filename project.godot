@@ -21,7 +21,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Values="*uid://rj0v3jri7dxo"
 Data="*uid://j25s4fcoieaj"
 
 [input]

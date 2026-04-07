@@ -1,18 +1,18 @@
 extends Node
 
 @export var car: RigidBody3D
+@onready var Values: Resource
 
-var max_tire_turn_angle = Values.max_tire_turn_angle
-var tire_turn_speed = Values.tire_turn_speed
 
+	
 func steering_proccess(delta: float) -> void:
 	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
-	var steering_amount = input_turn * max_tire_turn_angle
+	var steering_amount = input_turn * Values.max_tire_turn_angle
 	
 	if abs(input_turn) < 0.01:
-		car.fl_wheel.rotation.y = move_toward(car.fl_wheel.rotation.y, 0.0, tire_turn_speed * delta)
-		car.fr_wheel.rotation.y = move_toward(car.fr_wheel.rotation.y, 0.0, tire_turn_speed * delta)
+		car.fl_wheel.rotation.y = move_toward(car.fl_wheel.rotation.y, 0.0, Values.tire_turn_speed * delta)
+		car.fr_wheel.rotation.y = move_toward(car.fr_wheel.rotation.y, 0.0, Values.tire_turn_speed * delta)
 		return
 	var L = Values.wheel_base
 	var W = Values.track
@@ -36,10 +36,10 @@ func steering_proccess(delta: float) -> void:
 	car.fl_wheel.rotation.y = move_toward(
 		car.fl_wheel.rotation.y,
 		target_fl,
-		tire_turn_speed * delta
+		Values.tire_turn_speed * delta
 	)
 	car.fr_wheel.rotation.y = move_toward(
 		car.fr_wheel.rotation.y,
 		target_fr,
-		tire_turn_speed * delta
+		Values.tire_turn_speed * delta
 	)

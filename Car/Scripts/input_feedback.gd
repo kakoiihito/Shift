@@ -1,36 +1,33 @@
 extends Node
 
-var longitude_force = Data.longitude_force
-var lateral_force = Data.lateral_force
 var wheel_spring_force = Data.wheel_spring_force
-var friction_coeff = Values.friction_coefficient
-
-var lateral_intensity: float
-var longitude_intensity: float
-
-var prev_lateral = 0.0
-var prev_longitude = 0.0
+var weak_reference_force   = 1000.0
+var strong_reference_force = 2800.0
+var wheel_spring_force_prev: Array = [0.0, 0.0, 0.0, 0.0]
 
 func _input_feedback():
-	var total_lateral = 0.0
-	var total_longitude = 0.0
-	
+	# FL=0, FR=1, RL=2, RR=3 (adjust indices to match your setup)
+	var left_delta  = abs(wheel_spring_force[0].length() - wheel_spring_force_prev[0]) \
+					+ abs(wheel_spring_force[2].length() - wheel_spring_force_prev[2])
+	var right_delta = abs(wheel_spring_force[1].length() - wheel_spring_force_prev[1]) \
+					+ abs(wheel_spring_force[3].length() - wheel_spring_force_prev[3])
+
+	left_delta  /= 2.0
+	right_delta /= 2.0
+
 	for i in range(4):
-		var spring_len = Data.wheel_spring_force[i].length()
-		if spring_len > 0.0:
-			total_lateral += abs(Data.lateral_force[i]) / (Values.friction_coefficient * spring_len)
-			total_longitude += abs(Data.longitude_force[i]) / (Values.friction_coefficient * spring_len)
-	
-	lateral_intensity = total_lateral / 4.0
-	longitude_intensity = total_longitude / 4.0
-	
-	var lateral_delta = abs(lateral_intensity - prev_lateral)
-	var longitude_delta = abs(longitude_intensity - prev_longitude)
-	
-	prev_lateral = lateral_intensity
-	prev_longitude = longitude_intensity
-	
-	var grip_intensity = clamp(lateral_delta * 9.0, 0.0, 1.0)
-	var slip_intensity = clamp(longitude_delta * 9.0, 0.0, 1.0)
-	
-	Input.start_joy_vibration(0, grip_intensity, slip_intensity, 0.1)
+		wheel_spring_force_prev[i] = wheel_spring_force[i].length()
+
+
+
+	# Left motor = left side, Right motor = right side
+	var total = left_delta + right_delta
+	if total > 0.001:  # deadzone to avoid noise when both are near zero
+		var left_bias  = left_delta  / total  # 0.0 to 1.0
+		var right_bias = right_delta / total
+
+		var intensity = clamp(total / 2.0 / weak_reference_force, 0.0, 1.0)
+
+		Input.start_joy_vibration(0, left_bias * intensity, right_bias * intensity, 0.1)
+	else:
+		Input.start_joy_vibration(0, 0, 0, 10)

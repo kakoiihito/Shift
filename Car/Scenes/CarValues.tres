@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CarValues" format=3 uid="uid://bb7hoiqpkmfdr"]
+
+[ext_resource type="Script" uid="uid://rj0v3jri7dxo" path="res://Car/Scripts/values.gd" id="1_s8jyo"]
+
+[resource]
+script = ExtResource("1_s8jyo")
+max_brake_torque = 200.0
+metadata/_custom_type_script = "uid://rj0v3jri7dxo"

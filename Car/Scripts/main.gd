@@ -4,6 +4,8 @@
 # Note: realized i shouldnt spam comments to learn.
 extends RigidBody3D
 
+@export var VehicleValues: Resource
+
 	###########
 	# SCRIPTS #
 	###########
@@ -50,6 +52,8 @@ var FL_torque_brake = false
 var RR_torque_brake = true
 var RL_torque_brake = true
 
+
+
 func _ready() -> void:
 
 	Suspension.car = self
@@ -57,16 +61,18 @@ func _ready() -> void:
 	Steering.car = self
 	WheelProcess.car = self
 	Motor.car = self
+	Brake.car = self
+	Suspension.Values = VehicleValues
+	Transmission.Values = VehicleValues
+	Steering.Values = VehicleValues
+	WheelProcess.Values = VehicleValues
+	Motor.Values = VehicleValues
+	Brake.Values = VehicleValues
 	
 	fl_wheel.set_meta("wheel_index", 0)
 	fr_wheel.set_meta("wheel_index", 1)
 	rl_wheel.set_meta("wheel_index", 2)
 	rr_wheel.set_meta("wheel_index", 3)
-
-	var brake_wheels = [FL_torque_brake, FL_torque_brake, RR_torque_brake, RL_torque_brake]
-	for i in range(4):
-		if brake_wheels[i] == true:
-			Data.active_wheels_brake += 1
 			
 
 func _physics_process(delta: float) -> void:

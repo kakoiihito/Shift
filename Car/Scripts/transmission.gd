@@ -1,8 +1,10 @@
 extends Node
 
 @export var car: RigidBody3D
+@onready var Values: Resource
 
-var gear_ratio = Values.gear_ratio
+func _ready() -> void:
+	Values = car.VehicleValues
 
 func transmission_process(delta: float):
 	var target_clutch = Input.get_action_strength("Clutch")
@@ -10,7 +12,7 @@ func transmission_process(delta: float):
 
 	if not Data.is_shifting and target_clutch > 0.95:
 		if Input.is_action_just_pressed("ShiftUp"):
-			if Data.current_gear < gear_ratio.size() - 1:
+			if Data.current_gear < Values.gear_ratio.size() - 1:
 				Data.current_gear += 1
 				Data.is_shifting = true
 				Data.shift_timer = 0.15 + randf() * 0.1
@@ -24,5 +26,5 @@ func transmission_process(delta: float):
 	if Data.is_shifting:
 		Data.shift_timer -= delta
 		if Data.shift_timer <= 0.0:
-			Data.current_gear_ratio = gear_ratio[Data.current_gear]
+			Data.current_gear_ratio = Values.gear_ratio[Data.current_gear]
 			Data.is_shifting = false

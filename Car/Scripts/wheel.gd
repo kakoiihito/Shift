@@ -33,33 +33,38 @@ func _get_wheel_forces(ray: RayCast3D):
 	if ray.is_colliding():
 		
 		var slip_angle = 0.0
-		if abs(forward_speed) > 1.0:
-			slip_angle = -rad_to_deg(atan2(side_velocity, abs(forward_speed)))
+		var safe_speed = max(abs(forward_speed), 0.5)
+		slip_angle = -rad_to_deg(atan2(side_velocity, safe_speed))
+		slip_angle *= clamp(abs(forward_speed) / 1.0, 0.0, 1.0)
 		
-		var slip_ratio: float
+		
 		if abs(forward_speed) > 0.5:
-			slip_ratio = (wheel_surface_speed - forward_speed) / abs(forward_speed)
+			Data.slip_ratio = (wheel_surface_speed - forward_speed) / abs(forward_speed)
 		else:
-			slip_ratio = (wheel_surface_speed - forward_speed) / 0.5
-		slip_ratio = clamp(slip_ratio * 100.0, -100.0, 100.0)
+			Data.slip_ratio = (wheel_surface_speed - forward_speed) / 0.5
+		Data.slip_ratio = clamp(Data.slip_ratio * 100.0, -100.0, 100.0)
 		
 		#var B = 13.6527
+
+		var Fz_nominal_kN = (car.mass * 9.81) / Values.weight_distribution[wheel_index] / 1000.0  
+		var dfz = (Fz - Fz_nominal_kN) / Fz_nominal_kN
 		
 		var D = Fz * (Values.b1 * Fz + Values.b2)
 		var C = Values.b0
 		var BCD = (Values.b3 * pow(Fz, 2) + Values.b4 * Fz) * exp(-Values.b5 * Fz)
 		var B = BCD / (C * D)
 		var H = Values.b9 * Fz + Values.b10
-		var E = (Values.b6* pow(Fz, 2) + Values.b7 * Fz + Values.b8) *  (1 - Values.b13 * sign(slip_ratio+H))
+		var E = (Values.b6* pow(Fz, 2) + Values.b7 * Fz + Values.b8) *  (1 - Values.b13 * sign(Data.slip_ratio+H))
 		var V = Values.b11 * Fz + Values.b12
-		var Bx1 = B * (slip_ratio + H)
+		var Bx1 = B * (Data.slip_ratio + H)
 		var Fxo = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1)))) + V
 
 		var SHxa = Values.rHx1
 		var alpha_s = slip_angle + SHxa
-		var Bxa = (Values.rBx1 + Values.rBx3 * pow(camber, 2)) * cos(atan(Values.rBx2 * slip_ratio)) * Values.lambda_xalpha
+		var Bxa = (Values.rBx1 + Values.rBx3 * pow(camber, 2)) * cos(atan(Values.rBx2 * Data.slip_ratio)) * Values.lambda_xalpha
 		var Cxa = Values.rCx1
-		var Exa = Values.rEx1 + Values.rEx2 * 0
+		var Exa = Values.rEx1 + Values.rEx2 * dfz
+		
 		var Gxa0 = cos(Cxa * atan(Bxa * SHxa - Exa * (Bxa * SHxa - atan(Bxa * SHxa))))
 		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
 
@@ -75,17 +80,17 @@ func _get_wheel_forces(ray: RayCast3D):
 		var Bx2 = B1 * (slip_angle + H1)
 		var Fyo = D1 * sin(C1 * atan(Bx2 - E1 * (Bx2 - atan(Bx2)))) + V1
 
-		var SHyk = Values.rHy1 + Values.rHy2 * 0
-		var kappa_s = slip_ratio + SHyk
+		var SHyk = Values.rHy1 + Values.rHy2 * dfz
+		var kappa_s = Data.slip_ratio + SHyk
 		var Byk = (Values.rBy1 + Values.rBy4 * pow(camber, 2)) * cos(atan(Values.rBy2 * (slip_angle - Values.rBy3))) * Values.lambda_ykappa
 		var Cyk = Values.rCy1
-		var Eyk = clamp(Values.rEy1 + Values.rEy2 * 0, -INF, 1.0)
+		var Eyk = clamp(Values.rEy1 + Values.rEy2 * dfz, -INF, 1.0)
 		var Gyk0 = cos(Cyk * atan(Byk * SHyk - Eyk * (Byk * SHyk - atan(Byk * SHyk))))
 		var Gyk = cos(Cyk * atan(Byk * kappa_s - Eyk * (Byk * kappa_s - atan(Byk * kappa_s)))) / Gyk0
 
-		var mu_y = Values.a2 / 1000.0
-		var DVyk = mu_y * Fz * (Values.rVy1 + Values.rVy2 * 0 + Values.rVy3 * camber) * cos(atan(Values.rVy4 * slip_angle))
-		var SVyk = DVyk * sin(Values.rVy5 * atan(Values.rVy6 * slip_ratio)) * Values.lambda_Vyk
+		var mu_y = (Values.a1 * Fz + Values.a2) / 1000.0
+		var DVyk = mu_y * Fz * (Values.rVy1 + Values.rVy2 * dfz + Values.rVy3 * camber) * cos(atan(Values.rVy4 * slip_angle))
+		var SVyk = DVyk * sin(Values.rVy5 * atan(Values.rVy6 * Data.slip_ratio)) * Values.lambda_Vyk
 
 		lateral_force[wheel_index] = Gyk * Fyo + SVyk
 

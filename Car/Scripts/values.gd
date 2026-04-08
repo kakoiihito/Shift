@@ -38,7 +38,13 @@ extends Resource
 	###################
 	
 @export_group("Brake")
-@export var max_brake_torque = 20000000000000000000000000000000000.0
+@export var max_brake_torque = 200.0
+
+@export_subgroup("ABS")
+@export var ABS = false
+@export var ABS_Rate: float
+
+
 
 	####################
 	# ENGINE VARIABLES #
@@ -58,6 +64,9 @@ extends Resource
 @export var FL_torque_brake = true
 @export var RR_torque_brake = true
 @export var RL_torque_brake = true
+@export var friction_c0 = 15.0
+@export var friction_c1 = 20.0
+@export var friction_c2 = 25.0
 
 	#################
 	# LSD VARIABLES #
@@ -70,10 +79,11 @@ extends Resource
 @export var clutch_lsd = false
 @export var electronic_lsd = false
 @export var open_diff = true
-@export var minimum_lsd_force = 100.0
-@export var ramp_factor = 1.0
+@export var minimum_clutch_lsd_force = 100.0
+@export var clutch_lsd_ramp_factor = 1.0
 @export var center_diff_split = 0.5 # front bias
 @export var TBR = 2.0
+@export var SLIP_THRESHOLD = 0.01
 
 	##########################
 	# TRANSMISSION VARIABLES #
@@ -87,9 +97,8 @@ extends Resource
 @export var gear_ratio = [-3.968, 0.0, 3.136, 1.888, 1.330, 1.0, 0.814]
 @export var current_gear = 1
 @export var max_clutch_torque = 340.0
-@export var lock_threshold = 5.0
 @export var unlock_threshold = 12.0
-@export var clutch_stiffness = 64.0
+
 
 	###################
 	# WHEEL VARIABLES #

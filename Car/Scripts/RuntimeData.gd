@@ -20,3 +20,4 @@ var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0]
 var F_max = [0.0, 0.0, 0.0, 0.0]
 var longitude_force = [0.0, 0.0, 0.0, 0.0]
 var lateral_force = [0.0, 0.0, 0.0, 0.0]
+var slip_ratio: float

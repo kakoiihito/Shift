@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://djg81y2ixd52b"]
 
 [ext_resource type="PackedScene" uid="uid://dd6vp25dk1dcg" path="res://Tracks/IchiCircuit.glb" id="1_mil6m"]
-[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="2_o7snf"]
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Roadster.tscn" id="2_o7snf"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mil6m"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -38,6 +38,5 @@ shape = SubResource("ConcavePolygonShape3D_64vfs")
 
 [node name="Node3D" parent="." unique_id=1502971588 instance=ExtResource("2_o7snf")]
 transform = Transform3D(0.41987982, 0, 0.9075797, 0, 1, 0, -0.9075797, 0, 0.41987982, 131.47083, -9.47821, 109.96935)
-mass = 1000.0
 
 [editable path="IchiCircuit"]

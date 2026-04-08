@@ -17,11 +17,9 @@ func brake_proccess() -> void:
 	var input_brake = Input.get_action_strength("Brake")
 	
 	if input_brake > 0.0:
-		
-		brake_torque = (input_brake * 20000) / Data.active_wheels_brake 
-		
+		brake_torque = (input_brake * Values.max_brake_torque) / Data.active_wheels_brake 
 		for i in range(4):
-			if brake_wheels[i] == true:
+			if brake_wheels[i] == true and Data.wheel_angular_velocity[i] > 0:
 				Data.wheel_brake_torque[i] = brake_torque 
 	else:
 		for i in range(4):

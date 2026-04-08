@@ -55,7 +55,7 @@ var RL_torque_brake = true
 
 
 func _ready() -> void:
-
+	
 	Suspension.car = self
 	Transmission.car = self
 	Steering.car = self
@@ -76,6 +76,8 @@ func _ready() -> void:
 			
 
 func _physics_process(delta: float) -> void:
+	
+
 	
 	Steering.steering_proccess(delta) # independent function
 	Transmission.transmission_process(delta) # independent function

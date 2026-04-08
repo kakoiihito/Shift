@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_70ppv"]
-[ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/CarValues.tres" id="2_dxta8"]
+[ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_dxta8"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="3_enp3b"]
 
 [sub_resource type="Curve" id="Curve_nnsko"]

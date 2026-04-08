@@ -61,11 +61,11 @@ func motor_process(delta: float) -> void:
 		engine_torque = torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 	else:
 		clutch_engagement = 0.0
-		engine_torque = 0.0
+		engine_torque = torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 		
-	var base_friction = 0.001 * Values.max_torque
-	var linear_friction = 0.003 * Values.max_torque * normalized_rpm
-	var quadratic_friction = 0.002 * Values.max_torque * normalized_rpm * normalized_rpm
+	var base_friction = Values.friction_c0                      
+	var linear_friction = Values.friction_c1 * normalized_rpm       
+	var quadratic_friction = Values.friction_c2 * normalized_rpm * normalized_rpm
 	var engine_friction = base_friction + linear_friction + quadratic_friction
 	
 			
@@ -75,13 +75,15 @@ func motor_process(delta: float) -> void:
 		var max_transferable_torque = Values.max_clutch_torque * clutch_engagement
 					
 		if abs(speed_difference) > Values.unlock_threshold:
-			clutch_torque_on_engine = clamp(
-				-speed_difference * Values.clutch_stiffness,
-				-max_transferable_torque,
-				max_transferable_torque
-			)
-		else:
 			clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
+		else:
+			var required_torque = (Values.engine_inertia * (target_engine_ang_vel - engine_angular_velocity)) / delta
+			
+			if abs(required_torque) <= max_transferable_torque:
+				engine_angular_velocity = target_engine_ang_vel
+				clutch_torque_on_engine = 0.0
+			else:
+				clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
 			
 	var net_engine_torque = engine_torque - engine_friction + clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / Values.engine_inertia
@@ -130,23 +132,31 @@ func motor_process(delta: float) -> void:
 		var slip_b = longitude_force[axle[1]]
 		
 		var T_lock: float
+		var T_high: float
+		var T_low: float
 		
 		if Values.torsen_lsd:
-			T_lock = axle_torque * (Values.TBR-1) / (Values.TBR + 1)
+			if min(slip_a, slip_b) <= 0.0:
+				T_high = axle_torque / 2.0
+				T_low  = axle_torque / 2.0
+			else:
+				T_high = axle_torque * (Values.TBR / (Values.TBR + 1.0))
+				T_low  = axle_torque * (1.0 / (Values.TBR + 1.0))
 		elif Values.clutch_lsd:
-			T_lock = Values.minimum_lsd_force + (axle_torque * Values.ramp_factor)
+			T_lock = Values.minimum_clutch_lsd_force + (axle_torque * Values.clutch_lsd_ramp_factor)
+			T_lock = min(T_lock, axle_torque / 2.0) 
+			T_high = (axle_torque / 2.0) + T_lock
+			T_low  = (axle_torque / 2.0) - T_lock
 		elif Values.electronic_lsd:
-			pass # will write logic but not at the moment
+			pass # will write logic
 		elif Values.open_diff:
-			T_lock = 0.0
+			T_high = axle_torque / 2.0
+			T_low  = axle_torque / 2.0
 		
-		var T_high = (axle_torque / 2.0) + T_lock
-		var T_low  = (axle_torque / 2.0) - T_lock
-		
-		if slip_a > slip_b:
+		if (slip_a - slip_b) > Values.SLIP_THRESHOLD:
 			wheel_engine_torque[axle[0]] = T_low
 			wheel_engine_torque[axle[1]] = T_high
-		elif slip_b > slip_a:
+		elif (slip_b - slip_a) > Values.SLIP_THRESHOLD:
 			wheel_engine_torque[axle[0]] = T_high
 			wheel_engine_torque[axle[1]] = T_low
 		else:

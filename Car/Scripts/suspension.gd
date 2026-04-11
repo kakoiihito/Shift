@@ -21,21 +21,21 @@ func suspension_proccess(ray: RayCast3D):
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, 0.0, Values.max_compression[wheel_index]) 
+		Data.compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, 0.0, Values.max_compression[wheel_index]) 
 
 		if Values.front_antiroll_bar == true:
-			var arb = Values.front_antiroll_bar_stiffness * (compression[0] - compression[1])
+			var arb = Values.front_antiroll_bar_stiffness * (Data.compression[0] - Data.compression[1])
 			
 			arb_force[0]  += -arb
 			arb_force[1] +=  arb
 			
 		if Values.rear_antiroll_bar == true:
-			var arb = Values.rear_antiroll_bar_stiffness * (compression[2] - compression[3])
+			var arb = Values.rear_antiroll_bar_stiffness * (Data.compression[2] - Data.compression[3])
 
 			arb_force[2]  += -arb
 			arb_force[3] +=  arb
 
-		var damper_ratio = 0.5
+		var damper_ratio = 0.7
 		
 		var world_vel = _get_point_velocity(hit)
 		var relative_vel = up_dir_spring.dot(world_vel)
@@ -45,13 +45,17 @@ func suspension_proccess(ray: RayCast3D):
 		var c = damper_ratio * c_crit
 		var spring_dampning = c * pow(abs(relative_vel), Values.velocity_exponent) * sign(relative_vel)
 		
-		var spring_force = Values.spring_stiffness[wheel_index] * compression[wheel_index]
+		var spring_force = Values.spring_stiffness[wheel_index] * Data.compression[wheel_index]
 		var wheel_force_area = hit - car.global_position
 		wheel_spring_force[wheel_index] = (spring_force - spring_dampning + arb_force[wheel_index]) * up_dir_spring
 
 		
-		wheels[wheel_index].position.y = -compression[wheel_index]
+		wheels[wheel_index].position.y = -Data.compression[wheel_index]
 		car.apply_force(wheel_spring_force[wheel_index], wheel_force_area)
+	else:
+		Data.compression[wheel_index] = 0.0
+		wheels[wheel_index].position.y = 0.0
+		
 		
 func _get_point_velocity(point: Vector3) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)

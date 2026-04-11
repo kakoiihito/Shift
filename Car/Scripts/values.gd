@@ -38,7 +38,7 @@ extends Resource
 	###################
 	
 @export_group("Brake")
-@export var max_brake_torque = 200.0
+@export var max_brake_torque = 41.0
 
 @export_subgroup("ABS")
 @export var ABS = false
@@ -52,9 +52,9 @@ extends Resource
 
 @export_group("Motor")
 @export var max_torque = 351.0
-@export var max_rpm = 7500.0
-@export var idle_rpm = 850.0
-@export var stall_rpm = 400.0
+@export var max_rpm = 7000.0
+@export var idle_rpm = 700.0
+@export var stall_rpm = 500.0
 @export var engine_inertia = 0.75
 @export var FL_torque_engine = false
 @export var FR_torque_engine = false
@@ -113,8 +113,8 @@ extends Resource
 @export_subgroup("Pacejka Longitudinal")
 # Pure Longitudinal
 @export var b0 = 1.3882
-@export var b1 = -8.0
-@export var b2 = 1150.0
+@export var b1 = -10.0
+@export var b2 = 850.0
 @export var b3 = 0.0
 @export var b4 = 320.0
 @export var b5 = 0.0
@@ -130,10 +130,10 @@ extends Resource
 @export_subgroup("Pacejka Lateral")
 # Pure Lateral
 @export var a0 = 1.7379
-@export var a1 = -9.0
-@export var a2 = 1250.0
-@export var a3 = 1400.0
-@export var a4 = 6.5
+@export var a1 = -12.0
+@export var a2 = 900.0
+@export var a3 = 900.0
+@export var a4 = 8.5
 @export var a5 = 0.0
 @export var a6 = -0.08
 @export var a7 = -2.0
@@ -150,8 +150,8 @@ extends Resource
 
 @export_subgroup("Pacejka Longtiudinal G-Function")
 # Longitudinal G Functions
-@export var rBx1 = 10.0
-@export var rBx2 = 8.0
+@export var rBx1 = 5.0
+@export var rBx2 = 7.0
 @export var rBx3 = 0.0
 @export var rCx1 = 1.05
 @export var rEx1 = -0.2

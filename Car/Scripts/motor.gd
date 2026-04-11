@@ -57,11 +57,11 @@ func motor_process(delta: float) -> void:
 	
 	var normalized_rpm = engine_rpm / Values.max_rpm
 	var engine_torque: float
-	if is_shifting == false:
-		engine_torque = torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
-	else:
+
+	engine_torque = torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
+
+	if is_shifting:
 		clutch_engagement = 0.0
-		engine_torque = torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 		
 	var base_friction = Values.friction_c0                      
 	var linear_friction = Values.friction_c1 * normalized_rpm       

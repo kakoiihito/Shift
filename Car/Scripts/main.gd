@@ -77,8 +77,6 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	
-
-	
 	Steering.steering_proccess(delta) # independent function
 	Transmission.transmission_process(delta) # independent function
 	

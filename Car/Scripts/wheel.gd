@@ -14,7 +14,7 @@ var longitude_force = Data.longitude_force
 var lateral_force = Data.lateral_force
 var camber:float
 var slip_angle = [0.0, 0.0, 0.0, 0.0]
-
+var aligning_torque = [0.0, 0.0, 0.0, 0.0]
 
 func _get_point_velocity(point: Vector3) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)
@@ -23,10 +23,9 @@ func _get_wheel_forces(ray: RayCast3D):
 
 	
 	var wheel_index = ray.get_meta("wheel_index")
-	var camber_angles = [-1.2, -1.2, -1.7, -1.7]
-	var camber_gain = [-18.0, -18.0, -33.0, -33.0]
+
 	
-	camber  =(camber_angles[wheel_index]) + (camber_gain[wheel_index] * Data.compression[wheel_index])
+	camber  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * Data.compression[wheel_index])
 	var velocity_at_wheel = _get_point_velocity(ray.get_collision_point())
 	var side_dir = ray.global_transform.basis.x #
 	var side_velocity = velocity_at_wheel.dot(side_dir)
@@ -93,8 +92,40 @@ func _get_wheel_forces(ray: RayCast3D):
 		var SVyk = DVyk * sin(Values.rVy5 * atan(Values.rVy6 * slip_ratio_percentage)) * Values.lambda_Vyk
 
 		lateral_force[wheel_index] = Gyk * Fyo + SVyk
+		
+		var c1 = -2.72
+		var c2 = -2.28
+		var c3 = -1.86
+		var c4 = -2.73
+		var c5 = 0.110
+		var c6 = -0.07
+		var c7 = 0.643
+		var c8 = -4.04
+		var c9 = 0.015
+		var c10 = -0.066
+		var c11 = 0.945
+		var c12 = 0.03
+		var c13 = 0.07
+		
+		var C3 = 2.4
+		var D3 = (c1 * pow(Fz, 2)) + (c2 * Fz)
+		var BCD2 = c3 * sin(c4 * atan(c5 * Fz))
+		var B3 = BCD2 / (C3 * D3)
+		var E3 = (c6 * pow(Fz, 2)) + (c7 * Fz) + c8
+		
+		var SHz = c9 * camber
+		var SVz = ((c10 * pow(Fz, 2)) + (c11 * Fz)) * camber
+		B3 *= (1 - c12 * abs(camber))
+		E3 *= (1 - c13 * abs(camber))
+		
+		var x = slip_angle[wheel_index] + SHz
+		var Bx = B3 * x
 
-		var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (lateral_force[wheel_index] * side_dir) # both vectors combined
+		var inner = Bx - E3 * (Bx - atan(Bx))
+
+		aligning_torque[wheel_index] = D3 * sin(C3 * atan(inner)) + SVz
+
+		var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (aligning_torque[wheel_index] * ray.global_transform.basis.y ) +(lateral_force[wheel_index] * side_dir) # both vectors combined
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force , force_pos)
 

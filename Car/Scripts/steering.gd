@@ -11,18 +11,7 @@ func steering_proccess(delta: float) -> void:
 	var steering_amount = input_turn * Values.max_tire_turn_angle
 
 	if abs(input_turn) < 0.01:
-		var pneumatic_trail = 0.04
-		var mechanical_trail = 0.02
-		var trail = pneumatic_trail + mechanical_trail
-
-		var sat_fl = -trail * Data.lateral_force[0]  # FL
-		var sat_fr = -trail * Data.lateral_force[1]  # FR
-		var total_sat = sat_fl + sat_fr
-
-		var sat_steer = clamp(total_sat * 0.0002, -Values.max_tire_turn_angle, Values.max_tire_turn_angle)
-
-
-		var target = clamp(sat_steer, -Values.max_tire_turn_angle, Values.max_tire_turn_angle)
+		var target = clamp(steering_amount, -Values.max_tire_turn_angle, Values.max_tire_turn_angle)
 		car.fl_wheel.rotation.y = move_toward(car.fl_wheel.rotation.y, target, Values.tire_turn_speed * delta)
 		car.fr_wheel.rotation.y = move_toward(car.fr_wheel.rotation.y, target, Values.tire_turn_speed * delta)
 		return

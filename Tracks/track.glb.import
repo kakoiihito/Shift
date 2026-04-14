@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dd6vp25dk1dcg"
-path="res://.godot/imported/IchiCircuit.glb-5c7fc8d7ee4f33587354c5332f82ecfc.scn"
+uid="uid://dk4r2yas0nmft"
+path="res://.godot/imported/track.glb-d68a25bfe57515113ed46dcf7ece56cd.scn"
 
 [deps]
 
-source_file="res://Tracks/IchiCircuit.glb"
-dest_files=["res://.godot/imported/IchiCircuit.glb-5c7fc8d7ee4f33587354c5332f82ecfc.scn"]
+source_file="res://Tracks/track.glb"
+dest_files=["res://.godot/imported/track.glb-d68a25bfe57515113ed46dcf7ece56cd.scn"]
 
 [params]
 

@@ -109,6 +109,8 @@ extends Resource
 @export var wheel_mass = 15.0
 @export var rolling_resistance_coeff = 0.013
 @export var friction_coefficient = 1.1
+@export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
+@export var camber_gain = [-18.0, -18.0, -33.0, -33.0]
 
 @export_subgroup("Pacejka Longitudinal")
 # Pure Longitudinal

@@ -37,13 +37,11 @@ func _get_wheel_forces(ray: RayCast3D):
 		
 		var safe_speed = max(abs(forward_speed), 0.1)
 		
-		slip_angle[wheel_index] = -rad_to_deg(atan2(side_velocity, safe_speed))
+		slip_angle[wheel_index] = -(atan2(side_velocity, safe_speed))
 		
 		Data.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / safe_speed
 		var slip_ratio_percentage: float
 		slip_ratio_percentage = clamp(Data.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
-		
-		#var B = 13.6527
 
 		var Fz_nominal_kN = (car.mass * 9.81) * Values.weight_distribution[wheel_index] / 1000.0  
 		var dfz = (Fz - Fz_nominal_kN) / Fz_nominal_kN
@@ -93,41 +91,26 @@ func _get_wheel_forces(ray: RayCast3D):
 
 		lateral_force[wheel_index] = Gyk * Fyo + SVyk
 		
-		var c1 = -2.72
-		var c2 = -2.28
-		var c3 = -1.86
-		var c4 = -2.73
-		var c5 = 0.110
-		var c6 = -0.07
-		var c7 = 0.643
-		var c8 = -4.04
-		var c9 = 0.015
-		var c10 = -0.066
-		var c11 = 0.945
-		var c12 = 0.03
-		var c13 = 0.07
+		var stiffness_ratio_sq = pow(BCD/ BCD1, 2)
+		var kappa_sq = pow(slip_ratio_percentage, 2)
 		
-		var C3 = 2.4
-		var D3 = (c1 * pow(Fz, 2)) + (c2 * Fz)
-		var BCD2 = c3 * sin(c4 * atan(c5 * Fz))
-		var B3 = BCD2 / (C3 * D3)
-		var E3 = (c6 * pow(Fz, 2)) + (c7 * Fz) + c8
+		var alpha_t_eq = sqrt(slip_angle[wheel_index] * slip_angle[wheel_index] + stiffness_ratio_sq * kappa_sq) * sign(slip_angle[wheel_index])
+		var alpha_r_eq = sqrt(slip_angle[wheel_index] * slip_angle[wheel_index] + stiffness_ratio_sq * kappa_sq) * sign(slip_angle[wheel_index])
 		
-		var SHz = c9 * camber
-		var SVz = ((c10 * pow(Fz, 2)) + (c11 * Fz)) * camber
-		B3 *= (1 - c12 * abs(camber))
-		E3 *= (1 - c13 * abs(camber))
+		var s = Values.Ro * (Values.ssz1 + Values.ssz2 * (lateral_force[wheel_index] / Fz_nominal_kN) + (Values.ssz3 + Values.ssz4 * dfz) * camber) * Values.lambda_s
 		
-		var x = slip_angle[wheel_index] + SHz
-		var Bx = B3 * x
+		var Mzr = Values.Dr * cos(Values.Cr * atan(Values.Br * alpha_r_eq))
+		
+		var trail = Values.Dt * cos(Values.Ct * atan(Values.Bt*alpha_t_eq - Values.Et * (Values.Bt*alpha_t_eq - atan(Values.Bt*alpha_t_eq)))) * cos(slip_angle[wheel_index])
 
-		var inner = Bx - E3 * (Bx - atan(Bx))
-
-		aligning_torque[wheel_index] = D3 * sin(C3 * atan(inner)) + SVz
-
-		var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) + (aligning_torque[wheel_index] * ray.global_transform.basis.y ) +(lateral_force[wheel_index] * side_dir) # both vectors combined
+		var Mz_ = -trail * (lateral_force[wheel_index] - SVyk)
+		
+		aligning_torque[wheel_index] = Mz_ + Mzr + s * longitude_force[wheel_index]
+		
+		var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) +(lateral_force[wheel_index] * side_dir) # both vectors combined
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force , force_pos)
+		car.apply_torque(aligning_torque[wheel_index] * ray.global_transform.basis.y)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 	var wheel_inertia = 0.6 * Values.wheel_mass * Values.wheel_radius * Values.wheel_radius

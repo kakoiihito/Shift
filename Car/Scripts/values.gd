@@ -113,12 +113,11 @@ extends Resource
 @export var camber_gain = [-18.0, -18.0, -33.0, -33.0]
 
 @export_subgroup("Pacejka Longitudinal")
-# Pure Longitudinal
-@export var b0 = 1.3882
-@export var b1 = -10.0
-@export var b2 = 850.0
+@export var b0 = 1.5
+@export var b1 = -8.0
+@export var b2 = 1100.0
 @export var b3 = 0.0
-@export var b4 = 320.0
+@export var b4 = 300.0
 @export var b5 = 0.0
 @export var b6 = 0.0
 @export var b7 = 0.0
@@ -130,12 +129,11 @@ extends Resource
 @export var b13 = 0.0
 
 @export_subgroup("Pacejka Lateral")
-# Pure Lateral
-@export var a0 = 1.7379
-@export var a1 = -12.0
-@export var a2 = 900.0
-@export var a3 = 900.0
-@export var a4 = 8.5
+@export var a0 = 1.75
+@export var a1 = -10.0
+@export var a2 = 1000.0
+@export var a3 = 800.0
+@export var a4 = 10.0
 @export var a5 = 0.0
 @export var a6 = -0.08
 @export var a7 = -2.0
@@ -150,30 +148,44 @@ extends Resource
 @export var a16 = 0.0
 @export var a17 = 0.0
 
-@export_subgroup("Pacejka Longtiudinal G-Function")
-# Longitudinal G Functions
+@export_subgroup("Aligning Torque")
+@export var Ro: float = 0.287     
+@export var FNzo: float = 2.7       
+@export var ssz1: float = 0.0
+@export var ssz2: float = 0.05
+@export var ssz3: float = 0.0
+@export var ssz4: float = 0.0
+@export var lambda_s: float = 1.0
+@export var Br: float = 4.0
+@export var Cr: float = 1.0
+@export var Dr: float = 0.05
+@export var Bt: float = 9.0
+@export var Ct: float = 1.05
+@export var Dt: float = 0.035
+@export var Et: float = -1.2
+
+@export_subgroup("Pacejka Longitudinal G-Function")
 @export var rBx1 = 5.0
-@export var rBx2 = 7.0
+@export var rBx2 = 8.0
 @export var rBx3 = 0.0
 @export var rCx1 = 1.05
 @export var rEx1 = -0.2
 @export var rEx2 = 0.0
-@export var rHx1 = 0.02
+@export var rHx1 = 0.0
 @export var lambda_xalpha = 1.0
 
 @export_subgroup("Pacejka Lateral G-Function")
-# Lateral G Functions
 @export var rBy1 = 7.0
 @export var rBy2 = 2.5
-@export var rBy3 = 0.05
+@export var rBy3 = 0.0
 @export var rBy4 = 0.0
 @export var rCy1 = 1.0
-@export var rEy1 = -0.3
+@export var rEy1 = -0.2
 @export var rEy2 = 0.0
-@export var rHy1 = 0.02
+@export var rHy1 = 0.0
 @export var rHy2 = 0.0
-@export var rVy1 = 0.05
-@export var rVy2 = -0.025
+@export var rVy1 = 0.0
+@export var rVy2 = 0.0
 @export var rVy3 = 0.0
 @export var rVy4 = 4.0
 @export var rVy5 = 1.9

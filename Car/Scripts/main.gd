@@ -53,7 +53,6 @@ var RR_torque_brake = true
 var RL_torque_brake = true
 
 
-
 func _ready() -> void:
 	
 	Suspension.car = self

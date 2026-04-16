@@ -29,12 +29,16 @@ shadow_enabled = true
 directional_shadow_max_distance = 1.0
 
 [node name="Node3D" parent="." unique_id=1502971588 instance=ExtResource("2_7i8jn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.00177, -5.1359425, 175.93083)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.82886, -5.1359425, 209.16011)
+mass = 950.0
 
 [node name="track" parent="." unique_id=946924307 instance=ExtResource("2_byp7f")]
 transform = Transform3D(0.78149873, 0, -0.62390685, 0, 1, 0, 0.62390685, 0, 0.78149873, -7.1644135, 0, 64.63144)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="track/Plane" parent_id_path=PackedInt32Array(946924307, 1848645835) index="0" unique_id=1628542869]
+[node name="Plane" parent="track" index="1" unique_id=1848645835]
+transform = Transform3D(3.269, 0, 0, 0, 1.308, 0, 0, 0, 17, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="track/Plane" index="0" unique_id=1628542869]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="track/Plane/StaticBody3D" unique_id=362384057]
 shape = SubResource("ConcavePolygonShape3D_byp7f")

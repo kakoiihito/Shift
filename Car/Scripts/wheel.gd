@@ -14,16 +14,13 @@ var longitude_force = Data.longitude_force
 var lateral_force = Data.lateral_force
 var camber:float
 var slip_angle = [0.0, 0.0, 0.0, 0.0]
-var aligning_torque = [0.0, 0.0, 0.0, 0.0]
 
 func _get_point_velocity(point: Vector3) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)
 	
 func _get_wheel_forces(ray: RayCast3D):
 
-	
 	var wheel_index = ray.get_meta("wheel_index")
-
 	
 	camber  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * Data.compression[wheel_index])
 	var velocity_at_wheel = _get_point_velocity(ray.get_collision_point())
@@ -105,12 +102,11 @@ func _get_wheel_forces(ray: RayCast3D):
 
 		var Mz_ = -trail * (lateral_force[wheel_index] - SVyk)
 		
-		aligning_torque[wheel_index] = Mz_ + Mzr + s * longitude_force[wheel_index]
+		Data.aligning_torque[wheel_index] = (Mz_ + Mzr + s * longitude_force[wheel_index]) * 1000.0
 		
 		var combined_force = (longitude_force[wheel_index] * -ray.global_transform.basis.z) +(lateral_force[wheel_index] * side_dir) # both vectors combined
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force , force_pos)
-		car.apply_torque(aligning_torque[wheel_index] * ray.global_transform.basis.y)
 
 func _get_wheel_angular_velocity(ray: RayCast3D,delta: float):
 	var wheel_inertia = 0.6 * Values.wheel_mass * Values.wheel_radius * Values.wheel_radius

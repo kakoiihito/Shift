@@ -30,8 +30,10 @@ extends Resource
 	######################
 	
 @export_group("Steering")
-@export var max_tire_turn_angle = 40.0
+@export var max_tire_turn_angle = 900.0
+@export var steering_ratio = 15.0
 @export var tire_turn_speed = 3.0
+@export var steering_stiffness = 20000
 
 	###################
 	# BRAKE VARIABLES #

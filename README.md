@@ -2,7 +2,7 @@
 
   ### Highlights
   
-  * Simplified Pacejka Tire Model
+  * Pacejka Tire Model + Aligning Torque
   * Raycast Wheels
   * Rigid Body Car
   * Curve Based Engine Torque Model
@@ -12,7 +12,7 @@
   * Linear/Exponentional Suspension Model
   * Antiroll Bar Model
   * Ackermman Steering Model
-  * 240 Hz engine
+  * 240 Hz
 
   ### Overview
 

@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://b6xbl6di5i5ck" path="res://UI/info.gd" id="1_cfwd4"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_cfwd4"]
+font_color = Color(0, 2.4061394, 2.4061394, 1)
+
 [node name="Info" type="Control" unique_id=1292094877]
 layout_mode = 3
 anchors_preset = 15
@@ -23,3 +26,4 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=327630757]
 layout_mode = 2
+label_settings = SubResource("LabelSettings_cfwd4")

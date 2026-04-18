@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
-[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Miata.tscn" id="1_yhjd6"]
-[ext_resource type="Curve" uid="uid://c6dn4db5wuv2o" path="res://Car/new_curve.tres" id="2_lbp5j"]
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Roadster.tscn" id="1_yhjd6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -20,9 +19,17 @@ tonemap_mode = 2
 [sub_resource type="CylinderMesh" id="CylinderMesh_8uh7m"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
-size = Vector3(100, 3, 300)
+size = Vector3(300, 3, 300)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yhjd6"]
+albedo_color = Color(0, 1, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_37kl0"]
+material = SubResource("StandardMaterial3D_yhjd6")
+
+[sub_resource type="Curve" id="Curve_yhjd6"]
+_data = [Vector2(0, 0.30337083), 0.0, 1.8258431, 0, 0, Vector2(0.08, 0.44943827), 0.0, 0.0, 0, 0, Vector2(0.1657143, 0.55056185), 0.0, 0.0, 0, 0, Vector2(0.24571428, 0.6966293), 0.0, 0.0, 0, 0, Vector2(0.3257143, 0.79775286), 0.0, 0.0, 0, 0, Vector2(0.41714284, 0.8988764), 0.0, 0.0, 0, 0, Vector2(0.497, 0.95), 0.0, 0.0, 0, 0, Vector2(0.57714283, 0.97752815), 0.0, 0.0, 0, 0, Vector2(0.67428565, 1), 0.0, 0.0, 0, 0, Vector2(0.7485714, 0.97752815), 0.0, 0.0, 0, 0, Vector2(0.82857144, 0.92134833), 0.0, 0.0, 0, 0, Vector2(0.91999996, 0.79775286), 0.0, 0.0, 0, 0, Vector2(1, 0.59550565), 0.0, 0.0, 0, 0]
+point_count = 13
 
 [node name="Test" type="Node3D" unique_id=1300905328]
 
@@ -69,7 +76,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 mesh = SubResource("CylinderMesh_8uh7m")
 
 [node name="Floor" type="StaticBody3D" parent="Scenery&Level" unique_id=1049420459]
-transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor" unique_id=1405423850]
 shape = SubResource("BoxShape3D_37kl0")
@@ -78,12 +85,44 @@ shape = SubResource("BoxShape3D_37kl0")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.53986, 3.87743, -5.5925)
 mesh = SubResource("BoxMesh_37kl0")
 
+[node name="RenderTest2" type="MeshInstance3D" parent="Scenery&Level" unique_id=943449551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75.706375, 3.87743, -66.48386)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="Scenery&Level" unique_id=1722539574]
+transform = Transform3D(1, 0, 0, 0, -0.80963206, 0.5869377, 0, -0.5869377, -0.80963206, -64.91156, 3.87743, -70.523636)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="Scenery&Level/RenderTest3" unique_id=1527939822]
+transform = Transform3D(1, 0, 0, 0, -0.80963224, 0.58693796, 0, -0.58693796, -0.80963224, -35.783386, -33.672768, -43.301872)
+mesh = SubResource("BoxMesh_37kl0")
+
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
 
 [node name="Node3D" parent="Functional" unique_id=1475845789 instance=ExtResource("1_yhjd6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 43.196335, 19.011797)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8598504, 19.011797)
 mass = 950.0
-torque_curve = ExtResource("2_lbp5j")
+torque_curve = SubResource("Curve_yhjd6")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
 transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)
+
+[node name="RenderTest3" type="MeshInstance3D" parent="." unique_id=1568609221]
+transform = Transform3D(1, 0, 0, 0, -0.80963206, 0.5869377, 0, -0.5869377, -0.80963206, -64.91156, 3.87743, 82.714264)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="RenderTest3" unique_id=1236916443]
+transform = Transform3D(1, 0, 0, 0, -0.8096323, 0.5869381, 0, -0.5869381, -0.8096323, 61.524605, -22.292011, -27.523102)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="RenderTest3/RenderTest3" unique_id=1770982849]
+transform = Transform3D(1, 0, 0, 0, -0.8096323, 0.58693814, 0, -0.58693814, -0.8096323, 61.524605, -27.110832, -12.797291)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="RenderTest3/RenderTest3/RenderTest3" unique_id=1163293442]
+transform = Transform3D(1, 0, 0, 0, -0.8096324, 0.5869382, 0, -0.5869382, -0.8096324, 15.498665, 75.12996, -22.746544)
+mesh = SubResource("BoxMesh_37kl0")
+
+[node name="RenderTest3" type="MeshInstance3D" parent="RenderTest3/RenderTest3/RenderTest3/RenderTest3" unique_id=81725276]
+transform = Transform3D(1, 0, 0, 0, -0.8096326, 0.5869383, 0, -0.5869383, -0.8096326, -81.4987, -68.18405, 102.37665)
+mesh = SubResource("BoxMesh_37kl0")

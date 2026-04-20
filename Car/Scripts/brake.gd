@@ -4,25 +4,27 @@ extends Node
 @onready var Values: Resource
 var wheel_brake_torque = Data.wheel_brake_torque
 var brake_torque: float 
-
+var slip_target = -0.15
+var slip_threshold = -0.25
 
 func _ready() -> void:
-	var brake_wheels = [Values.FL_torque_brake, Values.FL_torque_brake, Values.RR_torque_brake, Values.RL_torque_brake]
+	var brake_wheels = [Values.FL_torque_brake, Values.FR_torque_brake, Values.RL_torque_brake, Values.RR_torque_brake]
 	for i in range(4):
 		if brake_wheels[i] == true:
 			Data.active_wheels_brake += 1
 
-func brake_proccess() -> void:
-	var brake_wheels = [Values.FL_torque_brake, Values.FL_torque_brake, Values.RR_torque_brake, Values.RL_torque_brake]
+func brake_proccess(delta: float) -> void:
+	var brake_wheels = [Values.FL_torque_brake, Values.FR_torque_brake, Values.RL_torque_brake, Values.RR_torque_brake]
 	var input_brake = Input.get_action_strength("Brake")
 	
 	if input_brake > 0.0:
 		brake_torque = (input_brake * Values.max_brake_torque) / Data.active_wheels_brake 
 		for i in range(4):
-			if brake_wheels[i] == true and Data.wheel_angular_velocity[i] > 0:
+			if brake_wheels[i] == true and abs(Data.wheel_angular_velocity[i]) > 0:
 				Data.wheel_brake_torque[i] = brake_torque 
 	else:
 		for i in range(4):
-			wheel_brake_torque[i] = 0.0
+			Data.wheel_brake_torque[i] = 0.0
 
-			
+
+		

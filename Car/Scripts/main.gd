@@ -43,35 +43,23 @@ var InputFeedback = InputFeedbackScript.new()
 	####################
 @export var torque_curve: Curve
 
-	###################
-	# BRAKE VARIABLES #
-	###################
-
-var FR_torque_brake = false
-var FL_torque_brake = false
-var RR_torque_brake = true
-var RL_torque_brake = true
 
 
 func _ready() -> void:
 	
-	Suspension.car = self
-	Transmission.car = self
-	Steering.car = self
-	WheelProcess.car = self
-	Motor.car = self
-	Brake.car = self
-	Suspension.Values = VehicleValues
-	Transmission.Values = VehicleValues
-	Steering.Values = VehicleValues
-	WheelProcess.Values = VehicleValues
-	Motor.Values = VehicleValues
-	Brake.Values = VehicleValues
+	var Processes = [Suspension, Transmission, Steering, WheelProcess, Motor, Brake]
+	var Wheels = [fl_wheel, fr_wheel, rl_wheel, rr_wheel]
 	
-	fl_wheel.set_meta("wheel_index", 0)
-	fr_wheel.set_meta("wheel_index", 1)
-	rl_wheel.set_meta("wheel_index", 2)
-	rr_wheel.set_meta("wheel_index", 3)
+	for i in range(Processes.size()):
+		Processes[i].car = self
+	
+	for i in range(Processes.size()):
+		Processes[i].Values = VehicleValues
+		
+	for i in range(Wheels.size()):
+		Wheels[i].set_meta("wheel_index", i)
+	
+
 			
 
 func _physics_process(delta: float) -> void:
@@ -86,4 +74,4 @@ func _physics_process(delta: float) -> void:
 	
 	InputFeedback._input_feedback()
 	Motor.motor_process(delta) # relies on wheel ang and forces functions
-	Brake.brake_proccess() #relies on wheel angular velocity function
+	Brake.brake_proccess(delta) #relies on wheel angular velocity function

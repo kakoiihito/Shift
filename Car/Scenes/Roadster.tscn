@@ -2,8 +2,13 @@
 
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_70ppv"]
-[ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_dxta8"]
+[ext_resource type="Script" uid="uid://rj0v3jri7dxo" path="res://Car/Scripts/values.gd" id="2_35f3q"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="3_enp3b"]
+
+[sub_resource type="Resource" id="Resource_uhfiu"]
+script = ExtResource("2_35f3q")
+ABS = true
+metadata/_custom_type_script = "uid://rj0v3jri7dxo"
 
 [sub_resource type="Curve" id="Curve_nnsko"]
 _data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.08, 0.45), 0.0, 0.0, 0, 0, Vector2(0.17, 0.55), 0.0, 0.0, 0, 0, Vector2(0.25, 0.7), 0.0, 0.0, 0, 0, Vector2(0.33, 0.8), 0.0, 0.0, 0, 0, Vector2(0.42, 0.9), 0.0, 0.0, 0, 0, Vector2(0.5, 0.95), 0.0, 0.0, 0, 0, Vector2(0.58, 0.98), 0.0, 0.0, 0, 0, Vector2(0.67, 1), 0.0, 0.0, 0, 0, Vector2(0.75, 0.98), 0.0, 0.0, 0, 0, Vector2(0.92, 0.8), 0.0, 0.0, 0, 0, Vector2(1, 0.6), 0.0, 0.0, 0, 0]
@@ -357,7 +362,7 @@ points = PackedVector3Array(2.751977, 0.8231825, 1.3487251, 2.7399833, 0.9212879
 [node name="Node3D" type="RigidBody3D" unique_id=1502971588 node_paths=PackedStringArray("wheels")]
 mass = 1000.0
 script = ExtResource("1_70ppv")
-VehicleValues = ExtResource("2_dxta8")
+VehicleValues = SubResource("Resource_uhfiu")
 wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("WheelRearLeft"), NodePath("WheelRearRight")]
 torque_curve = SubResource("Curve_nnsko")
 

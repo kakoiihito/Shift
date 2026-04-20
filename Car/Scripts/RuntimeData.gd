@@ -1,7 +1,7 @@
 extends Node
 
 # used for real time calculation, do not mess with these variables unless you know what your doing
-# values.gd is for tuning the car's behavior
+
 
 var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 var compression = [0.0, 0.0, 0.0, 0.0]
@@ -9,7 +9,6 @@ var compression = [0.0, 0.0, 0.0, 0.0]
 var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 var active_wheels_brake: int
 
-var engine_rpm: float
 var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0]
 
 var is_shifting = false

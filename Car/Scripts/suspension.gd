@@ -6,10 +6,6 @@ extends Node
 var wheel_spring_force = Data.wheel_spring_force
 var compression = [0.0, 0.0, 0.0, 0.0]
 
-
-
-
-
 func suspension_proccess(ray: RayCast3D):
 	var arb_force = [0.0, 0.0, 0.0, 0.0]
 	var wheel_index = ray.get_meta("wheel_index")

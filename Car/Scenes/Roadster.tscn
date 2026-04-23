@@ -1,16 +1,9 @@
 [gd_scene format=4 uid="uid://c7epypda8yfxx"]
 
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
-[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/main.gd" id="1_70ppv"]
-[ext_resource type="Script" uid="uid://rj0v3jri7dxo" path="res://Car/Scripts/values.gd" id="2_35f3q"]
+[ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_jypor"]
+[ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_35f3q"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="3_enp3b"]
-[ext_resource type="Curve" uid="uid://b0edfpyvumbsr" path="res://roadster.tres" id="3_uhfiu"]
-
-[sub_resource type="Resource" id="Resource_uhfiu"]
-script = ExtResource("2_35f3q")
-ABS = true
-torque_curve = ExtResource("3_uhfiu")
-metadata/_custom_type_script = "uid://rj0v3jri7dxo"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -358,9 +351,9 @@ shadow_mesh = SubResource("ArrayMesh_cplvt")
 points = PackedVector3Array(2.751977, 0.8231825, 1.3487251, 2.7399833, 0.92128795, 1.2515185, 2.748462, 0.8924548, 1.3202424, 2.751977, -0.8335492, 1.3487251, 2.72799, 0.8231825, 1.15435, 2.7315025, 0.8924548, 1.1828138, 2.7399833, -0.931292, 1.2515185, 2.748462, -0.9026401, 1.3202424, 2.72799, -0.8335492, 1.15435, 2.7315025, -0.9026401, 1.1828138)
 
 [node name="Node3D" type="RigidBody3D" unique_id=1502971588 node_paths=PackedStringArray("wheels")]
-mass = 1000.0
-script = ExtResource("1_70ppv")
-VehicleValues = SubResource("Resource_uhfiu")
+mass = 950.0
+script = ExtResource("1_jypor")
+VehicleValues = ExtResource("2_35f3q")
 wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("WheelRearLeft"), NodePath("WheelRearRight")]
 
 [node name="WheelFrontLeft" type="RayCast3D" parent="." unique_id=2052019363]

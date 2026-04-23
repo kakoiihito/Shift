@@ -1,8 +1,9 @@
 [gd_resource type="Resource" script_class="CarValues" format=3 uid="uid://bb7hoiqpkmfdr"]
 
 [ext_resource type="Script" uid="uid://rj0v3jri7dxo" path="res://Car/Scripts/values.gd" id="1_whfmr"]
+[ext_resource type="Curve" uid="uid://b0edfpyvumbsr" path="res://roadster.tres" id="2_tsmdu"]
 
 [resource]
 script = ExtResource("1_whfmr")
-ABS = true
+torque_curve = ExtResource("2_tsmdu")
 metadata/_custom_type_script = "uid://rj0v3jri7dxo"

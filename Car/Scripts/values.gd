@@ -36,13 +36,17 @@ extends Resource
 @export var steering_stiffness = 20000
 @export var speed_factor_coeff = 0.03
 @export var ackermann_factor = 0.8 
+
 	###################
 	# BRAKE VARIABLES #
 	###################
 	
 @export_group("Brake")
-@export var max_brake_torque = 41.0
+@export var max_brake_torque = 4000001.0
 
+	#####################
+	# ASSISTS VARIABLES #
+	#####################
 
 @export_group("Assists")
 

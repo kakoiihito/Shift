@@ -7,6 +7,7 @@
   * Rigid Body Car
   * Curve Based Engine Torque Model
   * Dry Clutch Model
+  * Open Differential or LSD Simulation (Torsen, Clutch, Electronic)
   * Basic Brake Model
   * Basic Transmission Model
   * Linear/Exponentional Suspension Model

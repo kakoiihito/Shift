@@ -1,9 +1,9 @@
-## Shift: The Car Simulatior
+## G-Shift: The Car Simulatior
 
   ### Highlights
   
-  * Pacejka Tire Model + Aligning Torque
-  * Raycast Wheels
+  * Pacejka Tire Model (With Load, Camber senitivity, and over 60+ tuning coefficents)
+  * One Point Raycast Wheels
   * Rigid Body Car
   * Curve Based Engine Torque Model
   * Dry Clutch Model
@@ -11,12 +11,14 @@
   * Basic Transmission Model
   * Linear/Exponentional Suspension Model
   * Antiroll Bar Model
+  * Anti Lock Brake Simulation
+  * Traction Control Simulation
   * Ackermman Steering Model
-  * 240 Hz
+  * 240 Hz Based Project
 
   ### Overview
 
-Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to offer top level physics. Made by a broke highschool student interested in motorsports, This projects aims to understand them at a deeper level. Shift was made as an alternative to motorsports simulators open to anyone to improve, work on, use for projects, or personal use.
+Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to offer top level physics. Made by a broke highschool student interested in motorsports, This projects aims to understand vehicles at a deeper level. G-Shift was made as an alternative to motorsports simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Usage
 

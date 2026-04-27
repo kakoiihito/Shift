@@ -24,9 +24,9 @@
 
   ### Usage
 
-> Requirements: Operating System and Hardware Supporting Godot 4.6
+> Requirements: Operating System and Hardware Supporting Godot 4.6 and git
 >
-> 1. Download the project
+> 1. Download the project using git
 > ```
 > gh repo clone kakoiihito/Shift
 > ```

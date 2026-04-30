@@ -20,11 +20,7 @@ func brake_process(delta: float, Data: RuntimeData.brake, Values: Resource) -> v
 	if input_brake > 0.0:
 		Data.brake_torque = (input_brake * Values.max_brake_torque) / Data.active_wheels_brake
 		for i in range(4):
-			if brake_wheels[i] and Data.abs_active[i] == false:
+			if brake_wheels[i] == true and Data.abs_active[i] == false:
 				Data.wheel_brake_torque[i] = Data.brake_torque
 			else:
 				Data.wheel_brake_torque[i] = 0.0  # ABS pulse or inactive wheel
-	else:
-		for i in range(4):
-			Data.abs_active[i] = false
-			Data.wheel_brake_torque[i] = 0.0

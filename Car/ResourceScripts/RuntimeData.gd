@@ -33,7 +33,7 @@ class wheels:
 	var lateral_force = [0.0, 0.0, 0.0, 0.0]
 	var slip_ratio = [0.0, 0.0, 0.0, 0.0]
 	var aligning_torque = [0.0, 0.0, 0.0, 0.0]
-	var camber:float
+	var camber = [0.0, 0.0, 0.0, 0.0]
 	var slip_angle = [0.0, 0.0, 0.0, 0.0]
 
 class steering:

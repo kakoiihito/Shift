@@ -16,10 +16,8 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
 	var wheel_surface_speed = WheelData.wheel_angular_velocity[wheel_index] * Values.wheel_radius
 	var Fz = SuspensionData.wheel_spring_force[wheel_index].length() / 1000
+	var slip_ratio_percentage: float
 	
-
-	
-
 		
 	if ray.is_colliding():
 	
@@ -28,20 +26,18 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		WheelData.camber[wheel_index]  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * SuspensionData.compression[wheel_index])
 		
 		# slip angle calc
+		if forward_speed > 0.0:
+			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 		
-		WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 		
-		
-		WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
-		var slip_ratio_percentage: float
-		slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
+		if forward_speed > 0.0:
+			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
+			slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 
 		var Fz_nominal_kN = (car.mass * 9.81) * Values.weight_distribution[wheel_index] / 1000.0  
 		var dfz = (Fz - Fz_nominal_kN) / Fz_nominal_kN
 		
 		# pure longitudinal force calc
-				# slip ratio calc
-
 
 		var D = Fz * (Values.b1 * Fz + Values.b2)
 		var C = Values.b0
@@ -132,25 +128,23 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 		var angular_decel = air_drag_torque / wheel_inertia
 		WheelData.wheel_angular_velocity[wheel_index] -= angular_decel * delta
 		
-		# on ground behavior
+	# on ground behavior
 		
 	else:
 		var normal_force = SuspensionData.wheel_spring_force[wheel_index].length()
-		var rolling_resistance = Values.rolling_resistance_coeff * normal_force * Values.wheel_radius * sign(WheelData.wheel_angular_velocity[wheel_index])
 		
+		var rolling_resistance = Values.rolling_resistance_coeff * normal_force * Values.wheel_radius * sign(WheelData.wheel_angular_velocity[wheel_index])
 		if WheelData.wheel_angular_velocity[wheel_index] == 0.0:
 			rolling_resistance = 0.0
 			
 		var ground_reaction_torque = -WheelData.longitude_force[wheel_index] * Values.wheel_radius
+		
 		var net_torque = EngineData.wheel_engine_torque[wheel_index] - BrakeData.wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
 
 		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
 		
 		WheelData.wheel_angular_velocity[wheel_index] += angular_acceleration * delta
-		
-		if BrakeData.wheel_brake_torque[wheel_index] > 0 and sign(WheelData.wheel_angular_velocity[wheel_index]) < 0.0:
-			WheelData.wheel_angular_velocity[wheel_index] = 0.0
-			
+
 
 		
 		

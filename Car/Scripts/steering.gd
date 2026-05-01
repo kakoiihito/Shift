@@ -1,6 +1,7 @@
 extends Node
 
 func steering_proccess(delta: float, SteeringData: RuntimeData.steering, WheelData: RuntimeData.wheels, car: RigidBody3D, Values: Resource) -> void:
+	
 	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
 	var speed = car.linear_velocity.length()
 	var speed_factor = 1.0 / (1.0 + pow(speed * Values.speed_factor_coeff, 2))

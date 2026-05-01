@@ -146,6 +146,7 @@ var Stability = false
 @export var b11 = 0.0
 @export var b12 = 0.0
 @export var b13 = 0.0
+
 @export_subgroup("Pacejka Lateral")
 @export var a0  = 1.0     
 @export var a1  = 0.0 
@@ -165,6 +166,7 @@ var Stability = false
 @export var a15 = 0.0
 @export var a16 = 0.0
 @export var a17 = 0.0
+
 @export_subgroup("Aligning Torque")
 @export var Ro: float = 0.287
 @export var FNzo: float = 2050.0
@@ -182,7 +184,8 @@ var Stability = false
 @export var Et: float = -1.2
 @export var Ky1: float = 15.2  
 @export var Ky2: float = 1.8    
-@export var Ky3: float = 0.27 
+@export var Ky3: float = 0.27
+
 @export_subgroup("Pacejka Longitudinal G-Function")
 @export var rBx1 = 5.0
 @export var rBx2 = 8.0
@@ -192,6 +195,7 @@ var Stability = false
 @export var rEx2 = 0.0
 @export var rHx1 = 0.0
 @export var lambda_xalpha = 1.0
+
 @export_subgroup("Pacejka Lateral G-Function")
 @export var rBy1 = 7.0
 @export var rBy2 = 2.5

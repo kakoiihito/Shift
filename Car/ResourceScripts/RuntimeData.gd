@@ -10,7 +10,8 @@ class brake:
 	var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
 	var abs_active = [false, false, false, false]
 	var active_wheels_brake: int
-	var brake_torque: float 
+	var brake_torque: float
+	var input_brake := 0.0
 
 class engine:
 	var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0]

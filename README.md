@@ -3,7 +3,7 @@
 
   ### Overview
 
-> Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to become the gold standard of vehicle simulation. Made by a broke highschool student interested in motorsports, This projects aims to understand vehicles at a deeper level. G-Shift was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
+> Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to become the gold standard of vehicle simulation. Made by a broke highschool student interested in motorsports, This projects aims to understand vehicles at a deeper level. Shift was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Highlights
   
@@ -42,6 +42,7 @@
   ## Feedback and Contributing
 
 > You can discuss ideas and issues at https://github.com/kakoiihito/Shift/issues
+> View the CONTRIBUTING.md for more info about contribution.
 
   ## Acknowledgements
 

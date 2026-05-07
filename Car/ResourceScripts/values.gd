@@ -24,6 +24,7 @@ extends Resource
 @export var front_antiroll_bar = true
 @export var rear_antiroll_bar_stiffness = 2870.0
 @export var front_antiroll_bar_stiffness = 1700.0
+@export var damper_ratio = [0.69, 0.69, 0.75, 0.75]
 
 	######################
 	# STEERING VARIABLES #

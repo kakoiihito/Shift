@@ -8,5 +8,7 @@ point_count = 12
 
 [resource]
 script = ExtResource("1_whfmr")
+rear_antiroll_bar = false
+front_antiroll_bar = false
 torque_curve = SubResource("Curve_tsmdu")
 metadata/_custom_type_script = "uid://rj0v3jri7dxo"

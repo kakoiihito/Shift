@@ -30,12 +30,12 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 
 		# spring dampning calc
 
-		var damper_ratio = 0.7
+		
 		var world_vel = _get_point_velocity(hit, car)
 		var relative_vel = up_dir_spring.dot(world_vel)
 		var sprung_mass = car.mass * Values.weight_distribution[wheel_index]
 		var c_crit = 2.0 * sqrt(Values.spring_stiffness[wheel_index] * sprung_mass)
-		var c = damper_ratio * c_crit
+		var c = Values.damper_ratio[wheel_index] * c_crit
 		var spring_dampning = c * pow(abs(relative_vel), Values.velocity_exponent) * sign(relative_vel)
 		
 		# spring force calc

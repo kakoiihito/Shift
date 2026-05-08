@@ -1,14 +1,9 @@
 extends Node
 
-@export var car: RigidBody3D
-@onready var Values: Resource
-
-func _ready() -> void:
-	Values = car.VehicleValues
-
-func transmission_process(delta: float):
+func transmission_process(delta: float, Data: RuntimeData.transmission, Values: Resource):
 	var target_clutch = Input.get_action_strength("Clutch")
 
+	# shift behavior
 
 	if not Data.is_shifting and target_clutch > 0.95:
 		if Input.is_action_just_pressed("ShiftUp"):
@@ -22,6 +17,8 @@ func transmission_process(delta: float):
 				Data.current_gear -= 1
 				Data.is_shifting = true
 				Data.shift_timer = 0.15 + randf() * 0.1
+
+	# shift timer
 
 	if Data.is_shifting:
 		Data.shift_timer -= delta

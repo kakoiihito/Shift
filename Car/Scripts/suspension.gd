@@ -16,17 +16,15 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 			
 		# anti roll bar calc
 			
-		if Values.front_antiroll_bar == true:
+		if Values.front_antiroll_bar:
 			var arb = Values.front_antiroll_bar_stiffness * (Data.compression[0] - Data.compression[1])
-			
-			arb_force[0]  += -arb
-			arb_force[1] +=  arb
-			
-		if Values.rear_antiroll_bar == true:
-			var arb = Values.rear_antiroll_bar_stiffness * (Data.compression[2] - Data.compression[3])
+			arb_force[0] = clamp(-arb, -Values.spring_stiffness[0] * Data.compression[0], Values.spring_stiffness[0] * Data.compression[0])
+			arb_force[1] = clamp( arb, -Values.spring_stiffness[1] * Data.compression[1], Values.spring_stiffness[1] * Data.compression[1])
 
-			arb_force[2]  += -arb
-			arb_force[3] +=  arb
+		if Values.rear_antiroll_bar:
+			var arb = Values.rear_antiroll_bar_stiffness * (Data.compression[2] - Data.compression[3])
+			arb_force[2] = clamp(-arb, -Values.spring_stiffness[2] * Data.compression[2], Values.spring_stiffness[2] * Data.compression[2])
+			arb_force[3] = clamp( arb, -Values.spring_stiffness[3] * Data.compression[3], Values.spring_stiffness[3] * Data.compression[3])
 
 		# spring dampning calc
 
@@ -44,12 +42,13 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		var wheel_force_area = ray.global_position - car.global_position
 		Data.wheel_spring_force[wheel_index] = (spring_force - spring_dampning + arb_force[wheel_index]) * up_dir_spring
 
-		wheels[wheel_index].position.y = -Data.compression[wheel_index] # visual of suspension compression and rarefaction
+		wheels[wheel_index].position.y = -Data.compression[wheel_index]
 		car.apply_force(Data.wheel_spring_force[wheel_index], wheel_force_area) # application
+
 	else:
 		Data.compression[wheel_index] = 0.0
-		wheels[wheel_index].position.y = 0.0
+		wheels[wheel_index].position.y = -Values.rest_length[wheel_index]
 		
-	
+
 func _get_point_velocity(point: Vector3, car: RigidBody3D) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)

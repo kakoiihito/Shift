@@ -6,8 +6,8 @@ extends Resource
 	# CAR #
 	#######
 @export_group("Car")
-@export var wheel_base = 2.3
-@export var track = 1.5
+@export var wheel_base = 6.0
+@export var track = 2.5
 
 	########################
 	# SUSPENSION VARIABLES #
@@ -22,19 +22,20 @@ extends Resource
 @export var velocity_exponent = 1.0
 @export var rear_antiroll_bar = true
 @export var front_antiroll_bar = true
-@export var front_antiroll_bar_stiffness = 11500.0
-@export var rear_antiroll_bar_stiffness = 7500.0
-@export var damper_ratio = [0.69, 0.69, 0.75, 0.75]
+@export var front_antiroll_bar_stiffness = 3750.0
+@export var rear_antiroll_bar_stiffness = 2500.0
+@export var damper_ratio = [0.30, 0.30, 0.32, 0.32]
 
 	######################
 	# STEERING VARIABLES #
 	######################
 	
 @export_group("Steering")
-@export var max_tire_turn_angle = 900.0
+@export var max_tire_turn_angle = 35.0
+@export var steering_wheel_travel = 900.0
 @export var steering_ratio = 15.2
 @export var tire_turn_speed = 3.0
-@export var steering_stiffness = 20000
+@export var steering_stiffness = 800.0
 @export var speed_factor_coeff = 0.03
 @export var ackermann_factor = 0.85
 
@@ -70,11 +71,11 @@ var Stability = false
 	####################
 
 @export_group("Motor")
-@export var max_torque = 156.0
-@export var max_rpm = 7000.0
-@export var idle_rpm = 850.0
-@export var stall_rpm = 500.0
-@export var engine_inertia = 0.08
+@export var max_torque = 152.0   
+@export var max_rpm = 7200.0       
+@export var idle_rpm = 850.0       
+@export var stall_rpm = 500.0        
+@export var engine_inertia = 0.09      
 @export var FL_torque_engine = false
 @export var FR_torque_engine = false
 @export var RL_torque_engine = true
@@ -83,9 +84,9 @@ var Stability = false
 @export var FL_torque_brake = true
 @export var RR_torque_brake = true
 @export var RL_torque_brake = true
-@export var friction_c0 = 10.0
-@export var friction_c1 = 14.0
-@export var friction_c2 = 18.0
+@export var friction_c0 = 8.0 
+@export var friction_c1 = 12.0         
+@export var friction_c2 = 20.0         
 @export var torque_curve: Curve
 
 	#################
@@ -112,12 +113,12 @@ var Stability = false
 @export_group("Transmission")
 @export var is_shifting = false
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 0.88
-@export var final_drive = 4.300
+@export var drive_train_efficeny = 1.0
+@export var final_drive = 4.1
 @export var gear_ratio = [-3.760, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var current_gear = 1
-@export var max_clutch_torque = 185.0
-@export var unlock_threshold = 8.0
+@export var max_clutch_torque = 304.0 
+@export var unlock_threshold = 5.0    
 
 
 	###################
@@ -125,12 +126,11 @@ var Stability = false
 	###################
 
 @export_group("Wheel")
-@export var wheel_radius = 0.299
-@export var wheel_mass = 11.0
+@export var wheel_radius = 0.288
+@export var wheel_mass = 10.5
 @export var rolling_resistance_coeff = 0.013
-@export var friction_coefficient = 1.05
-@export var camber_angles = [-0.5, -0.5, -1.5, -1.5]
-@export var camber_gain = [-18.0, -18.0, -33.0, -33.0]
+@export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
+@export var camber_gain = [-18.0, -18.0, -25.0, -25.0]
 
 @export_subgroup("Pacejka Longitudinal")
 @export var b0 = 1.5
@@ -169,23 +169,23 @@ var Stability = false
 @export var a17 = 0.0
 
 @export_subgroup("Aligning Torque")
-@export var Ro: float = 0.287
-@export var FNzo: float = 2050.0
-@export var ssz1: float = 0.0
-@export var ssz2: float = 0.0
-@export var ssz3: float = -0.055
-@export var ssz4: float = 0.0
+@export var Ro: float = 0.299
+@export var FNzo: float = 2200.0
+@export var ssz1: float = 0.007
+@export var ssz2: float = 0.012
+@export var ssz3: float = -0.008
+@export var ssz4: float = 0.003
 @export var lambda_s: float = 1.0
-@export var Br: float = 10.5
+@export var Br: float = 5.5
 @export var Cr: float = 1.5
-@export var Dr: float = 5.8
-@export var Bt: float = 8.0
-@export var Ct: float = 1.5
-@export var Dt: float = 1.0
+@export var Dr: float = 0.008
+@export var Bt: float = 7.5
+@export var Ct: float = 1.35
+@export var Dt: float = 0.12
 @export var Et: float = -1.2
-@export var Ky1: float = 15.2  
-@export var Ky2: float = 1.8    
-@export var Ky3: float = 0.27
+@export var Ky1: float = 14.5
+@export var Ky2: float = 1.65
+@export var Ky3: float = 0.25
 
 @export_subgroup("Pacejka Longitudinal G-Function")
 @export var rBx1 = 5.0

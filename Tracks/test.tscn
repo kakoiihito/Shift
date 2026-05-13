@@ -75,6 +75,7 @@ mesh = SubResource("CylinderMesh_8uh7m")
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor" unique_id=1405423850]
+transform = Transform3D(1, 0, 0, 0, 0.9999958, 0, 0, 0, 0.9999958, 0, 0, 0)
 shape = SubResource("BoxShape3D_37kl0")
 
 [node name="RenderTest" type="MeshInstance3D" parent="Scenery&Level" unique_id=783264161]

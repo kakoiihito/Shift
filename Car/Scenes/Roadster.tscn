@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_jypor"]
 [ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_35f3q"]
-[ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="3_enp3b"]
+[ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="4_35f3q"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -257,7 +257,7 @@ mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
 [node name="WheelRearLeft" type="RayCast3D" parent="." unique_id=2031816737]
-transform = Transform3D(1.3993838, 0.041532744, 0, -0.041532744, 1.3993838, 9.629728e-12, 2.8567787e-13, -9.625489e-12, 1.4, -1.15, 0.6, 2.242)
+transform = Transform3D(1.3993838, 0.041532744, -2.5731366e-20, -0.041532744, 1.3993838, 9.629727e-12, 2.8567787e-13, -9.625488e-12, 1.4, -1.15, 0.6, 2.242)
 target_position = Vector3(0, -0.6, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 script = ExtResource("1_03rhi")
@@ -278,22 +278,21 @@ script = ExtResource("1_03rhi")
 [node name="RearRightWheel" type="Node3D" parent="WheelRearRight" unique_id=1779066980]
 
 [node name="wheel_backRight" type="MeshInstance3D" parent="WheelRearRight/RearRightWheel" unique_id=1586398132]
-transform = Transform3D(1.0000001, -1.902123e-09, 0, -3.942091e-11, 1, -7.275958e-12, -2.3283064e-10, -7.275958e-12, 1.0000001, -0.2016874, 0, 1.1920929e-07)
+transform = Transform3D(1.0000001, 3.9420908e-11, 2.3283064e-10, -3.942091e-11, 1, 7.275959e-12, -2.3283064e-10, -7.2759585e-12, 1.0000001, -0.2016874, 0, 1.1920929e-07)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=591093353]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9887118, 2.3422723, 5.8866215)
-
-[node name="Info" parent="." unique_id=541806933 node_paths=PackedStringArray("car") instance=ExtResource("3_enp3b")]
-car = NodePath("..")
-metadata/_edit_use_anchors_ = true
-
 [node name="Car" type="MeshInstance3D" parent="." unique_id=1895633457]
-transform = Transform3D(-1.2828882, 0, -2.6408847e-07, 0, 0.9702039, 0, 1.1215364e-07, 0, -3.0208201, 0, 0.4, 0.12866473)
+transform = Transform3D(-1.2828882, 0, -4.5613118e-07, 0, 0.9702039, 0, 1.9371073e-07, 0, -3.0208201, 0, 0.4, 0.12866473)
 mesh = SubResource("ArrayMesh_u42nv")
 skeleton = NodePath("")
 
 [node name="CollisionShape3D7" type="CollisionShape3D" parent="." unique_id=580387491]
-transform = Transform3D(-1.2828882, 0, -2.6408847e-07, 0, 0.9702039, 0, 1.1215364e-07, 0, -3.0208201, 0, 0.4, 0.129)
+transform = Transform3D(-1.2828882, 0, -4.5613118e-07, 0, 0.9702039, 0, 1.9371073e-07, 0, -3.0208201, 0, 0.4, 0.129)
 shape = SubResource("ConvexPolygonShape3D_35f3q")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=318420880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1359835, 1.4859004, 0.1906991)
+
+[node name="Info" parent="." unique_id=1292094877 node_paths=PackedStringArray("car") instance=ExtResource("4_35f3q")]
+car = NodePath("..")

@@ -110,6 +110,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Mz_ = -trail * (WheelData.lateral_force[wheel_index] - SVyk)
 
 		WheelData.aligning_torque[wheel_index] = Mz_ + Mzr + s * WheelData.longitude_force[wheel_index]
+
 				
 		# final force calc (aligning torque is applied in steering.gd)
 		

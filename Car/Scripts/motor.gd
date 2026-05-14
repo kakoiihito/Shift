@@ -159,3 +159,4 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		else:
 			EngineData.wheel_engine_torque[axle[0]] = axle_torque / 2.0
 			EngineData.wheel_engine_torque[axle[1]] = axle_torque / 2.0
+			

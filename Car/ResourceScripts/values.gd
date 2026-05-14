@@ -113,9 +113,9 @@ var Stability = false
 @export_group("Transmission")
 @export var is_shifting = false
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 1.0
+@export var drive_train_efficeny = 0.9
 @export var final_drive = 4.1
-@export var gear_ratio = [-3.760, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
+@export var gear_ratio = [-3.760, 0.0, 3.136, 1.888, 1.333, 1.000, 0.814]
 @export var current_gear = 1
 @export var max_clutch_torque = 304.0 
 @export var unlock_threshold = 5.0    

@@ -62,20 +62,25 @@ func _ready() -> void:
 		Wheels[i].set_meta("wheel_index", i) # wheel identification
 	
 func _physics_process(delta: float) -> void:
-	
-	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # independent function
+
 	Transmission.transmission_process(delta, transmission, VehicleValues) # independent function
 	
 	for wheel in wheels:
 		Suspension.suspension_proccess(wheel, suspension, car, VehicleValues) # independent function
-		WheelProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+	
+	for wheel in wheels:
 		WheelProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues) # relies on wheel ang and suspension functions
 	
+	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
 
 	Motor.motor_process(delta, engine, transmission, wheeldata, VehicleValues) # relies on wheel ang, transmission, and forces functions
 	Brake.brake_process(delta, brake, VehicleValues) #relies on wheel angular velocity function
 	
 	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)  # relies on wheel forces and brake
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues) # relies on wheel forces and motor
+	
+	for wheel in wheels:
+		WheelProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+
 	
 	

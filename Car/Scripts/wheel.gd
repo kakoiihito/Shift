@@ -29,7 +29,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		if forward_speed > 0.0:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 		
-		
 		if forward_speed > 0.0:
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
 			slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
@@ -61,7 +60,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
 
 		WheelData.longitude_force[wheel_index] = Gxa * Fxo
-
 		
 		# pure lateral force calc
 
@@ -141,10 +139,11 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 		var ground_reaction_torque = -WheelData.longitude_force[wheel_index] * Values.wheel_radius
 		
 		var net_torque = EngineData.wheel_engine_torque[wheel_index] - BrakeData.wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
-
-		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
+		
+		var angular_acceleration = net_torque / wheel_inertia
 		
 		WheelData.wheel_angular_velocity[wheel_index] += angular_acceleration * delta
+
 
 
 		

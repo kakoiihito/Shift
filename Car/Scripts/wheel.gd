@@ -26,11 +26,11 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		WheelData.camber[wheel_index]  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * SuspensionData.compression[wheel_index])
 		
 		# slip angle calc
-		if forward_speed > 0.0:
+		if abs(forward_speed) > 0.0:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 		
-		if forward_speed > 0.0:
-			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
+		if abs(forward_speed) > 0.0:
+			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
 			slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 
 		var Fz_nominal_kN = (car.mass * 9.81) * Values.weight_distribution[wheel_index] / 1000.0  

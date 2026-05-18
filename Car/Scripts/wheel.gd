@@ -143,6 +143,11 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 		var angular_acceleration = net_torque / wheel_inertia
 		
 		WheelData.wheel_angular_velocity[wheel_index] += angular_acceleration * delta
+		
+		# safe guard for braking.
+		
+		if BrakeData.wheel_brake_torque[wheel_index] > 0.0 and WheelData.wheel_angular_velocity[wheel_index] < 0.0:
+			WheelData.wheel_angular_velocity[wheel_index] = 0.0
 
 
 

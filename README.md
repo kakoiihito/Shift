@@ -12,16 +12,21 @@
   > * One Point Raycast Wheels
   > * Rigid Body Car
   > * Curve Based Engine Torque Model
-  > * Dry Clutch Model
+  > * Clutch Torque Model
   > * Open Differential or LSD Simulation (Torsen, Clutch, Electronic)
   > * Basic Brake Model
   > * Basic Transmission Model
-  > * Linear/Exponentional Suspension Model
+  > * Linear Spring Force Model
+  > * Exponential/Linear Spring Damping Model
   > * Antiroll Bar Model
   > * Anti Lock Brake Simulation
   > * Traction Control Simulation
   > * Ackermman Steering Model
   > * 120 Hz Tick Rate Project
+  > * 100s of tuning parameters for ultimate control
+  > * Modular Functions for easy re-use
+  > * Roadster Example Car
+  > * Track Example (Ichi Circuit) 
 
   ### Usage
 

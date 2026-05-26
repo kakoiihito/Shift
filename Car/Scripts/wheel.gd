@@ -26,12 +26,11 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		WheelData.camber[wheel_index]  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * SuspensionData.compression[wheel_index])
 		
 		# slip angle calc
-		if forward_speed > 0.0:
+		if abs(forward_speed) > 0.0:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 		
-		
-		if forward_speed > 0.0:
-			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
+		if abs(forward_speed) > 0.0:
+			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
 			slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 
 		var Fz_nominal_kN = (car.mass * 9.81) * Values.weight_distribution[wheel_index] / 1000.0  
@@ -61,7 +60,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
 
 		WheelData.longitude_force[wheel_index] = Gxa * Fxo
-
 		
 		# pure lateral force calc
 
@@ -110,6 +108,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Mz_ = -trail * (WheelData.lateral_force[wheel_index] - SVyk)
 
 		WheelData.aligning_torque[wheel_index] = Mz_ + Mzr + s * WheelData.longitude_force[wheel_index]
+
 				
 		# final force calc (aligning torque is applied in steering.gd)
 		
@@ -140,10 +139,16 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 		var ground_reaction_torque = -WheelData.longitude_force[wheel_index] * Values.wheel_radius
 		
 		var net_torque = EngineData.wheel_engine_torque[wheel_index] - BrakeData.wheel_brake_torque[wheel_index] + ground_reaction_torque - rolling_resistance
-
-		var angular_acceleration = net_torque / wheel_inertia if wheel_inertia > 0 else 0
+		
+		var angular_acceleration = net_torque / wheel_inertia
 		
 		WheelData.wheel_angular_velocity[wheel_index] += angular_acceleration * delta
+		
+		# safe guard for braking.
+		
+		if BrakeData.wheel_brake_torque[wheel_index] > 0.0 and WheelData.wheel_angular_velocity[wheel_index] < 0.0:
+			WheelData.wheel_angular_velocity[wheel_index] = 0.0
+
 
 
 		

@@ -84,7 +84,6 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	if Input.is_action_pressed("Ignition"):
 		EngineData.engine_stalled = false
 		EngineData.engine_angular_velocity = Values.idle_rpm * TAU / 60.0
-		
 	
 	# Torque division (lsds, open diff)
 	
@@ -121,8 +120,8 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		else:
 			axle_torque = torque_at_wheels
 		
-		var slip_a = WheelData.longitude_force[axle[0]]
-		var slip_b = WheelData.longitude_force[axle[1]]
+		var slip_a = WheelData.slip_ratio[axle[0]]
+		var slip_b = WheelData.slip_ratio[axle[1]]
 		
 		var T_lock: float
 		var T_high: float
@@ -159,4 +158,3 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		else:
 			EngineData.wheel_engine_torque[axle[0]] = axle_torque / 2.0
 			EngineData.wheel_engine_torque[axle[1]] = axle_torque / 2.0
-			

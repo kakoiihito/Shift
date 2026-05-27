@@ -60,7 +60,7 @@ var Stability = false # a thing to work on
 @export var max_rpm = 7200.0
 @export var idle_rpm = 850.0
 @export var stall_rpm = 500.0
-@export var engine_inertia = 0.11 
+@export var engine_inertia = 0.25 
 @export var friction_c0 = 6.0
 @export var friction_c1 = 9.0
 @export var friction_c2 = 14.0
@@ -88,23 +88,22 @@ var Stability = false # a thing to work on
 
 @export_group("Transmission")
 
-@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
+@export var gear_ratio = [-3.758, 0.0, 3.163, 1.888, 1.333, 1.000, 0.814]
 @export var shift_timer = 0.0
 @export var drive_train_efficeny = 0.85 
 @export var final_drive = 4.300
 @export var is_shifting = false
-
 @export var current_gear = 1
-@export var max_clutch_torque = 210.0 
-@export var unlock_threshold = 5.0
+@export var max_clutch_torque = 130.0 
+@export var unlock_threshold = 7.5
 
 @export_group("Wheel")
 
 @export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
 @export var camber_gain = [-18.0, -18.0, -25.0, -25.0]
-@export var wheel_radius = 0.288
-@export var wheel_mass = 10.5
-@export var rolling_resistance_coeff = 0.013
+@export var wheel_radius = 0.299
+@export var wheel_mass = 4.6
+@export var rolling_resistance_coeff = 0.011
 
 # MF 5.2 model
 

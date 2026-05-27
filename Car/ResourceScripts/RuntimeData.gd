@@ -20,7 +20,7 @@ class engine:
 	var engine_angular_velocity: float
 	var clutch_torque_on_engine: float
 	var engine_stalled: bool
-	var engine_driven_count: int 
+	var engine_driven_count = 0
 
 class transmission:
 	var is_shifting = false

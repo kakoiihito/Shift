@@ -117,7 +117,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		car.apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, BrakeData: RuntimeData.brake, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
-	var wheel_inertia = 0.6 * Values.wheel_mass * Values.wheel_radius * Values.wheel_radius
+	var wheel_inertia =  Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	var wheel_index = ray.get_meta("wheel_index") 
 	
 	# in-air behavior

@@ -6,7 +6,7 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	
 	
 	var torque_curve = Values.torque_curve
-	var driven_count = EngineData.engine_driven_count
+
 	var drivetrain_ratio = TransmissionData.current_gear_ratio * Values.final_drive
 	var target = Input.get_action_strength("Gas")
 	var rate = 4.0 if target > throttle_input else 8.0
@@ -19,14 +19,17 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	
 	var angular_velocity_sum: float = 0.0
 	var target_engine_ang_vel: float
+	var driven_wheels = [Values.FL_torque_engine, Values.FR_torque_engine, Values.RL_torque_engine, Values.RR_torque_engine]
+	var driven_count: int = 0
 	
 	# Angular velocity addition (for engine angular velocity)
-	
-	var driven_wheels = [Values.FL_torque_engine, Values.FR_torque_engine, Values.RL_torque_engine, Values.RR_torque_engine]
+
 	for i in range(4):
-		if driven_wheels[i] == true:
+		if driven_wheels[i]:
 			angular_velocity_sum += WheelData.wheel_angular_velocity[i]
 			driven_count += 1
+
+	EngineData.engine_driven_count = driven_count
 	
 	# engine torque calculation
 	
@@ -47,8 +50,8 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	
 	# clutch torque calculation
 			
-	if driven_count > 0:
-		target_engine_ang_vel = (angular_velocity_sum / driven_count) * drivetrain_ratio
+	if EngineData.engine_driven_count > 0:
+		target_engine_ang_vel = (angular_velocity_sum / EngineData.engine_driven_count) * drivetrain_ratio
 		var speed_difference = EngineData.engine_angular_velocity - target_engine_ang_vel
 		var max_transferable_torque = Values.max_clutch_torque * clutch_engagement
 					
@@ -59,7 +62,7 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 			
 			if abs(required_torque) <= max_transferable_torque:
 				EngineData.engine_angular_velocity = target_engine_ang_vel
-				EngineData.clutch_torque_on_engine = 0.0
+				EngineData.clutch_torque_on_engine = -(engine_torque - engine_friction)
 			else:
 				EngineData.clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
 			
@@ -94,7 +97,7 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	var clutch_torque_to_wheels = -EngineData.clutch_torque_on_engine 
 	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * Values.drive_train_efficeny
 	
-	# finding axle usage (refuses abnormal configurations, more info in valudes.gd)
+	# finding axle usage (refuses abnormal configurations, more info in values.gd)
 	
 	if Values.FL_torque_engine and Values.FR_torque_engine and Values.RL_torque_engine and Values.RR_torque_engine:
 		driven_axle =[front_axle, rear_axle]

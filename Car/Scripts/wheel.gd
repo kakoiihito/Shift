@@ -117,15 +117,19 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		car.apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, BrakeData: RuntimeData.brake, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
-	var wheel_inertia =  Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
+	var wheel_inertia =  0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	var wheel_index = ray.get_meta("wheel_index") 
 	
 	# in-air behavior
 	
 	if not car.wheels[wheel_index].is_colliding():
 		var air_drag_torque = 0.001 * WheelData.wheel_angular_velocity[wheel_index] * abs(WheelData.wheel_angular_velocity[wheel_index])
-		var angular_decel = air_drag_torque / wheel_inertia
-		WheelData.wheel_angular_velocity[wheel_index] -= angular_decel * delta
+		var brake_torque = BrakeData.wheel_brake_torque[wheel_index] * sign(WheelData.wheel_angular_velocity[wheel_index])
+		
+		var net_torque = EngineData.wheel_engine_torque[wheel_index] - brake_torque - air_drag_torque
+		
+		var angular_acceleration = net_torque / wheel_inertia
+		WheelData.wheel_angular_velocity[wheel_index] += angular_acceleration * delta
 		
 	# on ground behavior
 		
@@ -133,8 +137,6 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 		var normal_force = SuspensionData.wheel_spring_force[wheel_index].length()
 		
 		var rolling_resistance = Values.rolling_resistance_coeff * normal_force * Values.wheel_radius * sign(WheelData.wheel_angular_velocity[wheel_index])
-		if WheelData.wheel_angular_velocity[wheel_index] == 0.0:
-			rolling_resistance = 0.0
 			
 		var ground_reaction_torque = -WheelData.longitude_force[wheel_index] * Values.wheel_radius
 		

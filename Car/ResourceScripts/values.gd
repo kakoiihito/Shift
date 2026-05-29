@@ -105,9 +105,20 @@ var Stability = false # a thing to work on
 @export var wheel_mass = 4.6
 @export var rolling_resistance_coeff = 0.011
 
-# MF 5.2 model
+# Pacejka Simplified Curves + Combined Slip and Aligning Torque
 
 @export_subgroup("Pacejka Longitudinal")
+
+@export var B1 = 0.0
+@export var C1 = 0.0
+@export var D1 = 0.0
+@export var E1 = 0.0
+@export var H1 = 0.0
+@export var V1 = 0.0
+
+# MF 5.2 model
+
+@export_subgroup("Advanced Pacejka Longitudinal")
 
 @export var b0 = 1.65
 @export var b1 = -5.0
@@ -124,7 +135,7 @@ var Stability = false # a thing to work on
 @export var b12 = 0.0
 @export var b13 = 0.0
 
-@export_subgroup("Pacejka Lateral")
+@export_subgroup("Advanced Pacejka Lateral")
 
 @export var a0  = 1.9
 @export var a1  = 0.0
@@ -145,7 +156,7 @@ var Stability = false # a thing to work on
 @export var a16 = 0.0
 @export var a17 = 0.0
 
-@export_subgroup("Pacejka Aligning Torque")
+@export_subgroup("Advanced Pacejka Aligning Torque")
 
 @export var Ro = 0.282
 @export var FNzo = 2700.0
@@ -165,7 +176,7 @@ var Stability = false # a thing to work on
 @export var Ky2 = 2.0
 @export var Ky3 = 0.25
 
-@export_subgroup("Pacejka Longitudinal G-Function")
+@export_subgroup("Advanced Pacejka Longitudinal G-Function")
 
 @export var rBx1 = 5.0
 @export var rBx2 = 8.0
@@ -176,7 +187,7 @@ var Stability = false # a thing to work on
 @export var rHx1 = 0.0
 @export var lambda_xalpha = 1.0
 
-@export_subgroup("Pacejka Lateral G-Function")
+@export_subgroup("Advanced Pacejka Lateral G-Function")
 
 @export var rBy1 = 7.0
 @export var rBy2 = 2.5

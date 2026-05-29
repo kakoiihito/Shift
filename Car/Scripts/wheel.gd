@@ -38,10 +38,10 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		
 		# pure longitudinal force calc
 
-		var D = Fz * (Values.b1 * Fz + Values.b2)
-		var C = Values.b0
-		var BCD = (Values.b3 * pow(Fz, 2) + Values.b4 * Fz) * exp(-Values.b5 * Fz)
-		var B = BCD / (C * D)
+		var D = Values.D1
+		var C = Values.C1
+		var BCD = Values.B1 * Values.C1 * Values.D1
+		var B = Values.B1
 		var H = Values.b9 * Fz + Values.b10
 		var E = (Values.b6* pow(Fz, 2) + Values.b7 * Fz + Values.b8) *  (1 - Values.b13 * sign(slip_ratio_percentage+H))
 		var V = Values.b11 * Fz + Values.b12
@@ -60,6 +60,8 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
 
 		WheelData.longitude_force[wheel_index] = Gxa * Fxo
+		
+		print(WheelData.longitude_force)
 		
 		# pure lateral force calc
 

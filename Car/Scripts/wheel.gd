@@ -38,23 +38,23 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		
 		# pure longitudinal force calc
 
-		var D = Values.D1
 		var C = Values.C1
-		var BCD = Values.B1 * Values.C1 * Values.D1
-		var B = Values.B1
-		var H = Values.b9 * Fz + Values.b10
-		var E = (Values.b6* pow(Fz, 2) + Values.b7 * Fz + Values.b8) *  (1 - Values.b13 * sign(slip_ratio_percentage+H))
-		var V = Values.b11 * Fz + Values.b12
+		var D = Values.D1 * Fz * (1.0 - pow(WheelData.camber[wheel_index], 2))
+		var BCD = Values.B1 * sin(2.0 * atan(Fz / Fz_nominal_kN)) * (1.0 - abs(WheelData.camber[wheel_index]))
+		var B = BCD / (C * D)
+		var H = Values.H1
+		var E = Values.E1
+		var V = Values.V1
 		var Bx1 = B * (slip_ratio_percentage + H)
 		var Fxo = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1)))) + V
 		
 		# combined slip longitudinal force calc
 		
-		var SHxa = Values.rHx1
+		var SHxa = Values.SHxa1
 		var alpha_s = WheelData.slip_angle[wheel_index] + SHxa
-		var Bxa = (Values.rBx1 + Values.rBx3 * pow(WheelData.camber[wheel_index], 2)) * cos(atan(Values.rBx2 * slip_ratio_percentage)) * Values.lambda_xalpha
-		var Cxa = Values.rCx1
-		var Exa = Values.rEx1 + Values.rEx2 * dfz
+		var Bxa = Values.Bxa1 * cos(atan(Values.Bxa2 * slip_ratio_percentage))
+		var Cxa = Values.Cxa1
+		var Exa = Values.Exa1
 		
 		var Gxa0 = cos(Cxa * atan(Bxa * SHxa - Exa * (Bxa * SHxa - atan(Bxa * SHxa))))
 		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
@@ -65,29 +65,29 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		
 		# pure lateral force calc
 
-		var C1 = Values.a0
-		var D1 = Fz * (Values.a1 * Fz + Values.a2) * (1 - Values.a15 * pow(WheelData.camber[wheel_index], 2))
-		var BCD1 = Values.a3 * sin(atan(Fz / Values.a4) * 2) * (1 - Values.a5* abs(WheelData.camber[wheel_index]))
-		var B1 = BCD1 / (C1 * D1)
-		var H1 = Values.a8 * Fz + Values.a9 + Values.a10 * WheelData.camber[wheel_index]
-		var E1 = (Values.a6 * Fz + Values.a7) * (1 - (Values.a16 * WheelData.camber[wheel_index] + Values.a17) * sign(WheelData.slip_angle[wheel_index] + H1))
-		var V1 = Values.a11 * Fz + Values.a12 + (Values.a13 * Fz + Values.a14) * WheelData.camber[wheel_index] * Fz
+		var C1   = Values.C2
+		var D1   = Values.D2 * Fz * (1.0 - pow(WheelData.camber[wheel_index], 2))
+		var BCD1 = Values.B2 * sin(2.0 * atan(Fz / Fz_nominal_kN)) * (1.0 - abs(WheelData.camber[wheel_index]))
+		var B1   = BCD1 / (C1 * D1)
+		var H1 = Values.H2
+		var E1 = Values.E2
+		var V1 = Values.V2
 		var Bx2 = B1 * (WheelData.slip_angle[wheel_index] + H1)
 		var Fyo = D1 * sin(C1 * atan(Bx2 - E1 * (Bx2 - atan(Bx2)))) + V1
 
 		# combined slip lateral force calc
 
-		var SHyk = Values.rHy1 + Values.rHy2 * dfz
+		var SHyk = Values.SHyk1 * dfz
 		var kappa_s = WheelData.slip_ratio[wheel_index] + SHyk
-		var Byk = (Values.rBy1 + Values.rBy4 * pow(WheelData.camber[wheel_index], 2)) * cos(atan(Values.rBy2 * (WheelData.slip_angle[wheel_index] - Values.rBy3))) * Values.lambda_ykappa
-		var Cyk = Values.rCy1
-		var Eyk = Values.rEy1 + Values.rEy2 * dfz
+		var Byk = Values.Byk1 * cos(atan(WheelData.slip_angle[wheel_index])) * (1.0 - pow(WheelData.camber[wheel_index], 2))
+		var Cyk = Values.Cyk1
+		var Eyk = Values.Eyk1 * dfz
 		var Gyk0 = cos(Cyk * atan(Byk * SHyk - Eyk * (Byk * SHyk - atan(Byk * SHyk))))
-		var Gyk = cos(Cyk * atan(Byk * kappa_s - Eyk * (Byk * kappa_s - atan(Byk * kappa_s)))) / Gyk0
+		var Gyk  = cos(Cyk * atan(Byk * kappa_s - Eyk * (Byk * kappa_s - atan(Byk * kappa_s)))) / Gyk0
 
 		var mu_y = D1 / Fz
-		var DVyk = mu_y * Fz * (Values.rVy1 + Values.rVy2 * dfz + Values.rVy3 * WheelData.camber[wheel_index]) * cos(atan(Values.rVy4 * WheelData.slip_angle[wheel_index]))
-		var SVyk = DVyk * sin(Values.rVy5 * atan(Values.rVy6 * WheelData.slip_ratio[wheel_index])) * Values.lambda_Vyk
+		var DVyk = mu_y * Fz * Values.DVyk1 * (1.0 + dfz + WheelData.camber[wheel_index]) * cos(atan(WheelData.slip_angle[wheel_index]))
+		var SVyk = DVyk * sin(Values.SVyk1 * atan(WheelData.slip_ratio[wheel_index]))
 
 		WheelData.lateral_force[wheel_index] = Fyo * Gyk + SVyk
 		

@@ -132,21 +132,21 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		
 		# type of lsd or open diff
 		
-		if Values.torsen_lsd:
+		if Values.differential == Values.DiffType.TORSEN_LSD:
 			if min(slip_a, slip_b) <= 0.0:
 				T_high = axle_torque / 2.0
 				T_low  = axle_torque / 2.0
 			else:
 				T_high = axle_torque * (Values.TBR / (Values.TBR + 1.0))
 				T_low  = axle_torque * (1.0 / (Values.TBR + 1.0))
-		elif Values.clutch_lsd:
+		elif Values.differential == Values.DiffType.CLUTCH_LSD:
 			T_lock = Values.minimum_clutch_lsd_force + (axle_torque * Values.clutch_lsd_ramp_factor)
 			T_lock = min(T_lock, axle_torque / 2.0) 
 			T_high = (axle_torque / 2.0) + T_lock
 			T_low  = (axle_torque / 2.0) - T_lock
-		elif Values.electronic_lsd:
+		elif Values.differential == Values.DiffType.ELECTRONIC_LSD:
 			pass # will write logic
-		elif Values.open_diff:
+		elif Values.differential == Values.DiffType.OPEN:
 			T_high = axle_torque / 2.0
 			T_low  = axle_torque / 2.0
 		

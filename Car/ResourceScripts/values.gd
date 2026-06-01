@@ -76,10 +76,14 @@ var Stability = false # a thing to work on
 
 @export_subgroup("Limited Slip Differential")
 
-@export var torsen_lsd = false
-@export var clutch_lsd = false
-@export var electronic_lsd = false
-@export var open_diff = true
+enum DiffType {
+	OPEN,
+	TORSEN_LSD,
+	CLUTCH_LSD,
+	ELECTRONIC_LSD
+}
+
+@export var differential: DiffType = DiffType.OPEN
 @export var minimum_clutch_lsd_force = 100.0
 @export var clutch_lsd_ramp_factor = 1.0
 @export var center_diff_split = 0.5
@@ -109,12 +113,39 @@ var Stability = false # a thing to work on
 
 @export_subgroup("Pacejka Longitudinal")
 
-@export var B1 = 0.0
-@export var C1 = 0.0
-@export var D1 = 0.0
-@export var E1 = 0.0
+@export var B1 = 0.18
+@export var C1 = 1.65
+@export var D1 = 1.70
+@export var E1 = -0.50
 @export var H1 = 0.0
 @export var V1 = 0.0
+
+
+@export_subgroup("Pacejka Longitudinal G-Function")
+
+@export var SHxa1 = 0.0
+@export var Bxa1 = 0.18
+@export var Bxa2 = 0.18
+@export var Cxa1 = 1.05
+@export var Exa1 = -0.50
+
+@export_subgroup("Pacejka Lateral")
+
+@export var B2 = 10.5
+@export var C2 = 1.30
+@export var D2 = 1.65
+@export var E2 = -1.20
+@export var H2 = 0.0
+@export var V2 = 0.0
+
+@export_subgroup("Pacejka Lateral G-Function")
+
+@export var SHyk1 = 0.0
+@export var Byk1 = 10.5
+@export var Cyk1 = 1.05
+@export var Eyk1 = -0.50
+@export var DVyk1 = 0.05
+@export var SVyk1 = 0.10
 
 # MF 5.2 model
 

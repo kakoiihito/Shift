@@ -38,62 +38,44 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		
 		# pure longitudinal force calc
 
-		var C = Values.C1
-		var D = Values.D1 * Fz * (1.0 - pow(WheelData.camber[wheel_index], 2))
-		var BCD = Values.B1 * sin(2.0 * atan(Fz / Fz_nominal_kN)) * (1.0 - abs(WheelData.camber[wheel_index]))
-		var B = BCD / (C * D)
-		var H = Values.H1
-		var E = Values.E1
-		var V = Values.V1
-		var Bx1 = B * (slip_ratio_percentage + H)
-		var Fxo = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1)))) + V
+		var C   = Values.b01
+		var D   = Fz * (Values.b111 * Fz + Values.b21)
+		var BCD = Values.b41 * Fz
+		var B   = BCD / (C * D)
+		var E   = Values.b61 * pow(Fz, 2) + Values.b71 * Fz + Values.b81
+		var Bx1 = B * slip_ratio_percentage
+		var Fxo = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1))))
 		
 		# combined slip longitudinal force calc
 		
-		var SHxa = Values.SHxa1
-		var alpha_s = WheelData.slip_angle[wheel_index] + SHxa
-		var Bxa = Values.Bxa1 * cos(atan(Values.Bxa2 * slip_ratio_percentage))
-		var Cxa = Values.Cxa1
-		var Exa = Values.Exa1
-		
-		var Gxa0 = cos(Cxa * atan(Bxa * SHxa - Exa * (Bxa * SHxa - atan(Bxa * SHxa))))
-		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s)))) / Gxa0
+		var alpha_s = WheelData.slip_angle[wheel_index]
+		var Bxa = Values.rBx11 * cos(atan(Values.rBx2 * slip_ratio_percentage)) * Values.lambda_xalpha
+		var Cxa = Values.rCx11
+		var Exa = Values.rEx11
+
+		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s))))
 
 		WheelData.longitude_force[wheel_index] = Gxa * Fxo
 		
-		print(WheelData.longitude_force)
-		
 		# pure lateral force calc
 
-		var C1   = Values.C2
-		var D1   = Values.D2 * Fz * (1.0 - pow(WheelData.camber[wheel_index], 2))
-		var BCD1 = Values.B2 * sin(2.0 * atan(Fz / Fz_nominal_kN)) * (1.0 - abs(WheelData.camber[wheel_index]))
-		var B1   = BCD1 / (C1 * D1)
-		var H1 = Values.H2
-		var E1 = Values.E2
-		var V1 = Values.V2
-		var Bx2 = B1 * (WheelData.slip_angle[wheel_index] + H1)
-		var Fyo = D1 * sin(C1 * atan(Bx2 - E1 * (Bx2 - atan(Bx2)))) + V1
+		var D1   = Values.a21 * Fz
+		var BCD1 = Values.a31 * sin(2.0 * atan(Fz / Values.a41))
+		var B1   = BCD1 / (Values.a01 * D1)
+		var E1   = Values.a61 * Fz + Values.a71
+		var Bx2  = B1 * WheelData.slip_angle[wheel_index]
+		var Fyo  = D1 * sin(Values.a01 * atan(Bx2 - E1 * (Bx2 - atan(Bx2))))
 
 		# combined slip lateral force calc
 
-		var SHyk = Values.SHyk1 * dfz
-		var kappa_s = WheelData.slip_ratio[wheel_index] + SHyk
-		var Byk = Values.Byk1 * cos(atan(WheelData.slip_angle[wheel_index])) * (1.0 - pow(WheelData.camber[wheel_index], 2))
-		var Cyk = Values.Cyk1
-		var Eyk = Values.Eyk1 * dfz
-		var Gyk0 = cos(Cyk * atan(Byk * SHyk - Eyk * (Byk * SHyk - atan(Byk * SHyk))))
-		var Gyk  = cos(Cyk * atan(Byk * kappa_s - Eyk * (Byk * kappa_s - atan(Byk * kappa_s)))) / Gyk0
+		var kappa_s = WheelData.slip_ratio[wheel_index]
+		var Byk = Values.rBy11 * cos(atan(WheelData.slip_angle[wheel_index] - Values.rBy21))
+		var Gyk = cos(Values.rCy11 * atan(Byk * kappa_s))
 
-		var mu_y = D1 / Fz
-		var DVyk = mu_y * Fz * Values.DVyk1 * (1.0 + dfz + WheelData.camber[wheel_index]) * cos(atan(WheelData.slip_angle[wheel_index]))
-		var SVyk = DVyk * sin(Values.SVyk1 * atan(WheelData.slip_ratio[wheel_index]))
-
-		WheelData.lateral_force[wheel_index] = Fyo * Gyk + SVyk
+		WheelData.lateral_force[wheel_index] = Fyo * Gyk
 		
 		# aligning torque calc
 		
-
 		var Kxkappa = BCD
 		
 		var stiffness_ratio_sq = pow(Kxkappa / BCD1, 2)
@@ -107,7 +89,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		var Mzr = Values.Dr * cos(Values.Cr * atan(Values.Br * alpha_r_eq))
 
 		var trail = Values.Dt * cos(Values.Ct * atan(Values.Bt * alpha_t_eq - Values.Et * (Values.Bt * alpha_t_eq - atan(Values.Bt * alpha_t_eq)))) * cos(WheelData.slip_angle[wheel_index])
-		var Mz_ = -trail * (WheelData.lateral_force[wheel_index] - SVyk)
+		var Mz_ = -trail * (WheelData.lateral_force[wheel_index])
 
 		WheelData.aligning_torque[wheel_index] = Mz_ + Mzr + s * WheelData.longitude_force[wheel_index]
 

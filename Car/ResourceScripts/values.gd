@@ -5,8 +5,8 @@ extends Resource
 
 @export_group("Car")
 
-@export var wheel_base = 6.0
-@export var track = 2.5
+@export var wheel_base = 2.265 
+@export var track = 1.41
 
 @export_group("Suspension")
 
@@ -109,43 +109,40 @@ enum DiffType {
 @export var wheel_mass = 4.6
 @export var rolling_resistance_coeff = 0.011
 
-# Pacejka Simplified Curves + Combined Slip and Aligning Torque
+# Pacejka MF 5.2 Simplified Curves + Combined Slip and Aligning Torque
 
 @export_subgroup("Pacejka Longitudinal")
 
-@export var B1 = 0.18
-@export var C1 = 1.65
-@export var D1 = 1.70
-@export var E1 = -0.50
-@export var H1 = 0.0
-@export var V1 = 0.0
-
+@export var b01  = 1.65
+@export var b111 = -4.2
+@export var b21  = 1150.0
+@export var b41  = 180.0
+@export var b61  = 0.0005
+@export var b71  = -0.01
+@export var b81  = -0.35
 
 @export_subgroup("Pacejka Longitudinal G-Function")
 
-@export var SHxa1 = 0.0
-@export var Bxa1 = 0.18
-@export var Bxa2 = 0.18
-@export var Cxa1 = 1.05
-@export var Exa1 = -0.50
+@export var rBx11 = 12.0
+@export var rBx21 = 10.0
+@export var rCx11 = 1.02
+@export var rEx11 = -0.15
 
 @export_subgroup("Pacejka Lateral")
 
-@export var B2 = 10.5
-@export var C2 = 1.30
-@export var D2 = 1.65
-@export var E2 = -1.20
-@export var H2 = 0.0
-@export var V2 = 0.0
+@export var a01  = 1.75
+@export var a21  = 2100.0
+@export var a31  = 24000.0
+@export var a41  = 3.2
+@export var a61  = -0.08
+@export var a71  = -1.2
 
 @export_subgroup("Pacejka Lateral G-Function")
 
-@export var SHyk1 = 0.0
-@export var Byk1 = 10.5
-@export var Cyk1 = 1.05
-@export var Eyk1 = -0.50
-@export var DVyk1 = 0.05
-@export var SVyk1 = 0.10
+@export var rBy11 = 10.0
+@export var rBy21 = 1.5
+@export var rCy11 = 1.02
+@export var rVy51 = 1.9
 
 # MF 5.2 model
 

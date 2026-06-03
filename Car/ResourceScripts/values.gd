@@ -109,9 +109,17 @@ enum DiffType {
 @export var wheel_mass = 4.6
 @export var rolling_resistance_coeff = 0.011
 
-# Pacejka MF 5.2 Simplified Curves + Combined Slip and Aligning Torque
+enum TireModelType {
+	MF52_Lite,
+	MF52_Full,
+	Pacejka_Simplified # still working on adding this
+}
 
-@export_subgroup("Pacejka Longitudinal")
+@export var TireModel: TireModelType = TireModelType.MF52_Lite
+
+# Pacejka MF 5.2 Lite 
+
+@export_subgroup("MF 5.2 Lite Pacejka Longitudinal")
 
 @export var b01  = 1.65
 @export var b111 = -4.2
@@ -121,14 +129,14 @@ enum DiffType {
 @export var b71  = -0.01
 @export var b81  = -0.35
 
-@export_subgroup("Pacejka Longitudinal G-Function")
+@export_subgroup("MF 5.2 Lite Pacejka Longitudinal G-Function")
 
 @export var rBx11 = 12.0
 @export var rBx21 = 10.0
 @export var rCx11 = 1.02
 @export var rEx11 = -0.15
 
-@export_subgroup("Pacejka Lateral")
+@export_subgroup("MF 5.2 Lite Pacejka Lateral")
 
 @export var a01  = 1.75
 @export var a21  = 2100.0
@@ -137,7 +145,7 @@ enum DiffType {
 @export var a61  = -0.08
 @export var a71  = -1.2
 
-@export_subgroup("Pacejka Lateral G-Function")
+@export_subgroup("MF 5.2 Lite Pacejka Lateral G-Function")
 
 @export var rBy11 = 10.0
 @export var rBy21 = 1.5
@@ -146,7 +154,7 @@ enum DiffType {
 
 # MF 5.2 model
 
-@export_subgroup("Advanced Pacejka Longitudinal")
+@export_subgroup("MF 5.2 Pacejka Longitudinal")
 
 @export var b0 = 1.65
 @export var b1 = -5.0
@@ -163,7 +171,7 @@ enum DiffType {
 @export var b12 = 0.0
 @export var b13 = 0.0
 
-@export_subgroup("Advanced Pacejka Lateral")
+@export_subgroup("MF 5.2 Pacejka Lateral")
 
 @export var a0  = 1.9
 @export var a1  = 0.0
@@ -184,7 +192,7 @@ enum DiffType {
 @export var a16 = 0.0
 @export var a17 = 0.0
 
-@export_subgroup("Advanced Pacejka Aligning Torque")
+@export_subgroup("MF 5.2 Pacejka Aligning Torque")
 
 @export var Ro = 0.282
 @export var FNzo = 2700.0
@@ -204,7 +212,7 @@ enum DiffType {
 @export var Ky2 = 2.0
 @export var Ky3 = 0.25
 
-@export_subgroup("Advanced Pacejka Longitudinal G-Function")
+@export_subgroup("MF 5.2 Pacejka Longitudinal G-Function")
 
 @export var rBx1 = 5.0
 @export var rBx2 = 8.0
@@ -215,7 +223,7 @@ enum DiffType {
 @export var rHx1 = 0.0
 @export var lambda_xalpha = 1.0
 
-@export_subgroup("Advanced Pacejka Lateral G-Function")
+@export_subgroup("MF 5.2 Pacejka Lateral G-Function")
 
 @export var rBy1 = 7.0
 @export var rBy2 = 2.5

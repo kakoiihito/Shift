@@ -25,7 +25,8 @@ var steering := RuntimeData.steering.new()
 var SteeringScript = load("res://Car/Scripts/steering.gd")
 var TransmissionScript = load("res://Car/Scripts/transmission.gd")
 var SuspensionScript = load("res://Car/Scripts/suspension.gd")
-var WheelProcessScript = load("res://Car/Scripts/wheel.gd")
+var MF52_LiteScript = load("res://Car/Scripts/mf52_lite.gd")
+var MF52_FullScript = load("res://Car/Scripts/mf52_full.gd")
 var MotorScript = load("res://Car/Scripts/motor.gd")
 var BrakeScript = load("res://Car/Scripts/brake.gd")
 var InputFeedbackScript = load("res://Car/Scripts/input_feedback.gd")
@@ -34,7 +35,8 @@ var AssistsScript = load("res://Car/Scripts/assists.gd")
 var Steering = SteeringScript.new()
 var Transmission = TransmissionScript.new()
 var Suspension = SuspensionScript.new()
-var WheelProcess = WheelProcessScript.new()
+var MF52_LiteProcess = MF52_LiteScript.new()
+var MF52_FullProcess = MF52_FullScript.new()
 var Motor = MotorScript.new()
 var Brake = BrakeScript.new()
 var InputFeedback = InputFeedbackScript.new()
@@ -69,7 +71,12 @@ func _physics_process(delta: float) -> void:
 		Suspension.suspension_proccess(wheel, suspension, car, VehicleValues) # independent function
 	
 	for wheel in wheels:
-		WheelProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues) # relies on wheel ang and suspension functions
+		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+			MF52_LiteProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full: # relies on wheel ang and suspension functions
+			MF52_FullProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
+			pass # have to add logic
 	
 	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
 
@@ -80,7 +87,13 @@ func _physics_process(delta: float) -> void:
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues) # relies on wheel forces and motor
 	
 	for wheel in wheels:
-		WheelProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+			MF52_LiteProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full: # relies on wheel ang and suspension functions
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
+			pass # have to add logic
+
 
 	
 	

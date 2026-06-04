@@ -19,18 +19,17 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 	
 		# camber calc
 	
-		WheelData.camber[wheel_index]  =(Values.camber_angles[wheel_index]) + (Values.camber_gain[wheel_index] * SuspensionData.compression[wheel_index])
 		
-		# slip angle calc
-		if abs(forward_speed) > 0.0:
+		
+		# slip angle and ratiocalc
+		if abs(forward_speed) < 0.001:
+			WheelData.slip_angle[wheel_index] = 0.0
+			WheelData.slip_ratio[wheel_index] = 0.0
+		else:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
-		
-		if abs(forward_speed) > 0.0:
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
-			slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 
-		var Fz_nominal_kN = (car.mass * 9.81) * Values.weight_distribution[wheel_index] / 1000.0  
-		var dfz = (Fz - Fz_nominal_kN) / Fz_nominal_kN
+		slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 		
 		# pure longitudinal force calc
 
@@ -70,25 +69,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 
 		WheelData.lateral_force[wheel_index] = Fyo * Gyk
 		
-		# aligning torque calc
-		
-		var Kxkappa = BCD
-		
-		var stiffness_ratio_sq = pow(Kxkappa / BCD1, 2)
-		var kappa_sq = pow(slip_ratio_percentage, 2)
-
-		var alpha_t_eq = sqrt(pow(WheelData.slip_angle[wheel_index], 2) + stiffness_ratio_sq * kappa_sq) * sign(WheelData.slip_angle[wheel_index])
-		var alpha_r_eq = sqrt(pow(WheelData.slip_angle[wheel_index], 2) + stiffness_ratio_sq * kappa_sq) * sign(WheelData.slip_angle[wheel_index])
-
-		var s = Values.Ro * (Values.ssz1 + Values.ssz2 * (WheelData.lateral_force[wheel_index] / Fz_nominal_kN) + (Values.ssz3 + Values.ssz4 * dfz) * WheelData.camber[wheel_index]) * Values.lambda_s
-
-		var Mzr = Values.Dr * cos(Values.Cr * atan(Values.Br * alpha_r_eq))
-
-		var trail = Values.Dt * cos(Values.Ct * atan(Values.Bt * alpha_t_eq - Values.Et * (Values.Bt * alpha_t_eq - atan(Values.Bt * alpha_t_eq)))) * cos(WheelData.slip_angle[wheel_index])
-		var Mz_ = -trail * (WheelData.lateral_force[wheel_index])
-
-		WheelData.aligning_torque[wheel_index] = Mz_ + Mzr + s * WheelData.longitude_force[wheel_index]
-
 				
 		# final force calc (aligning torque is applied in steering.gd)
 		

@@ -10,15 +10,15 @@ extends Resource
 
 @export_group("Suspension")
 
-@export var rest_length = [0.32, 0.32, 0.31, 0.31]
+@export var rest_length = [0.282, 0.282, 0.340, 0.340]
 @export var spring_stiffness = [28700, 28700, 17000, 17000]
-@export var max_compression = [0.10, 0.10, 0.09, 0.09]
-@export var weight_distribution = [0.250, 0.250, 0.250, 0.250]
-@export var damper_ratio = [0.35, 0.35, 0.35, 0.35]
+@export var max_compression = [0.11, 0.11, 0.11, 0.11]
+@export var weight_distribution = [0.25, 0.25, 0.25, 0.25]
+@export var damper_ratio = [0.69, 0.69, 0.75, 0.75]
 @export var rear_antiroll_bar = true
 @export var front_antiroll_bar = true
-@export var front_antiroll_bar_stiffness = 1900.0
-@export var rear_antiroll_bar_stiffness = 1100.0
+@export var front_antiroll_bar_stiffness = 8500.0
+@export var rear_antiroll_bar_stiffness = 2500.0
 @export var velocity_exponent = 1.0
 
 @export_group("Steering")
@@ -29,7 +29,7 @@ extends Resource
 @export var tire_turn_speed = 3.5
 @export var steering_stiffness = 720.0
 @export var speed_factor_coeff = 0.035
-@export var ackermann_factor = 0.90
+@export var ackermann_factor = 1.0
 
 @export_group("Brake")
 
@@ -94,19 +94,18 @@ enum DiffType {
 
 @export var gear_ratio = [-3.758, 0.0, 3.163, 1.888, 1.333, 1.000, 0.814]
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 0.85 
-@export var final_drive = 4.300
+@export var drive_train_efficeny = 0.80 
+@export var final_drive = 4.3
 @export var is_shifting = false
-@export var current_gear = 1
-@export var max_clutch_torque = 130.0 
+@export var max_clutch_torque = 160.0 
 @export var unlock_threshold = 7.5
 
 @export_group("Wheel")
 
 @export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
 @export var camber_gain = [-18.0, -18.0, -25.0, -25.0]
-@export var wheel_radius = 0.299
-@export var wheel_mass = 4.6
+@export var wheel_radius = 0.289
+@export var wheel_mass = 8.1
 @export var rolling_resistance_coeff = 0.011
 
 enum TireModelType {
@@ -147,9 +146,9 @@ enum TireModelType {
 
 @export_subgroup("MF 5.2 Lite Pacejka Lateral G-Function")
 
-@export var rBy11 = 10.0
-@export var rBy21 = 1.5
-@export var rCy11 = 1.02
+@export var rBy11 = 7.1
+@export var rBy21 = 9.2
+@export var rCy11 = 1.05
 @export var rVy51 = 1.9
 
 # MF 5.2 model

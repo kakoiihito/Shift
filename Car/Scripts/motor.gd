@@ -3,7 +3,7 @@ extends Node
 var throttle_input: float
 
 func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, Values: Resource) -> void:
-	
+	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	
 	var torque_curve = Values.torque_curve
 
@@ -58,7 +58,9 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		if abs(speed_difference) > Values.unlock_threshold:
 			EngineData.clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
 		else:
-			var required_torque = (Values.engine_inertia * (target_engine_ang_vel - EngineData.engine_angular_velocity)) / delta
+			var reflected_inertia = (wheel_inertia / (drivetrain_ratio * drivetrain_ratio)) * driven_count
+			var combined_inertia = Values.engine_inertia + reflected_inertia
+			var required_torque = (combined_inertia * (target_engine_ang_vel - EngineData.engine_angular_velocity)) / delta
 			
 			if abs(required_torque) <= max_transferable_torque:
 				EngineData.engine_angular_velocity = target_engine_ang_vel
@@ -122,6 +124,8 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 			axle_torque = torque_at_wheels * Values.center_diff_split if axle == front_axle else torque_at_wheels * (1.0 - Values.center_diff_split)
 		else:
 			axle_torque = torque_at_wheels
+		
+		# variable definitions
 		
 		var slip_a = WheelData.slip_ratio[axle[0]]
 		var slip_b = WheelData.slip_ratio[axle[1]]

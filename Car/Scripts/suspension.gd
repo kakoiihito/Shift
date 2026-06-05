@@ -37,7 +37,7 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		# spring force calc
 		
 		var spring_force = Values.spring_stiffness[wheel_index] * Data.compression[wheel_index]
-		var wheel_force_area = hit - car.global_position
+		var wheel_force_area = ray.global_position - car.global_position
 		Data.wheel_spring_force[wheel_index] = (spring_force - spring_dampning + Data.arb_force[wheel_index]) * up_dir_spring
 
 		wheels[wheel_index].position.y = -Data.compression[wheel_index]

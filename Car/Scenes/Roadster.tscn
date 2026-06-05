@@ -287,7 +287,7 @@ transform = Transform3D(-1.2828882, 0, -4.5613118e-07, 0, 0.9702039, 0, 1.937107
 shape = SubResource("ConvexPolygonShape3D_35f3q")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=318420880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.447352, 2.7114758, 6.4190083)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.711, 6.419)
 
 [node name="Info" parent="." unique_id=1292094877 node_paths=PackedStringArray("car") instance=ExtResource("4_35f3q")]
 car = NodePath("..")

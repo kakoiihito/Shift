@@ -130,10 +130,10 @@ enum TireModelType {
 
 @export_subgroup("MF 5.2 Lite Pacejka Longitudinal G-Function")
 
-@export var rBx11 = 12.0
-@export var rBx21 = 10.0
-@export var rCx11 = 1.02
-@export var rEx11 = -0.15
+@export var rBx11 = 13.0
+@export var rBx21 = 0.10  
+@export var rCx11 = 1.02   
+@export var rEx11 = -0.15  
 
 @export_subgroup("MF 5.2 Lite Pacejka Lateral")
 

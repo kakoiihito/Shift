@@ -6,7 +6,7 @@ func _get_point_velocity(point: Vector3, car: RigidBody3D) -> Vector3:
 func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
 
 	var wheel_index = ray.get_meta("wheel_index")
-	var velocity_at_wheel = _get_point_velocity(ray.get_collision_point(), car)
+	var velocity_at_wheel = _get_point_velocity(ray.global_position, car)
 	var side_dir = ray.global_transform.basis.x #
 	var side_velocity = velocity_at_wheel.dot(side_dir)
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
@@ -16,10 +16,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 	
 		
 	if ray.is_colliding():
-	
-		# camber calc
-	
-		
 		
 		# slip angle and ratiocalc
 		if abs(forward_speed) < 0.001:
@@ -28,9 +24,9 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		else:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
-
 		slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
-		
+		# OUTSIDE and AFTER the for loop that iterates rays
+
 		# pure longitudinal force calc
 
 		var C   = Values.b01
@@ -77,7 +73,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		car.apply_force(combined_force , force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, BrakeData: RuntimeData.brake, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
-	var wheel_inertia =  0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
+	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	var wheel_index = ray.get_meta("wheel_index") 
 	
 	# in-air behavior

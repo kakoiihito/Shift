@@ -1,17 +1,14 @@
 extends Node
 
-var throttle_input: float
+
 
 func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, Values: Resource) -> void:
 	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	
 	var torque_curve = Values.torque_curve
-
 	var drivetrain_ratio = TransmissionData.current_gear_ratio * Values.final_drive
-	var target = Input.get_action_strength("Gas")
-	var rate = 4.0 if target > throttle_input else 8.0
-	throttle_input = move_toward(throttle_input, target, rate * delta)
-
+	
+	var throttle_input = Input.get_action_strength("Gas")
 	
 	var clutch_input := Input.get_action_strength("Clutch")
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
@@ -64,7 +61,7 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 			
 			if abs(required_torque) <= max_transferable_torque:
 				EngineData.engine_angular_velocity = target_engine_ang_vel
-				EngineData.clutch_torque_on_engine = -(engine_torque - engine_friction)
+				EngineData.clutch_torque_on_engine = -required_torque
 			else:
 				EngineData.clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
 			
@@ -90,14 +87,13 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		EngineData.engine_stalled = false
 		EngineData.engine_angular_velocity = Values.idle_rpm * TAU / 60.0
 	
-	# Torque division (lsds, open diff)
+	#Torque division (lsds, open diff)
 	
 	var front_axle = [0,1]
 	var rear_axle = [2,3]
 	var driven_axle = []
 	
-	var clutch_torque_to_wheels = -EngineData.clutch_torque_on_engine 
-	var torque_at_wheels = clutch_torque_to_wheels * (drivetrain_ratio) * Values.drive_train_efficeny
+	var torque_at_wheels = engine_torque * (drivetrain_ratio) * Values.drive_train_efficeny
 	
 	# finding axle usage (refuses abnormal configurations, more info in values.gd)
 	
@@ -165,3 +161,4 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		else:
 			EngineData.wheel_engine_torque[axle[0]] = axle_torque / 2.0
 			EngineData.wheel_engine_torque[axle[1]] = axle_torque / 2.0
+			

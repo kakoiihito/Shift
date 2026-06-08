@@ -97,8 +97,8 @@ enum DiffType {
 @export var drive_train_efficeny = 0.80 
 @export var final_drive = 4.3
 @export var is_shifting = false
-@export var max_clutch_torque = 160.0 
-@export var unlock_threshold = 7.5
+@export var max_clutch_torque = 200.0 
+@export var unlock_threshold = 0.5
 
 @export_group("Wheel")
 

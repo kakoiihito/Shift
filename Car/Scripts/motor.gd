@@ -93,7 +93,7 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	var rear_axle = [2,3]
 	var driven_axle = []
 	
-	var torque_at_wheels = engine_torque * (drivetrain_ratio) * Values.drive_train_efficeny
+	var torque_at_wheels = -EngineData.clutch_torque_on_engine * (drivetrain_ratio) * Values.drive_train_efficeny
 	
 	# finding axle usage (refuses abnormal configurations, more info in values.gd)
 	
@@ -161,4 +161,3 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 		else:
 			EngineData.wheel_engine_torque[axle[0]] = axle_torque / 2.0
 			EngineData.wheel_engine_torque[axle[1]] = axle_torque / 2.0
-			

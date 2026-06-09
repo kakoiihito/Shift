@@ -8,7 +8,8 @@
 
   ### Highlights
   
-  > * Pacejka Tire Model (With Load, Camber senitivity, and over 60+ tuning coefficents)
+  > * MF 5.2 Pacejka Tire Model (With Load, Camber senitivity, and over 60+ tuning coefficents)
+>   * MF 5.2 "Lite" Tire Model (Load Sensitivity and a smaller set of tuning coefficents similar to the original 5.2 model)
   > * One Point Raycast Wheels
   > * Rigid Body Car
   > * Curve Based Engine Torque Model

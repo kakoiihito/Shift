@@ -5,20 +5,20 @@ extends Resource
 
 @export_group("Car")
 
-@export var wheel_base = 6.0
-@export var track = 2.5
+@export var wheel_base = 2.265 
+@export var track = 1.41
 
 @export_group("Suspension")
 
-@export var rest_length = [0.32, 0.32, 0.31, 0.31]
+@export var rest_length = [0.282, 0.282, 0.340, 0.340]
 @export var spring_stiffness = [28700, 28700, 17000, 17000]
-@export var max_compression = [0.10, 0.10, 0.09, 0.09]
-@export var weight_distribution = [0.250, 0.250, 0.250, 0.250]
-@export var damper_ratio = [0.35, 0.35, 0.35, 0.35]
+@export var max_compression = [0.11, 0.11, 0.11, 0.11]
+@export var weight_distribution = [0.25, 0.25, 0.25, 0.25]
+@export var damper_ratio = [0.69, 0.69, 0.75, 0.75]
 @export var rear_antiroll_bar = true
 @export var front_antiroll_bar = true
-@export var front_antiroll_bar_stiffness = 1900.0
-@export var rear_antiroll_bar_stiffness = 1100.0
+@export var front_antiroll_bar_stiffness = 8500.0
+@export var rear_antiroll_bar_stiffness = 2500.0
 @export var velocity_exponent = 1.0
 
 @export_group("Steering")
@@ -29,7 +29,7 @@ extends Resource
 @export var tire_turn_speed = 3.5
 @export var steering_stiffness = 720.0
 @export var speed_factor_coeff = 0.035
-@export var ackermann_factor = 0.90
+@export var ackermann_factor = 1.0
 
 @export_group("Brake")
 
@@ -58,12 +58,12 @@ var Stability = false # a thing to work on
 
 @export var max_torque = 135.0
 @export var max_rpm = 7200.0
-@export var idle_rpm = 850.0
-@export var stall_rpm = 500.0
-@export var engine_inertia = 0.11 
-@export var friction_c0 = 6.0
-@export var friction_c1 = 9.0
-@export var friction_c2 = 14.0
+@export var idle_rpm = 800.0
+@export var stall_rpm = 0.0
+@export var engine_inertia = 0.12 
+@export var friction_c0 = 3.0
+@export var friction_c1 = 4.5
+@export var friction_c2 = 8.0
 @export var FL_torque_engine = false
 @export var FR_torque_engine = false
 @export var RL_torque_engine = true
@@ -76,10 +76,14 @@ var Stability = false # a thing to work on
 
 @export_subgroup("Limited Slip Differential")
 
-@export var torsen_lsd = false
-@export var clutch_lsd = false
-@export var electronic_lsd = false
-@export var open_diff = true
+enum DiffType {
+	OPEN,
+	TORSEN_LSD,
+	CLUTCH_LSD,
+	ELECTRONIC_LSD
+}
+
+@export var differential: DiffType = DiffType.OPEN
 @export var minimum_clutch_lsd_force = 100.0
 @export var clutch_lsd_ramp_factor = 1.0
 @export var center_diff_split = 0.5
@@ -88,27 +92,68 @@ var Stability = false # a thing to work on
 
 @export_group("Transmission")
 
-@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
+@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.333, 1.000, 0.814]
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 0.85 
-@export var final_drive = 4.300
+@export var drive_train_efficeny = 0.82
+@export var final_drive = 4.3
 @export var is_shifting = false
-
-@export var current_gear = 1
-@export var max_clutch_torque = 210.0 
-@export var unlock_threshold = 5.0
+@export var max_clutch_torque = 160.0
+@export var unlock_threshold = 1.0
 
 @export_group("Wheel")
 
 @export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
 @export var camber_gain = [-18.0, -18.0, -25.0, -25.0]
-@export var wheel_radius = 0.288
-@export var wheel_mass = 10.5
-@export var rolling_resistance_coeff = 0.013
+@export var wheel_radius = 0.2885
+@export var wheel_mass = 13.4
+@export var rolling_resistance_coeff = 0.0105
+
+enum TireModelType {
+	MF52_Lite,
+	MF52_Full,
+	Pacejka_Simplified # still working on adding this
+}
+
+@export var TireModel: TireModelType = TireModelType.MF52_Lite
+
+# Pacejka MF 5.2 Lite 
+
+@export_subgroup("MF 5.2 Lite Pacejka Longitudinal")
+
+@export var b01  = 1.65
+@export var b111 = -4.2
+@export var b21  = 1150.0
+@export var b41  = 180.0
+@export var b61  = 0.0005
+@export var b71  = -0.01
+@export var b81  = -0.35
+
+@export_subgroup("MF 5.2 Lite Pacejka Longitudinal G-Function")
+
+@export var rBx11 = 13.0
+@export var rBx21 = 0.10  
+@export var rCx11 = 1.02   
+@export var rEx11 = -0.15  
+
+@export_subgroup("MF 5.2 Lite Pacejka Lateral")
+
+@export var a01  = 1.75
+@export var a21  = 2100.0
+@export var a31  = 24000.0
+@export var a41  = 3.2
+@export var a61  = -0.08
+@export var a71  = -1.2
+
+@export_subgroup("MF 5.2 Lite Pacejka Lateral G-Function")
+
+@export var rBy11 = 7.1
+@export var rBy21 = 9.2
+@export var rCy11 = 1.05
+@export var rVy51 = 1.9
 
 # MF 5.2 model
 
-@export_subgroup("Pacejka Longitudinal")
+@export_subgroup("MF 5.2 Pacejka Longitudinal")
 
 @export var b0 = 1.65
 @export var b1 = -5.0
@@ -125,7 +170,7 @@ var Stability = false # a thing to work on
 @export var b12 = 0.0
 @export var b13 = 0.0
 
-@export_subgroup("Pacejka Lateral")
+@export_subgroup("MF 5.2 Pacejka Lateral")
 
 @export var a0  = 1.9
 @export var a1  = 0.0
@@ -146,7 +191,7 @@ var Stability = false # a thing to work on
 @export var a16 = 0.0
 @export var a17 = 0.0
 
-@export_subgroup("Pacejka Aligning Torque")
+@export_subgroup("MF 5.2 Pacejka Aligning Torque")
 
 @export var Ro = 0.282
 @export var FNzo = 2700.0
@@ -166,7 +211,7 @@ var Stability = false # a thing to work on
 @export var Ky2 = 2.0
 @export var Ky3 = 0.25
 
-@export_subgroup("Pacejka Longitudinal G-Function")
+@export_subgroup("MF 5.2 Pacejka Longitudinal G-Function")
 
 @export var rBx1 = 5.0
 @export var rBx2 = 8.0
@@ -177,7 +222,7 @@ var Stability = false # a thing to work on
 @export var rHx1 = 0.0
 @export var lambda_xalpha = 1.0
 
-@export_subgroup("Pacejka Lateral G-Function")
+@export_subgroup("MF 5.2 Pacejka Lateral G-Function")
 
 @export var rBy1 = 7.0
 @export var rBy2 = 2.5

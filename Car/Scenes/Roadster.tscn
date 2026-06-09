@@ -1,6 +1,5 @@
 [gd_scene format=4 uid="uid://c7epypda8yfxx"]
 
-[ext_resource type="Script" uid="uid://c7krkxbhs7rx8" path="res://Car/Scripts/wheel.gd" id="1_03rhi"]
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_jypor"]
 [ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_35f3q"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="4_35f3q"]
@@ -234,7 +233,6 @@ wheels = [NodePath("WheelFrontLeft"), NodePath("WheelFrontRight"), NodePath("Whe
 transform = Transform3D(1.3996929, 0.029319387, 0, -0.029319387, 1.3996929, 0, 0, 0, 1.4, -1.15, 0.65, -2.046)
 target_position = Vector3(0, -0.6, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
-script = ExtResource("1_03rhi")
 
 [node name="FrontLeftWheel" type="Node3D" parent="WheelFrontLeft" unique_id=585656182]
 
@@ -247,7 +245,6 @@ skeleton = NodePath("")
 transform = Transform3D(1.3996929, -0.029319387, 0, 0.029319387, 1.3996929, 0, 0, 0, 1.4, 1.15, 0.65, -2.046)
 target_position = Vector3(0, -0.6, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
-script = ExtResource("1_03rhi")
 
 [node name="FrontRightWheel" type="Node3D" parent="WheelFrontRight" unique_id=346997846]
 
@@ -260,7 +257,6 @@ skeleton = NodePath("")
 transform = Transform3D(1.3993838, 0.041532744, -2.5731366e-20, -0.041532744, 1.3993838, 9.629727e-12, 2.8567787e-13, -9.625488e-12, 1.4, -1.15, 0.6, 2.242)
 target_position = Vector3(0, -0.6, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
-script = ExtResource("1_03rhi")
 
 [node name="RearLeftWheel" type="Node3D" parent="WheelRearLeft" unique_id=460100754]
 
@@ -273,7 +269,6 @@ skeleton = NodePath("")
 transform = Transform3D(1.3993838, -0.041532744, 0, 0.041532744, 1.3993838, 0, 0, 0, 1.4, 1.15, 0.6, 2.242)
 target_position = Vector3(0, -0.6, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
-script = ExtResource("1_03rhi")
 
 [node name="RearRightWheel" type="Node3D" parent="WheelRearRight" unique_id=1779066980]
 
@@ -292,7 +287,7 @@ transform = Transform3D(-1.2828882, 0, -4.5613118e-07, 0, 0.9702039, 0, 1.937107
 shape = SubResource("ConvexPolygonShape3D_35f3q")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=318420880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7114758, 6.4190083)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.711, 6.419)
 
 [node name="Info" parent="." unique_id=1292094877 node_paths=PackedStringArray("car") instance=ExtResource("4_35f3q")]
 car = NodePath("..")

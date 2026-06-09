@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://r7cjmdjnvbxj"]
+
+[ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Roadster.tscn" id="1_cqgw3"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cqgw3"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_oc6gt"]
+sky_material = SubResource("ProceduralSkyMaterial_cqgw3")
+
+[sub_resource type="Environment" id="Environment_mmnld"]
+background_mode = 2
+sky = SubResource("Sky_oc6gt")
+tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oc6gt"]
+size = Vector3(6, 1, 1000)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mmnld"]
+size = Vector3(1, 2, 1000)
+
+[node name="Node3D" type="Node3D" unique_id=1384221489]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=322556538]
+environment = SubResource("Environment_mmnld")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=744458817]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 1.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=232439936]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=67570228]
+shape = SubResource("BoxShape3D_oc6gt")
+
+[node name="Node3D" parent="." unique_id=1502971588 instance=ExtResource("1_cqgw3")]
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="." unique_id=572719680]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2" unique_id=69893142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.596, 0)
+shape = SubResource("BoxShape3D_mmnld")
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="." unique_id=1623984223]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3" unique_id=1362310958]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.596, 0)
+shape = SubResource("BoxShape3D_mmnld")

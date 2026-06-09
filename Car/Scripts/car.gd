@@ -47,14 +47,14 @@ var Assists = AssistsScript.new()
 	##########
 	
 @export var wheels: Array[RayCast3D]
-@onready var fl_wheel = $WheelFrontLeft
-@onready var fr_wheel = $WheelFrontRight
-@onready var rr_wheel = $WheelRearRight
-@onready var rl_wheel = $WheelRearLeft
-@onready var fl_wheel_mesh = $WheelFrontLeft/FrontLeftWheel/wheel_frontLeft
-@onready var fr_wheel_mesh = $WheelFrontRight/FrontRightWheel/wheel_frontRight
-@onready var rr_wheel_mesh = $WheelRearRight/RearRightWheel/wheel_backRight
-@onready var rl_wheel_mesh = $WheelRearLeft/RearLeftWheel/wheel_backLeft
+@onready var fl_wheel = wheels[0]
+@onready var fr_wheel = wheels[1]
+@onready var rr_wheel = wheels[2]
+@onready var rl_wheel = wheels[3]
+@onready var fl_wheel_mesh = fl_wheel.get_child(0)
+@onready var fr_wheel_mesh = fr_wheel.get_child(0)
+@onready var rr_wheel_mesh = rr_wheel.get_child(0)
+@onready var rl_wheel_mesh = rl_wheel.get_child(0)
 
 func _ready() -> void:
 	
@@ -81,7 +81,7 @@ func _physics_process(delta: float) -> void:
 	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
 
 	Motor.motor_process(delta, engine, transmission, wheeldata, VehicleValues) # relies on wheel ang, transmission, and forces functions
-	Brake.brake_process(delta, brake, VehicleValues) #relies on wheel angular velocity function
+	Brake.brake_process(delta, brake, VehicleValues) # independent function
 	
 	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)  # relies on wheel forces and brake
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues) # relies on wheel forces and motor

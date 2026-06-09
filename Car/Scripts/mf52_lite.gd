@@ -6,12 +6,15 @@ func _get_point_velocity(point: Vector3, car: RigidBody3D) -> Vector3:
 func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
 
 	var wheel_index = ray.get_meta("wheel_index")
+	
 	var velocity_at_wheel = _get_point_velocity(ray.global_position, car)
-	var side_dir = ray.global_transform.basis.x #
-	var side_velocity = velocity_at_wheel.dot(side_dir)
+	var side_velocity = velocity_at_wheel.dot(ray.global_transform.basis.x)
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
+	
 	var wheel_surface_speed = WheelData.wheel_angular_velocity[wheel_index] * Values.wheel_radius
+	
 	var Fz = SuspensionData.wheel_spring_force[wheel_index].length() / 1000
+	
 	var slip_ratio_percentage: float
 	
 		
@@ -25,7 +28,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
 		slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
-		# OUTSIDE and AFTER the for loop that iterates rays
 
 		# pure longitudinal force calc
 
@@ -68,7 +70,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 				
 		# final force calc (aligning torque is applied in steering.gd)
 		
-		var combined_force = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z) + (WheelData.lateral_force[wheel_index] * side_dir) # both vectors combined
+		var combined_force = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z) + (WheelData.lateral_force[wheel_index] * ray.global_transform.basis.x) # both vectors combined
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force , force_pos)
 

@@ -59,7 +59,7 @@ var Stability = false # a thing to work on
 @export var max_torque = 135.0
 @export var max_rpm = 7200.0
 @export var idle_rpm = 800.0
-@export var stall_rpm = 600.0
+@export var stall_rpm = 0.0
 @export var engine_inertia = 0.12 
 @export var friction_c0 = 3.0
 @export var friction_c1 = 4.5
@@ -104,9 +104,9 @@ enum DiffType {
 
 @export var camber_angles = [-1.2, -1.2, -1.7, -1.7]
 @export var camber_gain = [-18.0, -18.0, -25.0, -25.0]
-@export var wheel_radius = 0.2888
-@export var wheel_mass = 8.1
-@export var rolling_resistance_coeff = 0.011
+@export var wheel_radius = 0.2885
+@export var wheel_mass = 13.4
+@export var rolling_resistance_coeff = 0.0105
 
 enum TireModelType {
 	MF52_Lite,

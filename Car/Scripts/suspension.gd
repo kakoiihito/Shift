@@ -12,7 +12,7 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		Data.compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, 0.0, Values.max_compression[wheel_index]) 
+		Data.compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, -Values.max_compression[wheel_index], Values.max_compression[wheel_index]) 
 			
 		# anti roll bar calc
 		if Values.front_antiroll_bar:

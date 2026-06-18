@@ -16,7 +16,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 	var Fz = SuspensionData.wheel_spring_force[wheel_index].length() / 1000
 	
 	var slip_ratio_percentage: float
-	
 		
 	if ray.is_colliding():
 		

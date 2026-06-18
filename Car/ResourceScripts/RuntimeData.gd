@@ -16,6 +16,7 @@ class brake:
 
 class engine:
 	var wheel_engine_torque = [0.0, 0.0, 0.0, 0.0]
+	var engine_torque: float
 	var engine_rpm: float
 	var engine_angular_velocity: float
 	var clutch_torque_on_engine: float

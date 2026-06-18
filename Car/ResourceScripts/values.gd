@@ -84,6 +84,7 @@ enum DiffType {
 }
 
 @export var differential: DiffType = DiffType.OPEN
+
 @export var minimum_clutch_lsd_force = 100.0
 @export var clutch_lsd_ramp_factor = 1.0
 @export var center_diff_split = 0.5

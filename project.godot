@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Shift.2"
 run/main_scene="uid://dpu35v4g0f3s4"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [input]
@@ -72,13 +72,12 @@ Ignition={
 
 [physics]
 
-common/physics_ticks_per_second=400
+common/physics_ticks_per_second=333
 3d/physics_engine="Jolt Physics"
 3d/default_gravity=9.810000000000002
 
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/canvas_textures/default_texture_filter=1

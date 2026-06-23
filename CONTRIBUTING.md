@@ -12,7 +12,7 @@
 # Ways To Contribute
 
 > There are many ways to contribute to the Shift Project. Contributers like you can make tutorials, improve the
-> documentation, find bugs, report them, and sumbit feature requests or code which could be added.
+> documentation, find bugs, report them, and submit feature requests or code which could be added.
 
 # Issues Tab
 
@@ -52,6 +52,7 @@
 > * What did you do?
 > * What did you expect?
 > * What resulted due to what you did?
+> * Please provide a small example project of the bug.
 
 # Feature Requests
 

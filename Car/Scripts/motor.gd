@@ -66,9 +66,11 @@ func engine_torque_calc(EngineData: RuntimeData.engine, Values: Resource):
 	var normalized_rpm = EngineData.engine_rpm / Values.max_rpm
 
 	EngineData.engine_torque = Values.torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
+	
 	return Values.torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 
 func engine_friction_calc(EngineData: RuntimeData.engine, Values: Resource):
+	
 	
 	var normalized_rpm = EngineData.engine_rpm / Values.max_rpm
 	var base_friction = Values.friction_c0                      
@@ -94,27 +96,26 @@ func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: R
 		var max_transferable_torque = Values.max_clutch_torque * clutch_engagement
 					
 		if abs(speed_difference) > Values.unlock_threshold:
-			EngineData.clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
-			return -sign(speed_difference) * max_transferable_torque
+			EngineData.clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque
 		else:
 			var reflected_inertia = (wheel_inertia / (drivetrain_ratio * drivetrain_ratio)) * EngineData.engine_driven_count
 			var combined_inertia = Values.engine_inertia + reflected_inertia
 			var required_torque = (combined_inertia * (target_engine_ang_vel - EngineData.engine_angular_velocity)) / delta
 			
 			if abs(required_torque) <= max_transferable_torque:
-				EngineData.engine_angular_velocity = target_engine_ang_vel
-				EngineData.clutch_torque_on_engine = -required_torque
-				return -required_torque
+				EngineData.clutch_torque_on_engine = required_torque
+
 			else:
-				EngineData.clutch_torque_on_engine = -sign(speed_difference) * max_transferable_torque
-				return -sign(speed_difference) * max_transferable_torque
+				EngineData.clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque
+
 				
 
 func engine_rpm_calc(EngineData: RuntimeData.engine, Values: Resource, delta: float):
 	
-	var engine_friction = engine_friction_calc(EngineData, Values)
+	var throttle := Input.get_action_strength("Throttle")
+	var friction = engine_friction_calc(EngineData, Values)
 	
-	var net_engine_torque = EngineData.engine_torque - engine_friction + EngineData.clutch_torque_on_engine
+	var net_engine_torque = EngineData.engine_torque - (friction * (1.0 - throttle)) - EngineData.clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / Values.engine_inertia
 	EngineData.engine_angular_velocity += engine_angular_accel * delta
 	EngineData.engine_angular_velocity = clamp(EngineData.engine_angular_velocity, Values.stall_rpm * TAU / 60.0, Values.max_rpm * TAU / 60.0)
@@ -146,7 +147,7 @@ func wheel_torque_divison(TransmissionData: RuntimeData.transmission, EngineData
 	var rear_axle = [2,3]
 	var driven_axle = []
 	
-	var torque_at_wheels = -EngineData.clutch_torque_on_engine * (drivetrain_ratio) * Values.drive_train_efficeny
+	var torque_at_wheels = EngineData.clutch_torque_on_engine * (drivetrain_ratio) * Values.drive_train_efficeny
 	
 	# finding axle usage (refuses abnormal configurations, more info in values.gd)
 	
@@ -194,9 +195,9 @@ func wheel_torque_divison(TransmissionData: RuntimeData.transmission, EngineData
 				T_low  = axle_torque * (1.0 / (Values.TBR + 1.0))
 		elif Values.differential == Values.DiffType.CLUTCH_LSD:
 			T_lock = Values.minimum_clutch_lsd_force + (axle_torque * Values.clutch_lsd_ramp_factor)
-			T_lock = min(T_lock, axle_torque / 2.0) 
+			T_lock = min(T_lock, axle_torque / 2.0)
 			T_high = (axle_torque / 2.0) + T_lock
-			T_low  = (axle_torque / 2.0) - T_lock
+			T_low  = max((axle_torque / 2.0) - T_lock, 0.0)
 		elif Values.differential == Values.DiffType.ELECTRONIC_LSD:
 			pass # will write logic
 		elif Values.differential == Values.DiffType.OPEN:

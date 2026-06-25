@@ -6,4 +6,5 @@
 [resource]
 script = ExtResource("1_whfmr")
 torque_curve = ExtResource("2_tsmdu")
+TBR = 2.5
 metadata/_custom_type_script = "uid://rj0v3jri7dxo"

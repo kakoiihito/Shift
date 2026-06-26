@@ -25,8 +25,9 @@ var steering := RuntimeData.steering.new()
 var SteeringScript = load("res://Car/Scripts/steering.gd")
 var TransmissionScript = load("res://Car/Scripts/transmission.gd")
 var SuspensionScript = load("res://Car/Scripts/suspension.gd")
-var MF52_LiteScript = load("res://Car/Scripts/mf52_lite.gd")
-var MF52_FullScript = load("res://Car/Scripts/mf52_full.gd")
+var MF52_LiteScript = load("res://Car/Scripts/TireModels/mf52_lite.gd")
+var MF52_FullScript = load("res://Car/Scripts/TireModels/mf52_full.gd")
+var BrushModel_Script = load("res://Car/Scripts/TireModels/brushtire.gd")
 var MotorScript = load("res://Car/Scripts/motor.gd")
 var BrakeScript = load("res://Car/Scripts/brake.gd")
 var InputFeedbackScript = load("res://Car/Scripts/input_feedback.gd")
@@ -37,6 +38,7 @@ var Transmission = TransmissionScript.new()
 var Suspension = SuspensionScript.new()
 var MF52_LiteProcess = MF52_LiteScript.new()
 var MF52_FullProcess = MF52_FullScript.new()
+var BrushModel_Process = BrushModel_Script.new()
 var Motor = MotorScript.new()
 var Brake = BrakeScript.new()
 var InputFeedback = InputFeedbackScript.new()
@@ -77,6 +79,8 @@ func _physics_process(delta: float) -> void:
 			MF52_FullProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
 			pass # have to add logic
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
+			BrushModel_Process._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
 	
 	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
 
@@ -93,6 +97,8 @@ func _physics_process(delta: float) -> void:
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
 			pass # have to add logic
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
 
 
 	

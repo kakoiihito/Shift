@@ -122,8 +122,8 @@ enum TireModelType {
 
 @export_subgroup("Brush Model")
 
-@export var brush_Csx: float = 650000.0
-@export var brush_Csy: float = 50000.0
+@export var brush_Csx: float = 750000.0
+@export var brush_Csy: float = 32500.0
 @export var brush_mu: float = 0.78
 
 # Pacejka MF 5.2 Lite 

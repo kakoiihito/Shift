@@ -78,6 +78,7 @@ func engine_friction_calc(EngineData: RuntimeData.engine, Values: Resource):
 	var quadratic_friction = Values.friction_c2 * normalized_rpm * normalized_rpm
 	return base_friction + linear_friction + quadratic_friction
 	
+	
 func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, Values: Resource, delta: float):
 	
 	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)

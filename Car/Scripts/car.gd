@@ -58,12 +58,18 @@ var Assists = AssistsScript.new()
 @onready var rr_wheel_mesh = rr_wheel.get_child(0)
 @onready var rl_wheel_mesh = rl_wheel.get_child(0)
 
+var DEBUG: bool = true
+@export var Debug_Node: Node3D
+
 func _ready() -> void:
 	
 	var Wheels = [fl_wheel, fr_wheel, rl_wheel, rr_wheel]
 		
 	for i in range(Wheels.size()):
 		Wheels[i].set_meta("wheel_index", i) # wheel identification
+	
+
+
 	
 func _physics_process(delta: float) -> void:
 
@@ -100,6 +106,11 @@ func _physics_process(delta: float) -> void:
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
 
+	if DEBUG == true:
+		var SuspensionNode = Debug_Node.get_node("Suspension")
+		var SuspensionDebugForces = SuspensionNode.get_children()
+		for i in range(SuspensionDebugForces.size()):
+			SuspensionDebugForces[i].force_path = suspension.wheel_spring_force[i]
 
 	
 	

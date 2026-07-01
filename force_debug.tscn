@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://ck5sbds2kl6r7"]
+
+[ext_resource type="Script" uid="uid://b5md0iuechj3u" path="res://force_debug.gd" id="1_3y0l6"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cli56"]
+top_radius = 0.05
+bottom_radius = 0.05
+
+[node name="ForceDebug" type="Node3D" unique_id=1011455846]
+script = ExtResource("1_3y0l6")
+
+[node name="Center" type="Node3D" parent="." unique_id=434713126]
+
+[node name="Arrow" type="MeshInstance3D" parent="Center" unique_id=378277412]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CylinderMesh_cli56")
+skeleton = NodePath("../..")

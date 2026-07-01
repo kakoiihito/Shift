@@ -32,6 +32,8 @@ class transmission:
 class wheels:
 	var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0]
 	var F_max = [0.0, 0.0, 0.0, 0.0]
+	var longitude_force_vector = [Vector3(), Vector3(), Vector3(), Vector3()]
+	var lateral_force_vector = [Vector3(), Vector3(), Vector3(), Vector3()]
 	var longitude_force = [0.0, 0.0, 0.0, 0.0]
 	var lateral_force = [0.0, 0.0, 0.0, 0.0]
 	var slip_ratio = [0.0, 0.0, 0.0, 0.0]

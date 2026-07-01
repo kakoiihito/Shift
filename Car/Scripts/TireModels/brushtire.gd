@@ -50,7 +50,10 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 			WheelData.longitude_force[wheel_index] = 0.0
 			WheelData.lateral_force[wheel_index]   = 0.0
 
-		var combined_force = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z) + (WheelData.lateral_force[wheel_index]  *  ray.global_transform.basis.x)
+		WheelData.longitude_force_vector[wheel_index] = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z)
+		WheelData.lateral_force_vector[wheel_index] = (WheelData.lateral_force[wheel_index]  *  ray.global_transform.basis.x)
+		
+		var combined_force = WheelData.longitude_force_vector[wheel_index] + WheelData.lateral_force_vector[wheel_index]
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force, force_pos)
 

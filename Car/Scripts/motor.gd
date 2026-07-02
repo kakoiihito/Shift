@@ -113,7 +113,7 @@ func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: R
 
 func engine_rpm_calc(EngineData: RuntimeData.engine, Values: Resource, delta: float):
 	
-	var throttle := Input.get_action_strength("Throttle")
+	var throttle = Input.get_action_strength("Gas")
 	var friction = engine_friction_calc(EngineData, Values)
 	
 	var net_engine_torque = EngineData.engine_torque - (friction * (1.0 - throttle)) - EngineData.clutch_torque_on_engine

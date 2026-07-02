@@ -107,10 +107,18 @@ func _physics_process(delta: float) -> void:
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
 
 	if DEBUG == true:
-		var SuspensionNode = Debug_Node.get_node("Suspension")
-		var SuspensionDebugForces = SuspensionNode.get_children()
-		for i in range(SuspensionDebugForces.size()):
-			SuspensionDebugForces[i].force_path = suspension.wheel_spring_force[i]
+		var Debug_Suspension = [$WheelRearRight/RearRightWheel/Suspension/ForceDebug,
+								$WheelRearLeft/RearLeftWheel/Suspension/ForceDebug,
+								$WheelFrontRight/FrontRightWheel/Suspension/ForceDebug,
+								$WheelFrontLeft/FrontLeftWheel/Suspension/ForceDebug]
+		var Debug_Longtiude = [$WheelRearRight/RearRightWheel/Suspension/ForceDebug,
+								$WheelRearLeft/RearLeftWheel/Suspension/ForceDebug,
+								$WheelFrontRight/FrontRightWheel/Suspension/ForceDebug,
+								$WheelFrontLeft/FrontLeftWheel/Suspension/ForceDebug]
+		for i in range(Debug_Suspension.size()):
+			Debug_Suspension[i].force_path = suspension.wheel_spring_force[i]
+
+
 
 	
 	

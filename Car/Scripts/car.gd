@@ -49,17 +49,35 @@ var Assists = AssistsScript.new()
 	##########
 	
 @export var wheels: Array[RayCast3D]
+
 @onready var fl_wheel = wheels[0]
 @onready var fr_wheel = wheels[1]
 @onready var rr_wheel = wheels[2]
 @onready var rl_wheel = wheels[3]
+
 @onready var fl_wheel_mesh = fl_wheel.get_child(0)
 @onready var fr_wheel_mesh = fr_wheel.get_child(0)
 @onready var rr_wheel_mesh = rr_wheel.get_child(0)
 @onready var rl_wheel_mesh = rl_wheel.get_child(0)
 
+	#########
+	# DEBUG #
+	#########
+
 var DEBUG: bool = true
-@export var Debug_Node: Node3D
+
+@onready var Debug_Suspension = [rr_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  rl_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  fr_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  fl_wheel_mesh.get_node("Suspension/ForceDebug")]
+@onready var Debug_Longtiude = [rr_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 rl_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 fr_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 fl_wheel_mesh.get_node("Longitude/ForceDebug")]
+@onready var Debug_Lateral = [rr_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   rl_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   fr_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   fl_wheel_mesh.get_node("Lateral/ForceDebug")]
 
 func _ready() -> void:
 	
@@ -105,20 +123,18 @@ func _physics_process(delta: float) -> void:
 			pass # have to add logic
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+	
+	Debug_Arrows()
 
+
+func Debug_Arrows():
 	if DEBUG == true:
-		var Debug_Suspension = [$WheelRearRight/RearRightWheel/Suspension/ForceDebug,
-								$WheelRearLeft/RearLeftWheel/Suspension/ForceDebug,
-								$WheelFrontRight/FrontRightWheel/Suspension/ForceDebug,
-								$WheelFrontLeft/FrontLeftWheel/Suspension/ForceDebug]
-		var Debug_Longtiude = [$WheelRearRight/RearRightWheel/Suspension/ForceDebug,
-								$WheelRearLeft/RearLeftWheel/Suspension/ForceDebug,
-								$WheelFrontRight/FrontRightWheel/Suspension/ForceDebug,
-								$WheelFrontLeft/FrontLeftWheel/Suspension/ForceDebug]
+
 		for i in range(Debug_Suspension.size()):
 			Debug_Suspension[i].force_path = suspension.wheel_spring_force[i]
-
-
-
+		for i in range(Debug_Longtiude.size()):
+			Debug_Longtiude[i].force_path = wheeldata.longitude_force_vector[i]
+		for i in range(Debug_Lateral.size()):
+			Debug_Lateral[i].force_path = wheeldata.lateral_force_vector[i]
 	
 	

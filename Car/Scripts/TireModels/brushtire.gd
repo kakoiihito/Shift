@@ -49,7 +49,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		else:
 			WheelData.longitude_force[wheel_index] = 0.0
 			WheelData.lateral_force[wheel_index]   = 0.0
-
+		
 		WheelData.longitude_force_vector[wheel_index] = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z)
 		WheelData.lateral_force_vector[wheel_index] = (WheelData.lateral_force[wheel_index]  *  ray.global_transform.basis.x)
 		

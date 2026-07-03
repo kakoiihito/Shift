@@ -1,81 +1,64 @@
 extends RayCast3D
 
+
+
+
 func _get_point_velocity(point: Vector3, car: RigidBody3D) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)
-	
-func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
 
+func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
 	var wheel_index = ray.get_meta("wheel_index")
-	
+
 	var velocity_at_wheel = _get_point_velocity(ray.global_position, car)
 	var side_velocity = velocity_at_wheel.dot(ray.global_transform.basis.x)
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
-	
+
 	var wheel_surface_speed = WheelData.wheel_angular_velocity[wheel_index] * Values.wheel_radius
-	
-	var Fz = SuspensionData.wheel_spring_force[wheel_index].length() / 1000
-	
-	var slip_ratio_percentage: float
-	
-		
+
+	var Fz = SuspensionData.wheel_spring_force[wheel_index].length()
+
 	if ray.is_colliding():
-		
-		# slip angle and ratiocalc
+
 		if abs(forward_speed) < 0.001:
 			WheelData.slip_angle[wheel_index] = 0.0
 			WheelData.slip_ratio[wheel_index] = 0.0
 		else:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
-		slip_ratio_percentage = clamp(WheelData.slip_ratio[wheel_index] * 100.0, -100.0, 100.0)
 
-		# pure longitudinal force calc
+		var mu_Fz = Values.brush_mu * Fz
 
-		var C   = Values.b01
-		var D   = Fz * (Values.b111 * Fz + Values.b21)
-		var BCD = Values.b41 * Fz
-		var B   = BCD / (C * D)
-		var E   = Values.b61 * pow(Fz, 2) + Values.b71 * Fz + Values.b81
-		var Bx1 = B * slip_ratio_percentage
-		var Fxo = D * sin(C * atan(Bx1 - E * (Bx1 - atan(Bx1))))
+
+		var sx = Values.brush_Csx * WheelData.slip_ratio[wheel_index]
+		var sy = Values.brush_Csy * tan(WheelData.slip_angle[wheel_index])
+
+		var s_combined = sqrt(sx * sx + sy * sy)
+
+		var theta = s_combined / (3.0 * mu_Fz) if mu_Fz > 0.001 else 0.0
+
+
+		var F_total: float
+		if theta <= 1.0:
+			F_total = mu_Fz * (3.0 * theta - 3.0 * theta * theta + theta * theta * theta)
+		else:
+			F_total = mu_Fz
+
+		if s_combined > 0.0001:
+			WheelData.longitude_force[wheel_index] = F_total * (sx / s_combined)
+			WheelData.lateral_force[wheel_index]   = F_total * (sy / s_combined)
+		else:
+			WheelData.longitude_force[wheel_index] = 0.0
+			WheelData.lateral_force[wheel_index]   = 0.0
 		
-		# combined slip longitudinal force calc
+		WheelData.longitude_force_vector[wheel_index] = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z)
+		WheelData.lateral_force_vector[wheel_index] = (WheelData.lateral_force[wheel_index]  *  ray.global_transform.basis.x)
 		
-		var alpha_s = WheelData.slip_angle[wheel_index]
-		var Bxa = Values.rBx11 * cos(atan(Values.rBx2 * slip_ratio_percentage)) * Values.lambda_xalpha
-		var Cxa = Values.rCx11
-		var Exa = Values.rEx11
-
-		var Gxa = cos(Cxa * atan(Bxa * alpha_s - Exa * (Bxa * alpha_s - atan(Bxa * alpha_s))))
-
-		WheelData.longitude_force[wheel_index] = Gxa * Fxo
-		
-		# pure lateral force calc
-
-		var D1   = Values.a21 * Fz
-		var BCD1 = Values.a31 * sin(2.0 * atan(Fz / Values.a41))
-		var B1   = BCD1 / (Values.a01 * D1)
-		var E1   = Values.a61 * Fz + Values.a71
-		var Bx2  = B1 * WheelData.slip_angle[wheel_index]
-		var Fyo  = D1 * sin(Values.a01 * atan(Bx2 - E1 * (Bx2 - atan(Bx2))))
-
-		# combined slip lateral force calc
-
-		var kappa_s = WheelData.slip_ratio[wheel_index]
-		var Byk = Values.rBy11 * cos(atan(WheelData.slip_angle[wheel_index] - Values.rBy21))
-		var Gyk = cos(Values.rCy11 * atan(Byk * kappa_s))
-
-		WheelData.lateral_force[wheel_index] = Fyo * Gyk
-		
-				
-		# final force calc (aligning torque is applied in steering.gd)
-		
-		var combined_force = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z) + (WheelData.lateral_force[wheel_index] * ray.global_transform.basis.x) # both vectors combined
+		var combined_force = WheelData.longitude_force_vector[wheel_index] + WheelData.lateral_force_vector[wheel_index]
 		var force_pos = ray.get_collision_point() - car.global_position
-		car.apply_force(combined_force , force_pos)
+		car.apply_force(combined_force, force_pos)
 
 func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, BrakeData: RuntimeData.brake, SuspensionData: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
-	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
+	var wheel_inertia =  0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	var wheel_index = ray.get_meta("wheel_index") 
 	
 	# in-air behavior

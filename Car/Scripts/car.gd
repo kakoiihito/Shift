@@ -25,8 +25,9 @@ var steering := RuntimeData.steering.new()
 var SteeringScript = load("res://Car/Scripts/steering.gd")
 var TransmissionScript = load("res://Car/Scripts/transmission.gd")
 var SuspensionScript = load("res://Car/Scripts/suspension.gd")
-var MF52_LiteScript = load("res://Car/Scripts/mf52_lite.gd")
-var MF52_FullScript = load("res://Car/Scripts/mf52_full.gd")
+var MF52_LiteScript = load("res://Car/Scripts/TireModels/mf52_lite.gd")
+var MF52_FullScript = load("res://Car/Scripts/TireModels/mf52_full.gd")
+var BrushModel_Script = load("res://Car/Scripts/TireModels/brushtire.gd")
 var MotorScript = load("res://Car/Scripts/motor.gd")
 var BrakeScript = load("res://Car/Scripts/brake.gd")
 var InputFeedbackScript = load("res://Car/Scripts/input_feedback.gd")
@@ -37,6 +38,7 @@ var Transmission = TransmissionScript.new()
 var Suspension = SuspensionScript.new()
 var MF52_LiteProcess = MF52_LiteScript.new()
 var MF52_FullProcess = MF52_FullScript.new()
+var BrushModel_Process = BrushModel_Script.new()
 var Motor = MotorScript.new()
 var Brake = BrakeScript.new()
 var InputFeedback = InputFeedbackScript.new()
@@ -47,14 +49,35 @@ var Assists = AssistsScript.new()
 	##########
 	
 @export var wheels: Array[RayCast3D]
+
 @onready var fl_wheel = wheels[0]
 @onready var fr_wheel = wheels[1]
 @onready var rr_wheel = wheels[2]
 @onready var rl_wheel = wheels[3]
+
 @onready var fl_wheel_mesh = fl_wheel.get_child(0)
 @onready var fr_wheel_mesh = fr_wheel.get_child(0)
 @onready var rr_wheel_mesh = rr_wheel.get_child(0)
 @onready var rl_wheel_mesh = rl_wheel.get_child(0)
+
+	#########
+	# DEBUG #
+	#########
+
+var DEBUG: bool = true
+
+@onready var Debug_Suspension = [rr_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  rl_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  fr_wheel_mesh.get_node("Suspension/ForceDebug"),
+								  fl_wheel_mesh.get_node("Suspension/ForceDebug")]
+@onready var Debug_Longtiude = [rr_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 rl_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 fr_wheel_mesh.get_node("Longitude/ForceDebug"),
+								 fl_wheel_mesh.get_node("Longitude/ForceDebug")]
+@onready var Debug_Lateral = [rr_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   rl_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   fr_wheel_mesh.get_node("Lateral/ForceDebug"),
+							   fl_wheel_mesh.get_node("Lateral/ForceDebug")]
 
 func _ready() -> void:
 	
@@ -62,6 +85,9 @@ func _ready() -> void:
 		
 	for i in range(Wheels.size()):
 		Wheels[i].set_meta("wheel_index", i) # wheel identification
+	
+
+
 	
 func _physics_process(delta: float) -> void:
 
@@ -77,6 +103,8 @@ func _physics_process(delta: float) -> void:
 			MF52_FullProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
 			pass # have to add logic
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
+			BrushModel_Process._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
 	
 	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
 
@@ -93,7 +121,20 @@ func _physics_process(delta: float) -> void:
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
 			pass # have to add logic
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
+	
+	Debug_Arrows()
 
 
+func Debug_Arrows():
+	if DEBUG == true:
+
+		for i in range(Debug_Suspension.size()):
+			Debug_Suspension[i].force_path = suspension.wheel_spring_force[i]
+		for i in range(Debug_Longtiude.size()):
+			Debug_Longtiude[i].force_path = wheeldata.longitude_force_vector[i]
+		for i in range(Debug_Lateral.size()):
+			Debug_Lateral[i].force_path = wheeldata.lateral_force_vector[i]
 	
 	

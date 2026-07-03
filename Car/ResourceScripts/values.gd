@@ -57,7 +57,7 @@ var Stability = false # a thing to work on
 @export_group("Motor")
 
 @export var max_torque = 135.0
-@export var max_rpm = 7200.0
+@export var max_rpm = 7000.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
 @export var engine_inertia = 0.12 
@@ -84,6 +84,7 @@ enum DiffType {
 }
 
 @export var differential: DiffType = DiffType.OPEN
+
 @export var minimum_clutch_lsd_force = 100.0
 @export var clutch_lsd_ramp_factor = 1.0
 @export var center_diff_split = 0.5
@@ -111,10 +112,19 @@ enum DiffType {
 enum TireModelType {
 	MF52_Lite,
 	MF52_Full,
-	Pacejka_Simplified # still working on adding this
+	Pacejka_Simplified, # still working on adding this
+	Brush_Model
 }
 
-@export var TireModel: TireModelType = TireModelType.MF52_Lite
+@export var TireModel: TireModelType = TireModelType.Brush_Model
+
+# Brush Model
+
+@export_subgroup("Brush Model")
+
+@export var brush_Csx: float = 750000.0
+@export var brush_Csy: float = 32500.0
+@export var brush_mu: float = 0.78
 
 # Pacejka MF 5.2 Lite 
 

@@ -2,7 +2,9 @@
 
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_jypor"]
 [ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_35f3q"]
+[ext_resource type="Script" uid="uid://dsq8xo3qb2hnk" path="res://Car/Scenes/camera.gd" id="3_uhfiu"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="4_35f3q"]
+[ext_resource type="PackedScene" uid="uid://ck5sbds2kl6r7" path="res://force_debug.tscn" id="4_uhfiu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -241,6 +243,24 @@ transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, -1, 0.19880885, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
+[node name="Suspension" type="Node3D" parent="WheelFrontLeft/FrontLeftWheel" unique_id=1158535242]
+
+[node name="ForceDebug" parent="WheelFrontLeft/FrontLeftWheel/Suspension" unique_id=1011455846 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, -1.8626451e-09, 0, 1.8626451e-09, 1, 0, 0, 0, 1, -1.2958968, -0.027145177, 0)
+car = NodePath("../../../..")
+
+[node name="Longitude" type="Node3D" parent="WheelFrontLeft/FrontLeftWheel" unique_id=645910604]
+
+[node name="ForceDebug" parent="WheelFrontLeft/FrontLeftWheel/Longitude" unique_id=838236671 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, -1.8626451e-09, 0, 1.8626451e-09, 1, 0, 0, 0, 1, -1.2807047, -0.026826948, 0)
+car = NodePath("../../../..")
+
+[node name="Lateral" type="Node3D" parent="WheelFrontLeft/FrontLeftWheel" unique_id=1903281582]
+
+[node name="ForceDebug" parent="WheelFrontLeft/FrontLeftWheel/Lateral" unique_id=1042736044 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2807047, -0.026826948, 0)
+car = NodePath("../../../..")
+
 [node name="WheelFrontRight" type="RayCast3D" parent="." unique_id=1038542688]
 transform = Transform3D(1.3996929, -0.029319387, 0, 0.029319387, 1.3996929, 0, 0, 0, 1.4, 1.15, 0.65, -2.046)
 target_position = Vector3(0, -0.6, 0)
@@ -252,6 +272,25 @@ debug_shape_custom_color = Color(0, 0, 1, 1)
 transform = Transform3D(1, 4.5027093e-10, -1.1641532e-10, -4.5027093e-10, 1, 1.6442283e-19, 1.1641532e-10, -1.1200439e-19, 1, -0.19880891, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
+
+[node name="Suspension" type="Node3D" parent="WheelFrontRight/FrontRightWheel" unique_id=1317694767]
+
+[node name="ForceDebug" parent="WheelFrontRight/FrontRightWheel/Suspension" unique_id=1859201703 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 1.8626451e-09, 0, -1.8626451e-09, 1, 0, 0, 0, 1, 1.296, -0.02000001, 0)
+car = NodePath("../../../..")
+
+[node name="Longitude" type="Node3D" parent="WheelFrontRight/FrontRightWheel" unique_id=748457593]
+transform = Transform3D(1.0000001, 0, 2.3283064e-10, 1.8626451e-09, 1, 7.275961e-12, -2.3283064e-10, -7.2759585e-12, 1.0000001, -0.2016874, -2.9802322e-08, 2.3841858e-07)
+
+[node name="ForceDebug" parent="WheelFrontRight/FrontRightWheel/Longitude" unique_id=1078790861 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 1.8626451e-09, 0, 1.6940667e-21, 1.0000001, 0, 1.3877788e-17, -4.3368087e-19, 1, 1.5176085, -0.031789392, 0)
+car = NodePath("../../../..")
+
+[node name="Lateral" type="Node3D" parent="WheelFrontRight/FrontRightWheel" unique_id=454016166]
+
+[node name="ForceDebug" parent="WheelFrontRight/FrontRightWheel/Lateral" unique_id=1702297796 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 1.8626451e-09, 0, -1.8626451e-09, 1, 0, 0, 0, 1, 1.3031256, -0.027296662, 0)
+car = NodePath("../../../..")
 
 [node name="WheelRearLeft" type="RayCast3D" parent="." unique_id=2031816737]
 transform = Transform3D(1.3993838, 0.041532744, -2.5731366e-20, -0.041532744, 1.3993838, 9.629727e-12, 2.8567787e-13, -9.625488e-12, 1.4, -1.15, 0.6, 2.242)
@@ -265,6 +304,25 @@ transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, -1, 0.19880885, 0, 0)
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
+[node name="Suspension" type="Node3D" parent="WheelRearLeft/RearLeftWheel" unique_id=1667297961]
+
+[node name="ForceDebug" parent="WheelRearLeft/RearLeftWheel/Suspension" unique_id=734841718 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 5.5879354e-09, 0, -5.5879354e-09, 1, 8.6736174e-19, 6.7762636e-20, -1.3010426e-18, 1, -0.66869766, -0.01984647, 0)
+car = NodePath("../../../..")
+
+[node name="Longitude" type="Node3D" parent="WheelRearLeft/RearLeftWheel" unique_id=300825941]
+transform = Transform3D(1.0000001, -1.8626451e-09, 2.3283064e-10, 1.8626451e-09, 1, 7.275961e-12, -2.3283064e-10, -7.2759585e-12, 1.0000001, -0.20168746, -2.9802322e-08, 2.3841858e-07)
+
+[node name="ForceDebug" parent="WheelRearLeft/RearLeftWheel/Longitude" unique_id=1007872782 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(0.99999994, 3.2919698e-21, -1.3877788e-17, 3.2919708e-21, 0.99999994, -8.6736174e-19, 1.3877788e-17, 8.6736174e-19, 1, -0.47425926, -0.0140756965, 0)
+car = NodePath("../../../..")
+
+[node name="Lateral" type="Node3D" parent="WheelRearLeft/RearLeftWheel" unique_id=1464026101]
+
+[node name="ForceDebug" parent="WheelRearLeft/RearLeftWheel/Lateral" unique_id=510024762 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, 1.8626451e-09, 0, -1.8626451e-09, 1, 4.3368087e-19, 4.065758e-20, -8.6736174e-19, 1, -0.7153078, -0.021229833, 0)
+car = NodePath("../../../..")
+
 [node name="WheelRearRight" type="RayCast3D" parent="." unique_id=305259289]
 transform = Transform3D(1.3993838, -0.041532744, 0, 0.041532744, 1.3993838, 0, 0, 0, 1.4, 1.15, 0.6, 2.242)
 target_position = Vector3(0, -0.6, 0)
@@ -277,6 +335,26 @@ transform = Transform3D(1.0000001, 3.9420908e-11, 2.3283064e-10, -3.942091e-11, 
 mesh = SubResource("ArrayMesh_4a0rw")
 skeleton = NodePath("")
 
+[node name="Suspension" type="Node3D" parent="WheelRearRight/RearRightWheel" unique_id=784026701]
+transform = Transform3D(0.7139714, 0.021190176, 0, -0.021190176, 0.7139714, 0, 0, 0, 0.71428573, -0.8337812, -0.40401414, -1.6014286)
+
+[node name="ForceDebug" parent="WheelRearRight/RearRightWheel/Suspension" unique_id=895409641 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1.3993838, -0.041532744, 0, 0.041532744, 1.3993838, 0, 0, 0, 1.4, 2.1235008, 0.6000001, 2.242)
+car = NodePath("../../../..")
+
+[node name="Longitude" type="Node3D" parent="WheelRearRight/RearRightWheel" unique_id=2098784841]
+transform = Transform3D(1.0000001, -1.8626451e-09, 2.3283064e-10, 1.8626451e-09, 1, 7.275961e-12, -2.3283064e-10, -7.2759585e-12, 1.0000001, -0.20168746, -2.9802322e-08, 2.3841858e-07)
+
+[node name="ForceDebug" parent="WheelRearRight/RearRightWheel/Longitude" unique_id=1235251081 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(0.99999994, 1.6940658e-21, -2.7755576e-17, 1.6940665e-21, 0.99999994, -8.6736174e-19, 0, 0, 1, 0.90507776, -0.026862085, 0)
+car = NodePath("../../../..")
+
+[node name="Lateral" type="Node3D" parent="WheelRearRight/RearRightWheel" unique_id=1697348660]
+
+[node name="ForceDebug" parent="WheelRearRight/RearRightWheel/Lateral" unique_id=923488973 node_paths=PackedStringArray("car") instance=ExtResource("4_uhfiu")]
+transform = Transform3D(1, -1.8626451e-09, 0, 1.8626451e-09, 1, 0, 0, 0, 1, 0.7389627, -0.021931916, 0)
+car = NodePath("../../../..")
+
 [node name="Car" type="MeshInstance3D" parent="." unique_id=1895633457]
 transform = Transform3D(-1.2828882, 0, -4.5613118e-07, 0, 0.9702039, 0, 1.9371073e-07, 0, -3.0208201, 0, 0.4, 0.12866473)
 mesh = SubResource("ArrayMesh_u42nv")
@@ -288,6 +366,7 @@ shape = SubResource("ConvexPolygonShape3D_35f3q")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=318420880]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.711, 6.419)
+script = ExtResource("3_uhfiu")
 
 [node name="Info" parent="." unique_id=1292094877 node_paths=PackedStringArray("car") instance=ExtResource("4_35f3q")]
 car = NodePath("..")

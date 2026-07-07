@@ -4,12 +4,13 @@
 
   ### Overview
 
-> Shift is a vehicle  simulator made in the Godot 4.6 engine attempting to become the gold standard of vehicle simulation. Made by a broke highschool student interested in motorsports, This projects aims to understand vehicles at a deeper level. Shift was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
+> Shift is a vehicle  simulator made in the Godot 4.7 engine attempting to become the gold standard of vehicle simulation. Made by a broke highschool student interested in motorsports, This projects aims to understand vehicles at a deeper level. Shift was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Highlights
   
   > * MF 5.2 Pacejka Tire Model (With Load, Camber senitivity, and over 60+ tuning coefficents)
   > * MF 5.2 "Lite" Tire Model (Load Sensitivity and a smaller set of tuning coefficents similar to the original 5.2 model)
+  > * Brush Tire Model
   > * One Point Raycast Wheels
   > * Rigid Body Car
   > * Curve Based Engine Torque Model
@@ -24,14 +25,14 @@
   > * Traction Control Simulation
   > * Ackermman Steering Model
   > * 333 Hz Tick Rate Project
-  > * 100s of tuning parameters for ultimate control
+  > * 100s of tuning parameters for ultimate control 
   > * Modular Functions for easy re-use
   > * Roadster Example Car
   > * Track Example (Ichi Circuit) 
 
   ### Usage
 
-> Requirements: Operating System and Hardware Supporting Godot 4.6 and git
+> Requirements: Operating System and Hardware Supporting Godot 4.7 and git
 >
 > 1. Download the project using git
 > ```

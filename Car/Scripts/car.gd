@@ -90,44 +90,43 @@ func _ready() -> void:
 
 	
 func _physics_process(delta: float) -> void:
-
-	Transmission.transmission_process(delta, transmission, VehicleValues) # independent function
+	Transmission.transmission_process(delta, transmission, VehicleValues)
 	
 	for wheel in wheels:
-		Suspension.suspension_proccess(wheel, suspension, car, VehicleValues) # independent function
+		Suspension.suspension_proccess(wheel, suspension, car, VehicleValues)
 	
-	for wheel in wheels:
-		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
-			MF52_LiteProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full: # relies on wheel ang and suspension functions
-			MF52_FullProcess._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
-			pass # have to add logic
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
-			BrushModel_Process._get_wheel_forces(wheel,wheeldata, suspension, car, VehicleValues)
+	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues)
+	Brake.brake_process(delta, brake, VehicleValues)
 	
-	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # relies on wheel_forces
-
-	Motor.motor_process(delta, engine, transmission, wheeldata, VehicleValues) # relies on wheel ang, transmission, and forces functions
-	Brake.brake_process(delta, brake, VehicleValues) # independent function
+	var substeps = 4
+	var sub_delta = delta / substeps
 	
-	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)  # relies on wheel forces and brake
-	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues) # relies on wheel forces and motor
+	for i in range(substeps):
+		for wheel in wheels:
+			if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+				MF52_LiteProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
+			elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
+				MF52_FullProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
+			elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
+				BrushModel_Process._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
+			
+		Motor.motor_process(sub_delta, engine, transmission, wheeldata, VehicleValues)
+		
+		for wheel in wheels:
+			if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+				MF52_LiteProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+			elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
+				MF52_FullProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+			elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
+				MF52_FullProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
 	
-	for wheel in wheels:
-		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
-			MF52_LiteProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full: # relies on wheel ang and suspension functions
-			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.Pacejka_Simplified: # relies on wheel ang and suspension functions
-			pass # have to add logic
-		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model: # relies on wheel ang and suspension functions
-			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # relies on wheel force, motor, brake, and suspension functions
-	
+	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)
+	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues)
 	Debug_Arrows()
 
 
 func Debug_Arrows():
+
 	if DEBUG == true:
 
 		for i in range(Debug_Suspension.size()):

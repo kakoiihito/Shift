@@ -4,29 +4,13 @@ extends Node
 
 func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, Values: Resource) -> void:
 
-
-	var drivetrain_ratio = TransmissionData.current_gear_ratio * Values.final_drive
-	
-
-	
-	var clutch_input := Input.get_action_strength("Clutch")
-	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
-	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized)
-	
-
-
-	
-	# Angular velocity addition (for engine angular velocity)
-	
-
-	
 	# engine torque calculation
 	
-	var engine_torque = engine_torque_calc(EngineData, Values)
+	engine_torque_calc(EngineData, Values)
 	
 	# engine friciton calculation
 	
-	var engine_friction = engine_friction_calc(EngineData, Values)
+	engine_friction_calc(EngineData, Values)
 	
 	# clutch torque calculation
 		
@@ -67,7 +51,6 @@ func engine_torque_calc(EngineData: RuntimeData.engine, Values: Resource):
 
 	EngineData.engine_torque = Values.torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 	
-	return Values.torque_curve.sample(normalized_rpm) * Values.max_torque * throttle_input
 
 func engine_friction_calc(EngineData: RuntimeData.engine, Values: Resource):
 	
@@ -81,7 +64,7 @@ func engine_friction_calc(EngineData: RuntimeData.engine, Values: Resource):
 	
 func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, Values: Resource, delta: float):
 	
-	var wheel_inertia =  0.5 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
+	var wheel_inertia =  0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	
 	var clutch_input := Input.get_action_strength("Clutch")
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
@@ -141,52 +124,60 @@ func engine_stall_behavior(EngineData: RuntimeData.engine, Values: Resource):
 		EngineData.engine_angular_velocity = Values.idle_rpm * TAU / 60.0
 		
 func wheel_torque_divison(TransmissionData: RuntimeData.transmission, EngineData: RuntimeData.engine, WheelData: RuntimeData.wheels, Values: Resource):
-	
+
 	var drivetrain_ratio = TransmissionData.current_gear_ratio * Values.final_drive
-	
-	var front_axle = [0,1]
-	var rear_axle = [2,3]
-	var driven_axle = []
-	
-	var torque_at_wheels = EngineData.clutch_torque_on_engine * (drivetrain_ratio) * Values.drive_train_efficeny
-	
+
+	var torque_at_wheels = EngineData.clutch_torque_on_engine * drivetrain_ratio * Values.drive_train_efficeny
+
 	# finding axle usage (refuses abnormal configurations, more info in values.gd)
-	
-	if Values.FL_torque_engine and Values.FR_torque_engine and Values.RL_torque_engine and Values.RR_torque_engine:
-		driven_axle =[front_axle, rear_axle]
-	elif Values.FL_torque_engine and Values.FR_torque_engine:
-		driven_axle = [front_axle]
-	elif Values.RL_torque_engine and Values.RR_torque_engine:
-		driven_axle = [rear_axle]
+
+	var front_driven = Values.FL_torque_engine and Values.FR_torque_engine
+	var rear_driven = Values.RL_torque_engine and Values.RR_torque_engine
+
+	var do_front = false
+	var do_rear = false
+
+	if front_driven and rear_driven:
+		do_front = true
+		do_rear = true
+	elif front_driven:
+		do_front = true
+	elif rear_driven:
+		do_rear = true
 	else:
 		var per_wheel_torque = torque_at_wheels / EngineData.driven_count if EngineData.driven_count > 0 else 0.0
 		for i in range(4):
-			if EngineData.driven_wheels[i]:
-				EngineData.wheel_engine_torque[i] = per_wheel_torque
-			else:
-				EngineData.wheel_engine_torque[i] = 0.0
-	
-	for axle in driven_axle:
-		
+			EngineData.wheel_engine_torque[i] = per_wheel_torque if EngineData.driven_wheels[i] else 0.0
+
+	var both_driven = do_front and do_rear
+
+	for axle_index in range(2):
+		var active = do_front if axle_index == 0 else do_rear
+		if not active:
+			continue
+
+		var idx_a = 0 if axle_index == 0 else 2
+		var idx_b = 1 if axle_index == 0 else 3
+
 		# awd behavior
-		
+
 		var axle_torque: float
-		if driven_axle.size() == 2:
-			axle_torque = torque_at_wheels * Values.center_diff_split if axle == front_axle else torque_at_wheels * (1.0 - Values.center_diff_split)
+		if both_driven:
+			axle_torque = torque_at_wheels * Values.center_diff_split if axle_index == 0 else torque_at_wheels * (1.0 - Values.center_diff_split)
 		else:
 			axle_torque = torque_at_wheels
-		
+
 		# variable definitions
-		
-		var slip_a = WheelData.slip_ratio[axle[0]]
-		var slip_b = WheelData.slip_ratio[axle[1]]
-		
+
+		var slip_a = WheelData.slip_ratio[idx_a]
+		var slip_b = WheelData.slip_ratio[idx_b]
+
 		var T_lock: float
 		var T_high: float
 		var T_low: float
-		
+
 		# type of lsd or open diff
-		
+
 		if Values.differential == Values.DiffType.TORSEN_LSD:
 			if min(slip_a, slip_b) <= 0.0:
 				T_high = axle_torque / 2.0
@@ -204,15 +195,16 @@ func wheel_torque_divison(TransmissionData: RuntimeData.transmission, EngineData
 		elif Values.differential == Values.DiffType.OPEN:
 			T_high = axle_torque / 2.0
 			T_low  = axle_torque / 2.0
-		
+
 		# actual torque division
-		
-		if (slip_a - slip_b) > Values.SLIP_THRESHOLD:
-			EngineData.wheel_engine_torque[axle[0]] = T_low
-			EngineData.wheel_engine_torque[axle[1]] = T_high
-		elif (slip_b - slip_a) > Values.SLIP_THRESHOLD:
-			EngineData.wheel_engine_torque[axle[0]] = T_high
-			EngineData.wheel_engine_torque[axle[1]] = T_low
+
+		var diff = slip_a - slip_b
+		if diff > Values.SLIP_THRESHOLD:
+			EngineData.wheel_engine_torque[idx_a] = T_low
+			EngineData.wheel_engine_torque[idx_b] = T_high
+		elif -diff > Values.SLIP_THRESHOLD:
+			EngineData.wheel_engine_torque[idx_a] = T_high
+			EngineData.wheel_engine_torque[idx_b] = T_low
 		else:
-			EngineData.wheel_engine_torque[axle[0]] = axle_torque / 2.0
-			EngineData.wheel_engine_torque[axle[1]] = axle_torque / 2.0
+			EngineData.wheel_engine_torque[idx_a] = axle_torque / 2.0
+			EngineData.wheel_engine_torque[idx_b] = axle_torque / 2.0

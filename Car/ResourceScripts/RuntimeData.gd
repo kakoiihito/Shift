@@ -27,7 +27,7 @@ class transmission:
 	var is_shifting = false
 	var current_gear_ratio: float
 	var shift_timer = 0.0
-	var current_gear = 1
+	var current_gear = 0
 
 class wheels:
 	var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0]

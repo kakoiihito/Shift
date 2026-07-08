@@ -60,7 +60,7 @@ var Stability = false # a thing to work on
 @export var max_rpm = 7000.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
-@export var engine_inertia = 0.12 
+@export var engine_inertia = 0.25 
 @export var friction_c0 = 3.0
 @export var friction_c1 = 4.5
 @export var friction_c2 = 8.0
@@ -98,8 +98,8 @@ enum DiffType {
 @export var drive_train_efficeny = 0.82
 @export var final_drive = 4.3
 @export var is_shifting = false
-@export var max_clutch_torque = 160.0
-@export var unlock_threshold = 1.0
+@export var max_clutch_torque = 270.0
+@export var unlock_threshold = 17.5
 
 @export_group("Wheel")
 

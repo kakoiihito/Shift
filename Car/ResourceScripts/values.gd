@@ -57,7 +57,7 @@ var Stability = false # a thing to work on
 @export_group("Motor")
 
 @export var max_torque = 135.0
-@export var max_rpm = 7000.0
+@export var max_rpm = 7200.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
 @export var engine_inertia = 0.25 

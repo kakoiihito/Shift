@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dsq8xo3qb2hnk" path="res://Car/Scenes/camera.gd" id="3_uhfiu"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="4_35f3q"]
 [ext_resource type="PackedScene" uid="uid://ck5sbds2kl6r7" path="res://UI/force_debug.tscn" id="4_uhfiu"]
+[ext_resource type="PackedScene" uid="uid://cgkobuweayxxv" path="res://debug.tscn" id="6_mnl0d"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4010s"]
 resource_name = "carTire"
@@ -373,4 +374,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.711, 6.419)
 script = ExtResource("3_uhfiu")
 
 [node name="Info" parent="." unique_id=1292094877 node_paths=PackedStringArray("car") instance=ExtResource("4_35f3q")]
+car = NodePath("..")
+
+[node name="Debug" parent="." unique_id=438062332 node_paths=PackedStringArray("car") instance=ExtResource("6_mnl0d")]
 car = NodePath("..")

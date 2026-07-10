@@ -31,24 +31,22 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	
 	# engine stalling
 	
-	engine_stall_behavior(EngineData, Values)
+	#engine_stall_behavior(EngineData, Values)
 	
 	#Torque division (lsds, open diff)
 	
 	wheel_torque_divison(TransmissionData, EngineData, WheelData, Values)
 
-func angular_velocity_sum_calc(WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, Values: Resource):
+func angular_velocity_sum_calc(WheelData: RuntimeData.wheels, Values: Resource):
 	
 	var driven_wheels = [Values.FL_torque_engine, Values.FR_torque_engine, Values.RL_torque_engine, Values.RR_torque_engine]
-	var driven_count: int = 0
+
 	var angular_velocity_sum: float = 0.0
 	
 	for i in range(4):
 		if driven_wheels[i]:
 			angular_velocity_sum += WheelData.wheel_angular_velocity[i]
-			driven_count += 1
 
-	EngineData.engine_driven_count = driven_count
 	
 	return angular_velocity_sum
 	
@@ -85,23 +83,26 @@ func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: R
 	if EngineData.engine_driven_count <= 0:
 		EngineData.clutch_torque_on_engine = 0.0
 		return
-
+	
+	var wheel_inertia: float = 0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
 	var clutch_input := Input.get_action_strength("Clutch")
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
 	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized)
 	var max_transferable_torque = Values.max_clutch_torque * clutch_engagement
 
-	var angular_velocity_sum = angular_velocity_sum_calc(WheelData, EngineData, Values)
-	var target_engine_ang_vel = (angular_velocity_sum / EngineData.engine_driven_count) * drivetrain_ratio
-	var speed_difference = EngineData.engine_angular_velocity - target_engine_ang_vel
-
-	if abs(speed_difference) <= Values.unlock_threshold:
-		var required_torque = -speed_difference * Values.engine_inertia / max(delta, 0.0001)
-		EngineData.clutch_torque_on_engine = clamp(required_torque, -max_transferable_torque, max_transferable_torque)
-	else:
-		EngineData.clutch_torque_on_engine = sign(speed_difference) * max_transferable_torque
-
-				
+	var angular_velocity_sum = angular_velocity_sum_calc(WheelData, Values)
+	var clutch_ang_vel = (angular_velocity_sum / EngineData.engine_driven_count) * drivetrain_ratio
+	#var speed_difference = EngineData.engine_angular_velocity - clutch_ang_vel
+	
+	var reflected_inertia = (wheel_inertia / (drivetrain_ratio * drivetrain_ratio)) * EngineData.engine_driven_count
+	var combined_inertia = Values.engine_inertia + reflected_inertia
+	var total_angular_momentum = EngineData.engine_angular_velocity * Values.engine_inertia + clutch_ang_vel * reflected_inertia
+	var full_lock_ang_vel = total_angular_momentum / combined_inertia
+	var required_torque = (combined_inertia * (EngineData.engine_angular_velocity - full_lock_ang_vel)) / delta
+	
+	var clutch_torque = clampf(required_torque, -1 * max_transferable_torque, max_transferable_torque)
+	
+	EngineData.clutch_torque_on_engine = clutch_torque
 
 func engine_rpm_calc(EngineData: RuntimeData.engine, Values: Resource, delta: float):
 	
@@ -111,7 +112,7 @@ func engine_rpm_calc(EngineData: RuntimeData.engine, Values: Resource, delta: fl
 	var net_engine_torque = EngineData.engine_torque - (friction * (1.0 - throttle)) - EngineData.clutch_torque_on_engine
 	var engine_angular_accel = net_engine_torque / Values.engine_inertia
 	EngineData.engine_angular_velocity += engine_angular_accel * delta
-	EngineData.engine_angular_velocity = clamp(EngineData.engine_angular_velocity, Values.stall_rpm * TAU / 60.0, Values.max_rpm * TAU / 60.0)
+	EngineData.engine_angular_velocity = clamp(EngineData.engine_angular_velocity, Values.idle_rpm * TAU / 60.0, Values.max_rpm * TAU / 60.0)
 	EngineData.engine_rpm = EngineData.engine_angular_velocity * 60.0 / TAU
 	
 func engine_stall_behavior(EngineData: RuntimeData.engine, Values: Resource):

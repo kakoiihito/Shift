@@ -93,7 +93,7 @@ enum DiffType {
 
 @export_group("Transmission")
 
-@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.333, 1.000, 0.814]
+@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var shift_timer = 0.0
 @export var drive_train_efficeny = 0.82
 @export var final_drive = 4.3
@@ -123,7 +123,7 @@ enum TireModelType {
 @export_subgroup("Brush Model")
 
 @export var brush_Csx: float = 75000.0
-@export var brush_Csy: float = 32500.0
+@export var brush_Csy: float = 19250.0
 @export var brush_mu: float = 0.78
 
 # Pacejka MF 5.2 Lite 

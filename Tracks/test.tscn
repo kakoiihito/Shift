@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
+[ext_resource type="Texture2D" uid="uid://borrppv5qrpkg" path="res://Grid.jpg" id="1_lbp5j"]
 [ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Roadster.tscn" id="1_yhjd6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
@@ -18,14 +19,23 @@ tonemap_mode = 2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_8uh7m"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
-size = Vector3(300, 3, 300)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yhjd6"]
 albedo_color = Color(0, 1, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_37kl0"]
 material = SubResource("StandardMaterial3D_yhjd6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5amgi"]
+albedo_texture = ExtResource("1_lbp5j")
+uv1_scale = Vector3(0.04, 0.04, 0.04)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_lbp5j"]
+material = SubResource("StandardMaterial3D_5amgi")
+size = Vector3(2400, 3, 2400)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
+size = Vector3(2400, 3, 300)
 
 [node name="Test" type="Node3D" unique_id=1300905328]
 
@@ -71,13 +81,6 @@ shape = SubResource("CylinderShape3D_37kl0")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 mesh = SubResource("CylinderMesh_8uh7m")
 
-[node name="Floor" type="StaticBody3D" parent="Scenery&Level" unique_id=1049420459]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor" unique_id=1405423850]
-transform = Transform3D(1, 0, 0, 0, 0.99998146, 0, 0, 0, 8.429731, 0, 0, 0)
-shape = SubResource("BoxShape3D_37kl0")
-
 [node name="RenderTest" type="MeshInstance3D" parent="Scenery&Level" unique_id=783264161]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.53986, 3.87743, -5.5925)
 mesh = SubResource("BoxMesh_37kl0")
@@ -93,6 +96,16 @@ mesh = SubResource("BoxMesh_37kl0")
 [node name="RenderTest3" type="MeshInstance3D" parent="Scenery&Level/RenderTest3" unique_id=1527939822]
 transform = Transform3D(1, 0, 0, 0, -0.80963224, 0.58693796, 0, -0.58693796, -0.80963224, -35.783386, -33.672768, -43.301872)
 mesh = SubResource("BoxMesh_37kl0")
+
+[node name="Floor" type="MeshInstance3D" parent="Scenery&Level" unique_id=1604084394]
+mesh = SubResource("BoxMesh_lbp5j")
+
+[node name="Floor" type="StaticBody3D" parent="Scenery&Level/Floor" unique_id=1049420459]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor/Floor" unique_id=1405423850]
+transform = Transform3D(1, 0, 0, 0, 0.99997526, 0, 0, 0, 8.429632, 0, 0, 0)
+shape = SubResource("BoxShape3D_37kl0")
 
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
 

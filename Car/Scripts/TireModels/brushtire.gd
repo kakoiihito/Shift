@@ -24,7 +24,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 			WheelData.slip_ratio[wheel_index] = 0.0
 		else:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
-			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / abs(forward_speed)
+			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
 
 		var mu_Fz = Values.brush_mu * Fz
 
@@ -53,7 +53,7 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 		WheelData.longitude_force_vector[wheel_index] = (WheelData.longitude_force[wheel_index] * -ray.global_transform.basis.z)
 		WheelData.lateral_force_vector[wheel_index] = (WheelData.lateral_force[wheel_index]  *  ray.global_transform.basis.x)
 		
-		var combined_force = (WheelData.longitude_force_vector[wheel_index] + WheelData.lateral_force_vector[wheel_index]) / 4.0
+		var combined_force = (WheelData.longitude_force_vector[wheel_index] + WheelData.lateral_force_vector[wheel_index])
 		var force_pos = ray.get_collision_point() - car.global_position
 		car.apply_force(combined_force, force_pos)
 

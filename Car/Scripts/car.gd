@@ -98,28 +98,25 @@ func _physics_process(delta: float) -> void:
 	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues)
 	Brake.brake_process(delta, brake, VehicleValues)
 	
-	var substeps = 4
-	var sub_delta = delta / substeps
-	
-	for i in range(substeps):
-		for wheel in wheels:
-			if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
-				MF52_LiteProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
-			elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
-				MF52_FullProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
-			elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
-				BrushModel_Process._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
-			
-		Motor.motor_process(sub_delta, engine, transmission, wheeldata, VehicleValues)
+
+	for wheel in wheels:
+		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+			MF52_LiteProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
+			MF52_FullProcess._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
+			BrushModel_Process._get_wheel_forces(wheel, wheeldata, suspension, car, VehicleValues)
 		
-		for wheel in wheels:
-			if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
-				MF52_LiteProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
-			elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
-				MF52_FullProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
-			elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
-				MF52_FullProcess._get_wheel_angular_velocity(wheel, sub_delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+	Motor.motor_process(delta, engine, transmission, wheeldata, VehicleValues)
 	
+	for wheel in wheels:
+		if VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Lite:
+			MF52_LiteProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues)
+
 	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues)
 	Debug_Arrows()

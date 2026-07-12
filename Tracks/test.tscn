@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
-[ext_resource type="Texture2D" uid="uid://borrppv5qrpkg" path="res://Grid.jpg" id="1_lbp5j"]
+[ext_resource type="Texture2D" uid="uid://borrppv5qrpkg" path="res://Tracks/Grid.jpg" id="1_lbp5j"]
 [ext_resource type="PackedScene" uid="uid://c7epypda8yfxx" path="res://Car/Scenes/Roadster.tscn" id="1_yhjd6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]

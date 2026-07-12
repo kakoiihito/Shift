@@ -63,21 +63,12 @@ var Assists = AssistsScript.new()
 	#########
 	# DEBUG #
 	#########
+	
+var Force_Arrow_Scene = load("res://UI/force_debug.tscn")
 
-var DEBUG: bool = true
-
-@onready var Debug_Suspension = [rr_wheel_mesh.get_node("Suspension/ForceDebug"),
-								  rl_wheel_mesh.get_node("Suspension/ForceDebug"),
-								  fr_wheel_mesh.get_node("Suspension/ForceDebug"),
-								  fl_wheel_mesh.get_node("Suspension/ForceDebug")]
-@onready var Debug_Longtiude = [rr_wheel_mesh.get_node("Longitude/ForceDebug"),
-								 rl_wheel_mesh.get_node("Longitude/ForceDebug"),
-								 fr_wheel_mesh.get_node("Longitude/ForceDebug"),
-								 fl_wheel_mesh.get_node("Longitude/ForceDebug")]
-@onready var Debug_Lateral = [rr_wheel_mesh.get_node("Lateral/ForceDebug"),
-							   rl_wheel_mesh.get_node("Lateral/ForceDebug"),
-							   fr_wheel_mesh.get_node("Lateral/ForceDebug"),
-							   fl_wheel_mesh.get_node("Lateral/ForceDebug")]
+@onready var Debug_Suspension = []
+@onready var Debug_Longtiude = []
+@onready var Debug_Lateral = []
 
 func _ready() -> void:
 	
@@ -86,7 +77,32 @@ func _ready() -> void:
 	for i in range(Wheels.size()):
 		Wheels[i].set_meta("wheel_index", i) # wheel identification
 	
+	if VehicleValues.DEBUG == true:
+		var mesh_wheels = [fl_wheel_mesh, fr_wheel_mesh, rr_wheel_mesh, rl_wheel_mesh]
 
+		for i in range(wheels.size()):
+			var offset = -VehicleValues.Position_Offset if (i == 0 or i == 3) else VehicleValues.Position_Offset
+
+			var Suspension_Arrow = Force_Arrow_Scene.instantiate()
+			mesh_wheels[i].add_child(Suspension_Arrow)
+			Suspension_Arrow.color = VehicleValues.Suspension_Arrow_Color
+			Suspension_Arrow.Position_Offset = offset
+			Suspension_Arrow.Display_Force_Magntiude = VehicleValues.Display_Force_Magntiude
+			Debug_Suspension.append(Suspension_Arrow)
+
+			var Longitude_Arrow = Force_Arrow_Scene.instantiate()
+			mesh_wheels[i].add_child(Longitude_Arrow)
+			Longitude_Arrow.color = VehicleValues.Longtiude_Arrow_Color
+			Longitude_Arrow.Position_Offset = offset
+			Longitude_Arrow.Display_Force_Magntiude = VehicleValues.Display_Force_Magntiude
+			Debug_Longtiude.append(Longitude_Arrow)
+
+			var Lateral_Arrow = Force_Arrow_Scene.instantiate()
+			mesh_wheels[i].add_child(Lateral_Arrow)
+			Lateral_Arrow.color = VehicleValues.Lateral_Arrow_Color
+			Lateral_Arrow.Position_Offset = offset
+			Lateral_Arrow.Display_Force_Magntiude = VehicleValues.Display_Force_Magntiude
+			Debug_Lateral.append(Lateral_Arrow)
 
 	
 func _physics_process(delta: float) -> void:
@@ -119,18 +135,16 @@ func _physics_process(delta: float) -> void:
 
 	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues)
-	Debug_Arrows()
-
-
-func Debug_Arrows():
-
-	if DEBUG == true:
-
+	
+	if VehicleValues.DEBUG == true:
+			
 		for i in range(Debug_Suspension.size()):
-			Debug_Suspension[i].force_path = suspension.wheel_spring_force[i]
+			Debug_Suspension[i].force = suspension.wheel_spring_force[i]
 		for i in range(Debug_Longtiude.size()):
-			Debug_Longtiude[i].force_path = wheeldata.longitude_force_vector[i]
+			Debug_Longtiude[i].force = wheeldata.longitude_force_vector[i]
 		for i in range(Debug_Lateral.size()):
-			Debug_Lateral[i].force_path = wheeldata.lateral_force_vector[i]
+			Debug_Lateral[i].force = wheeldata.lateral_force_vector[i]
+
+
 	
 	

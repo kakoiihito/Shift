@@ -8,6 +8,9 @@ extends Resource
 @export var wheel_base = 2.265 
 @export var track = 1.41
 
+func car():
+	pass
+
 @export_group("Suspension")
 
 @export var rest_length = [0.282, 0.282, 0.340, 0.340]
@@ -21,6 +24,9 @@ extends Resource
 @export var rear_antiroll_bar_stiffness = 2500.0
 @export var velocity_exponent = 1.0
 
+func suspension():
+	pass
+
 @export_group("Steering")
 
 @export var max_tire_turn_angle = 38.0
@@ -31,11 +37,20 @@ extends Resource
 @export var speed_factor_coeff = 0.035
 @export var ackermann_factor = 1.0
 
+func steering():
+	pass
+
 @export_group("Brake")
 
 @export var max_brake_torque = 900.0
 
+func brake():
+	pass
+
 @export_group("Assists")
+
+func assists():
+	pass
 
 @export_subgroup("ABS")
 
@@ -55,6 +70,9 @@ extends Resource
 var Stability = false # a thing to work on
 
 @export_group("Motor")
+
+func motor():
+	pass
 
 @export var max_torque = 135.0
 @export var max_rpm = 7200.0
@@ -93,6 +111,9 @@ enum DiffType {
 
 @export_group("Transmission")
 
+func transmisson():
+	pass
+
 @export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var shift_timer = 0.0
 @export var drive_train_efficeny = 0.82
@@ -109,6 +130,9 @@ enum DiffType {
 @export var wheel_mass = 13.4
 @export var rolling_resistance_coeff = 0.0105
 
+func wheel():
+	pass
+
 enum TireModelType {
 	MF52_Lite,
 	MF52_Full,
@@ -121,6 +145,9 @@ enum TireModelType {
 # Brush Model
 
 @export_subgroup("Brush Model")
+
+func brush_model():
+	pass
 
 @export var brush_Csx: float = 75000.0
 @export var brush_Csy: float = 19250.0
@@ -160,6 +187,9 @@ enum TireModelType {
 @export var rBy21 = 9.2
 @export var rCy11 = 1.05
 @export var rVy51 = 1.9
+
+func mf52_lite():
+	pass
 
 # MF 5.2 model
 
@@ -251,3 +281,15 @@ enum TireModelType {
 @export var rVy6 = 0.0
 @export var lambda_ykappa = 1.0
 @export var lambda_Vyk = 1.0
+
+func mf52():
+	pass
+	
+@export_group("Debug")
+
+@export var DEBUG = true
+@export var Suspension_Arrow_Color: Color = Color.GREEN
+@export var Longtiude_Arrow_Color: Color = Color.RED
+@export var Lateral_Arrow_Color: Color = Color.BLUE
+@export var Position_Offset: Vector3 = Vector3(2, 0, 0)
+@export var Display_Force_Magntiude = false

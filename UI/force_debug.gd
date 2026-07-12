@@ -1,14 +1,18 @@
 extends Node3D
-@export var car: RigidBody3D
-@export var Display_Force_Magntiude: bool
-@export var color: Color = Color.WHITE:
+
+
+
+
+var color: Color = Color.WHITE:
 	set(value):
 		color = value
 		if material:
 			material.albedo_color = color
-
-var force_path: Vector3
 var force: Vector3
+var Position_Offset: Vector3
+var DEBUG: bool
+var Display_Force_Magntiude: bool
+
 var cyl_mesh: CylinderMesh
 var material: StandardMaterial3D
 
@@ -25,13 +29,10 @@ func _ready() -> void:
 	$Center/Arrow.mesh = cyl_mesh
 
 func _process(_delta: float) -> void:
-	if car.DEBUG == true:
-		visible = true
-		force = force_path
-		update_force_arrow()
-		update_force_label()
-	else:
-		visible = false
+
+	visible = true
+	update_force_arrow()
+	update_force_label()
 
 func update_force_arrow():
 	var magnitude = force.length()
@@ -47,7 +48,7 @@ func update_force_arrow():
 	cyl_mesh.height = length
 
 	$Center/Arrow.basis = Basis(Quaternion(Vector3.UP, direction))
-	$Center/Arrow.position = direction * (length / 2.0)
+	$Center/Arrow.position = direction * (length / 2.0) + Position_Offset
 	
 func update_force_label():
 	if Display_Force_Magntiude == true:

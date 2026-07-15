@@ -14,18 +14,21 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 	var forward_speed = velocity_at_wheel.dot(-ray.global_transform.basis.z)
 
 	var wheel_surface_speed = WheelData.wheel_angular_velocity[wheel_index] * Values.wheel_radius
-
+	
+	print("Forward Speed", forward_speed)
+	print("Wheel Speed", wheel_surface_speed)
 	var Fz = SuspensionData.wheel_spring_force[wheel_index].length()
 
 	if ray.is_colliding():
 
-		if abs(forward_speed) < 0.001:
+		if forward_speed < 0.001:
 			WheelData.slip_angle[wheel_index] = 0.0
 			WheelData.slip_ratio[wheel_index] = 0.0
 		else:
 			WheelData.slip_angle[wheel_index] = -(atan(side_velocity / forward_speed))
 			WheelData.slip_ratio[wheel_index] = (wheel_surface_speed - forward_speed) / forward_speed
 
+		
 		var mu_Fz = Values.brush_mu * Fz
 
 

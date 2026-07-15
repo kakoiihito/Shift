@@ -1,4 +1,4 @@
-extends Camera3D
+extends Node3D
 
 # Adjust this to change how fast the camera spins
 const ROTATION_SPEED = 2.0 

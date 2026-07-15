@@ -116,8 +116,8 @@ func transmisson():
 
 @export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 0.82
-@export var final_drive = 4.3
+@export var drive_train_efficeny = 1.0
+@export var final_drive = 4.1
 @export var is_shifting = false
 @export var max_clutch_torque = 270.0
 @export var unlock_threshold = 17.5
@@ -149,9 +149,9 @@ enum TireModelType {
 func brush_model():
 	pass
 
-@export var brush_Csx: float = 75000.0
-@export var brush_Csy: float = 19250.0
-@export var brush_mu: float = 0.78
+@export var brush_Csx: float = 60000.0  
+@export var brush_Csy: float = 55000.0  
+@export var brush_mu: float = 1.25
 
 # Pacejka MF 5.2 Lite 
 

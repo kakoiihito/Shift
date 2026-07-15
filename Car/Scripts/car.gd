@@ -103,7 +103,8 @@ func _ready() -> void:
 			Lateral_Arrow.Position_Offset = offset
 			Lateral_Arrow.Display_Force_Magntiude = VehicleValues.Display_Force_Magntiude
 			Debug_Lateral.append(Lateral_Arrow)
-
+			
+	transmission.current_gear_ratio = VehicleValues.gear_ratio[transmission.current_gear]
 	
 func _physics_process(delta: float) -> void:
 	Transmission.transmission_process(delta, transmission, VehicleValues)

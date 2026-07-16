@@ -15,8 +15,6 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 
 	var wheel_surface_speed = WheelData.wheel_angular_velocity[wheel_index] * Values.wheel_radius
 	
-	print("Forward Speed", forward_speed)
-	print("Wheel Speed", wheel_surface_speed)
 	var Fz = SuspensionData.wheel_spring_force[wheel_index].length()
 
 	if ray.is_colliding():
@@ -66,7 +64,7 @@ func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: Runtim
 	var angular_velocity: float = WheelData.wheel_angular_velocity[wheel_index]
 	var engine_torque: float = EngineData.wheel_engine_torque[wheel_index]
 	var brake_torque_mag: float = BrakeData.wheel_brake_torque[wheel_index]
-	var wheel_inertia: float = 0.7 * Values.wheel_mass * (Values.wheel_radius * Values.wheel_radius)
+	var wheel_inertia: float = 0.18
 
 	var net_torque: float
 

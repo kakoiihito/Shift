@@ -78,7 +78,7 @@ func motor():
 @export var max_rpm = 7200.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
-@export var engine_inertia = 0.25 
+@export var engine_inertia = 0.15
 @export var friction_c0 = 3.0
 @export var friction_c1 = 4.5
 @export var friction_c2 = 8.0
@@ -117,10 +117,9 @@ func transmisson():
 @export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var shift_timer = 0.0
 @export var drive_train_efficeny = 1.0
-@export var final_drive = 4.1
+@export var final_drive = 4.3
 @export var is_shifting = false
-@export var max_clutch_torque = 270.0
-@export var unlock_threshold = 17.5
+@export var max_clutch_torque = 262.5
 
 @export_group("Wheel")
 

@@ -74,11 +74,11 @@ var Stability = false # a thing to work on
 func motor():
 	pass
 
-@export var max_torque = 135.0
+@export var max_torque = 136.0
 @export var max_rpm = 7200.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
-@export var engine_inertia = 0.15
+@export var engine_inertia = 0.1
 @export var friction_c0 = 3.0
 @export var friction_c1 = 4.5
 @export var friction_c2 = 8.0
@@ -86,8 +86,8 @@ func motor():
 @export var FR_torque_engine = false
 @export var RL_torque_engine = true
 @export var RR_torque_engine = true
-@export var FR_torque_brake = true
-@export var FL_torque_brake = true
+@export var FR_torque_brake = false
+@export var FL_torque_brake = false
 @export var RR_torque_brake = true
 @export var RL_torque_brake = true
 @export var torque_curve: Curve
@@ -118,7 +118,6 @@ func transmisson():
 @export var shift_timer = 0.0
 @export var drive_train_efficeny = 1.0
 @export var final_drive = 4.3
-@export var is_shifting = false
 @export var max_clutch_torque = 262.5
 
 @export_group("Wheel")

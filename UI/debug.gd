@@ -35,7 +35,7 @@ func _update_max_traction_forces() -> void:
 	var suspension = car.suspension
 	_max_traction_forces.clear()
 	for i in range(suspension.wheel_spring_force.size()):
-		var spring_force_mag = suspension.wheel_spring_force[i].length()
+		var spring_force_mag = suspension.wheel_spring_force[1].length()
 		var max_force = car.VehicleValues.brush_mu * spring_force_mag
 		_max_traction_forces.append(snappedf(max_force, 0.01))
 		

@@ -84,7 +84,7 @@ func clutch_torque_calc(TransmissionData: RuntimeData.transmission, WheelData: R
 		EngineData.clutch_torque_on_engine = 0.0
 		return
 	
-	var wheel_inertia: float = 0.18
+	var wheel_inertia: float = 0.8
 	var clutch_input := Input.get_action_strength("Clutch")
 	var normalized = clamp((1.0 - clutch_input - 0.3) / 0.4, 0.0, 1.0)
 	var clutch_engagement = normalized * normalized * (3.0 - 2.0 * normalized)

@@ -15,11 +15,13 @@
 script = ExtResource("2_jn23w")
 wheel_base = 2.57
 track = 1.4
-rest_length = [0.33, 0.33, 0.33, 0.33]
-spring_stiffness = [20600, 20600, 44000, 44000]
+rest_length = [0.322, 0.322, 0.213, 0.213]
+spring_stiffness = [18600, 18600, 42900, 42900]
 max_compression = [0.1, 0.1, 0.1, 0.1]
 weight_distribution = [26.5, 26.5, 23.5, 23.5]
-damper_ratio = [0.92, 0.92, 0.65, 0.65]
+damper_ratio = [0.94, 0.94, 0.67, 0.67]
+rear_antiroll_bar = false
+front_antiroll_bar = false
 front_antiroll_bar_stiffness = 35000.0
 rear_antiroll_bar_stiffness = 11000.0
 max_tire_turn_angle = 37.5
@@ -375,56 +377,56 @@ center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.3, 0.08)
 script = ExtResource("1_84jys")
 VehicleValues = SubResource("Resource_5amgi")
-wheels = [NodePath("FL"), NodePath("FR"), NodePath("RR"), NodePath("RL")]
+wheels = [NodePath("FL"), NodePath("FR"), NodePath("RL"), NodePath("RR")]
 
 [node name="FL" type="RayCast3D" parent="." unique_id=1203522558]
-transform = Transform3D(0.9999603, -0.0081985025, 0.0034504873, 0.008626127, 0.988456, -0.15126081, -0.0021705434, 0.15128456, 0.9884877, 0.72, 0.15545154, -0.9223071)
-target_position = Vector3(0, -0.33, 0)
+transform = Transform3D(0.99996006, -0.0081985, 0.003450487, 0.008626124, 0.9884558, -0.15126081, -0.002170543, 0.15128453, 0.9884877, 0.72, 0.6269311, -0.9223071)
+target_position = Vector3(0, -0.75, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 
 [node name="Node3D" type="Node3D" parent="FL" unique_id=346698956]
 
 [node name="wheel_frontRight" type="MeshInstance3D" parent="FL/Node3D" unique_id=2009710988]
-transform = Transform3D(1, 5.529728e-10, -2.3283064e-10, -4.0745363e-10, 1.0000001, -1.4901161e-08, -2.3283064e-10, 2.9802322e-08, 1, -0.19734448, 0.16781524, -0.025680363)
+transform = Transform3D(0.9999999, 2.3574103e-09, -6.9849193e-10, 1.4842954e-09, 1.0000001, -4.4703484e-08, -4.656613e-10, 5.9604645e-08, 1, -0.20176083, -0.33826455, 0.051763654)
 visible = false
 mesh = SubResource("ArrayMesh_cylqa")
 skeleton = NodePath("")
 
 [node name="FR" type="RayCast3D" parent="." unique_id=1342509716]
-transform = Transform3D(0.9999603, 0.0081985025, -0.0034504873, -0.008626127, 0.988456, -0.15126081, 0.0021705434, 0.15128456, 0.9884877, -0.72, 0.15545154, -0.93730706)
-target_position = Vector3(0, -0.33, 0)
+transform = Transform3D(0.99996006, 0.0081985, -0.003450487, -0.008626124, 0.9884558, -0.15126081, 0.002170543, 0.15128453, 0.9884877, -0.72, 0.627, -0.922)
+target_position = Vector3(0, -0.75, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 
 [node name="Node3D" type="Node3D" parent="FR" unique_id=1739626421]
 
 [node name="wheel_frontLeft" type="MeshInstance3D" parent="FR/Node3D" unique_id=1110501531]
-transform = Transform3D(-1, 5.529728e-10, -2.3283064e-10, -4.0745363e-10, -1.0000001, 1.4901161e-08, -2.3283064e-10, -2.9802322e-08, -1, 0.19734442, 0.16781524, -0.025680304)
+transform = Transform3D(-0.9999999, 2.3574103e-09, -6.9849193e-10, 1.4842954e-09, -1.0000001, 4.4703484e-08, -4.656613e-10, -5.9604645e-08, -1, 0.20176089, -0.33826455, 0.051763594)
 visible = false
 mesh = SubResource("ArrayMesh_aeodp")
 skeleton = NodePath("")
 
 [node name="RR" type="RayCast3D" parent="." unique_id=534341158]
-transform = Transform3D(0.99937713, -0.03489902, 0.005235964, 0.034899496, 0.99939084, 0, -0.0052327747, 0.0001827325, 0.9999863, 0.72, 0.15545154, 1.654414)
-target_position = Vector3(0, -0.3, 0)
+transform = Transform3D(0.99937713, -0.03489902, 0.0052359644, 0.034899496, 0.99939084, 1.6251344e-11, -0.005232775, 0.0001827325, 0.9999863, 0.72, 0.6269311, 1.654414)
+target_position = Vector3(0, -0.75, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 
 [node name="Node3D" type="Node3D" parent="RR" unique_id=404318951]
 
 [node name="wheel_frontRight" type="MeshInstance3D" parent="RR/Node3D" unique_id=1924877032]
-transform = Transform3D(1, 1.2015562e-09, -4.656613e-10, -2.523734e-09, 1, 0, 0, 1.4551915e-11, 1, -0.19288385, 0.16967161, 0)
+transform = Transform3D(1, 1.2014425e-09, -1.3969839e-09, -9.974315e-09, 1, 0, 0, 1.4551915e-11, 1, -0.21075213, -0.3420065, 0)
 visible = false
 mesh = SubResource("ArrayMesh_cylqa")
 skeleton = NodePath("")
 
 [node name="RL" type="RayCast3D" parent="." unique_id=1868050095]
-transform = Transform3D(0.99937713, 0.03489902, -0.005235964, -0.034899496, 0.99939084, 0, 0.0052327747, 0.0001827325, 0.9999863, -0.72, 0.15545154, 1.654414)
-target_position = Vector3(0, -0.3, 0)
+transform = Transform3D(0.99937713, 0.03489902, -0.0052359644, -0.034899496, 0.99939084, 1.6251344e-11, 0.005232775, 0.0001827325, 0.9999863, -0.72, 0.6269311, 1.654414)
+target_position = Vector3(0, -0.75, 0)
 debug_shape_custom_color = Color(0, 0, 1, 1)
 
 [node name="Node3D" type="Node3D" parent="RL" unique_id=556630173]
 
 [node name="wheel_frontLeft" type="MeshInstance3D" parent="RL/Node3D" unique_id=1000301465]
-transform = Transform3D(-1, 1.2015562e-09, -4.656613e-10, -2.523734e-09, -1, 0, 0, -1.4551915e-11, -1, 0.19288385, 0.16967161, 0)
+transform = Transform3D(-1, 1.2014425e-09, -1.3969839e-09, -9.974315e-09, -1, 0, 0, -1.4551915e-11, -1, 0.21075213, -0.3420065, 0)
 visible = false
 mesh = SubResource("ArrayMesh_s6vlq")
 skeleton = NodePath("")

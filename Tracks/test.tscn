@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
 
 [ext_resource type="Texture2D" uid="uid://borrppv5qrpkg" path="res://Tracks/Grid.jpg" id="1_lbp5j"]
-[ext_resource type="PackedScene" uid="uid://cxj47joq1sbhl" path="res://e30.tscn" id="3_qf3vq"]
+[ext_resource type="PackedScene" uid="uid://cxj47joq1sbhl" path="res://e30.tscn" id="2_lbp5j"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -109,8 +109,8 @@ shape = SubResource("BoxShape3D_37kl0")
 
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
 
-[node name="Car" parent="Functional" unique_id=1787335018 instance=ExtResource("3_qf3vq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.022167, 0)
+[node name="Car" parent="Functional" unique_id=1787335018 instance=ExtResource("2_lbp5j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.783589, 7.277368)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
 transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)

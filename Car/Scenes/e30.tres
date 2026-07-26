@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="CarValues" format=3 uid="uid://sr43cpxi14ff"]
+
+[ext_resource type="Script" uid="uid://rj0v3jri7dxo" path="res://Car/ResourceScripts/values.gd" id="1_jcxrb"]
+[ext_resource type="Curve" uid="uid://bxmdtpkkmv41f" path="res://Car/TorqueCurves/e30curve.tres" id="2_pdrt3"]
+
+[resource]
+script = ExtResource("1_jcxrb")
+wheel_base = 2.57
+track = 1.4
+rest_length = [0.33, 0.33, 0.33, 0.33]
+spring_stiffness = [44000, 44000, 44000, 44000]
+max_compression = [0.1, 0.1, 0.1, 0.1]
+weight_distribution = [26.5, 26.5, 23.5, 23.5]
+damper_ratio = [0.0, 0.0, 0.0, 0.0]
+front_antiroll_bar_stiffness = 35000.0
+rear_antiroll_bar_stiffness = 11000.0
+max_tire_turn_angle = 37.5
+steering_wheel_travel = 720.0
+steering_ratio = 20.5
+max_torque = 226.0
+max_rpm = 6500.0
+torque_curve = ExtResource("2_pdrt3")
+gear_ratio = [-3.46, 0.0, 3.83, 2.2, 1.4, 1.0, 0.81]
+final_drive = 3.73
+max_clutch_torque = 452.0
+wheel_radius = 0.298
+wheel_mass = 7.0
+metadata/_custom_type_script = "uid://rj0v3jri7dxo"

@@ -28,6 +28,7 @@
   > * 100s of tuning parameters for ultimate control 
   > * Modular Functions for easy re-use
   > * Roadster Example Car
+  > * E30 Example Car 
   > * Track Example (Ichi Circuit) 
 
   ### Usage

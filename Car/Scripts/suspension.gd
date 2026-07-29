@@ -13,7 +13,6 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
 		Data.compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, 0, Values.max_compression[wheel_index]) 
-	
 		# anti roll bar calc
 		
 		if Values.front_antiroll_bar:
@@ -38,6 +37,7 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		# spring force calc
 		
 		var spring_force = Values.spring_stiffness[wheel_index] * Data.compression[wheel_index]
+		print(spring_force)
 		var wheel_force_area = ray.global_position - car.global_position
 		Data.wheel_spring_force[wheel_index] = (spring_force - spring_dampning + Data.arb_force[wheel_index]) * up_dir_spring
 

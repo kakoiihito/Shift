@@ -7,11 +7,11 @@
 script = ExtResource("1_jcxrb")
 wheel_base = 2.57
 track = 1.4
-rest_length = [1.0, 1.0, 1.0, 1.0]
-spring_stiffness = [15200, 15200, 21500, 21500]
-max_compression = [0.5, 0.5, 0.5, 0.5]
+rest_length = [0.8, 0.8, 0.8, 0.8]
+spring_stiffness = [21300, 21300, 17900, 17900]
+max_compression = [0.3, 0.3, 0.3, 0.3]
 weight_distribution = [26.1, 26.1, 23.9, 23.9]
-damper_ratio = [0.0, 0.0, 0.0, 0.0]
+damper_ratio = [0.1, 0.1, 0.1, 0.1]
 rear_antiroll_bar = false
 front_antiroll_bar = false
 front_antiroll_bar_stiffness = 35000.0

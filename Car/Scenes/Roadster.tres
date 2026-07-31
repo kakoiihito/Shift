@@ -5,9 +5,9 @@
 
 [resource]
 script = ExtResource("1_whfmr")
-rest_length = [0.368, 0.368, 0.415, 0.415]
-spring_stiffness = [230000, 230000, 107500, 107500]
-max_compression = [0.1, 0.1, 0.1, 0.1]
+ride_frequency = [1.15, 1.15, 1.01, 1.01]
+max_compression = [0.2, 0.2, 0.2, 0.2]
+damper_ratio = [0.2, 0.2, 0.2, 0.2]
 rear_antiroll_bar = false
 front_antiroll_bar = false
 torque_curve = ExtResource("2_tsmdu")

@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bptghx0namqxm" path="res://Car/Scripts/car.gd" id="1_wlv1y"]
 [ext_resource type="Resource" uid="uid://bb7hoiqpkmfdr" path="res://Car/Scenes/Roadster.tres" id="2_qxxjp"]
-[ext_resource type="Texture2D" uid="uid://cxhxtab2fveq1" path="res://na.png" id="3_xgrtq"]
 [ext_resource type="PackedScene" uid="uid://cgkobuweayxxv" path="res://UI/debug.tscn" id="4_fegrl"]
 [ext_resource type="Script" uid="uid://dsq8xo3qb2hnk" path="res://Car/Scripts/camera.gd" id="5_qxxjp"]
 [ext_resource type="PackedScene" uid="uid://c2kmtnii4hlg8" path="res://UI/info.tscn" id="5_xgrtq"]
@@ -260,7 +259,6 @@ shadow_mesh = SubResource("ArrayMesh_ikh5c")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vwgl6"]
 resource_name = "Material.012"
 cull_mode = 2
-albedo_texture = ExtResource("3_xgrtq")
 roughness = 0.0
 metadata/_gltf_primary_texture_coord = 0
 
@@ -467,7 +465,7 @@ wheels = [NodePath("FL"), NodePath("FR"), NodePath("RR"), NodePath("RL")]
 
 [node name="FL" type="RayCast3D" parent="." unique_id=2001574332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.02892287, -0.76529473)
-target_position = Vector3(0, -0.5, 0)
+target_position = Vector3(0, -0.4, 0)
 
 [node name="Node3D" type="Node3D" parent="FL" unique_id=174888339]
 
@@ -478,7 +476,7 @@ skeleton = NodePath("")
 
 [node name="FR" type="RayCast3D" parent="." unique_id=77199814]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.029, -0.765)
-target_position = Vector3(0, -0.5, 0)
+target_position = Vector3(0, -0.4, 0)
 
 [node name="Node3D" type="Node3D" parent="FR" unique_id=1524401067]
 
@@ -489,7 +487,7 @@ skeleton = NodePath("")
 
 [node name="RR" type="RayCast3D" parent="." unique_id=426417715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.029, 0.7817565)
-target_position = Vector3(0, -0.5, 0)
+target_position = Vector3(0, -0.4, 0)
 
 [node name="Node3D" type="Node3D" parent="RR" unique_id=1408479309]
 
@@ -500,7 +498,7 @@ skeleton = NodePath("")
 
 [node name="RL" type="RayCast3D" parent="." unique_id=155731066]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.02892287, 0.78127617)
-target_position = Vector3(0, -0.5, 0)
+target_position = Vector3(0, -0.4, 0)
 
 [node name="Node3D" type="Node3D" parent="RL" unique_id=1414902017]
 

@@ -13,8 +13,7 @@ func car():
 
 @export_group("Suspension")
 
-@export var rest_length = [0.282, 0.282, 0.340, 0.340]
-@export var spring_stiffness = [28700, 28700, 17000, 17000]
+@export var ride_frequency = [1.0, 1.0, 1.0, 1.0]
 @export var max_compression = [0.11, 0.11, 0.11, 0.11]
 @export var weight_distribution = [0.25, 0.25, 0.25, 0.25]
 @export var damper_ratio = [0.69, 0.69, 0.75, 0.75]

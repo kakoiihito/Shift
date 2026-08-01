@@ -464,8 +464,8 @@ VehicleValues = ExtResource("2_qxxjp")
 wheels = [NodePath("FL"), NodePath("FR"), NodePath("RR"), NodePath("RL")]
 
 [node name="FL" type="RayCast3D" parent="." unique_id=2001574332]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.02892287, -0.76529473)
-target_position = Vector3(0, -0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.024761096, -0.76529473)
+target_position = Vector3(0, -0.5, 0)
 
 [node name="Node3D" type="Node3D" parent="FL" unique_id=174888339]
 
@@ -475,8 +475,8 @@ mesh = SubResource("ArrayMesh_fegrl")
 skeleton = NodePath("")
 
 [node name="FR" type="RayCast3D" parent="." unique_id=77199814]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.029, -0.765)
-target_position = Vector3(0, -0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.024838224, -0.765)
+target_position = Vector3(0, -0.5, 0)
 
 [node name="Node3D" type="Node3D" parent="FR" unique_id=1524401067]
 
@@ -486,8 +486,8 @@ mesh = SubResource("ArrayMesh_mecsa")
 skeleton = NodePath("")
 
 [node name="RR" type="RayCast3D" parent="." unique_id=426417715]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.029, 0.7817565)
-target_position = Vector3(0, -0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.467, -0.024838224, 0.7817565)
+target_position = Vector3(0, -0.5, 0)
 
 [node name="Node3D" type="Node3D" parent="RR" unique_id=1408479309]
 
@@ -497,8 +497,8 @@ mesh = SubResource("ArrayMesh_mecsa")
 skeleton = NodePath("")
 
 [node name="RL" type="RayCast3D" parent="." unique_id=155731066]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.02892287, 0.78127617)
-target_position = Vector3(0, -0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46722594, -0.024761096, 0.78127617)
+target_position = Vector3(0, -0.5, 0)
 
 [node name="Node3D" type="Node3D" parent="RL" unique_id=1414902017]
 

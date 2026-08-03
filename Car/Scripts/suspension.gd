@@ -31,7 +31,7 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		
 		var sprung_mass = car.mass * Values.weight_distribution[wheel_index]
 		var omega_n = TAU * Values.ride_frequency[wheel_index]
-		var k = sprung_mass * omega_n * omega_n             
+		var k = sprung_mass * omega_n * omega_n   
 		
 		# spring dampning calc
 		

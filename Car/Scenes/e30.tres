@@ -7,10 +7,10 @@
 script = ExtResource("1_jcxrb")
 wheel_base = 2.57
 track = 1.4
-ride_frequency = [1.2, 1.2, 1.2, 1.2]
+ride_frequency = [1.3, 1.3, 1.5, 1.5]
 max_compression = [0.3, 0.3, 0.3, 0.3]
 weight_distribution = [26.1, 26.1, 23.9, 23.9]
-damper_ratio = [0.1, 0.1, 0.1, 0.1]
+damper_ratio = [0.5, 0.5, 0.5, 0.5]
 front_antiroll_bar_stiffness = 35000.0
 rear_antiroll_bar_stiffness = 11000.0
 max_tire_turn_angle = 37.5

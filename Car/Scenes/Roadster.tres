@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_whfmr")
 ride_frequency = [1.15, 1.15, 1.01, 1.01]
-max_compression = [0.2, 0.2, 0.2, 0.2]
-damper_ratio = [0.3, 0.3, 0.3, 0.3]
+max_compression = [0.3, 0.3, 0.3, 0.3]
+damper_ratio = [0.35, 0.35, 0.35, 0.35]
 rear_antiroll_bar = false
 front_antiroll_bar = false
 front_antiroll_bar_stiffness = 0.0

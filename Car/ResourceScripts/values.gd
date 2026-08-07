@@ -126,6 +126,7 @@ func transmisson():
 @export var wheel_radius = 0.2885
 @export var wheel_mass = 13.4
 @export var rolling_resistance_coeff = 0.0105
+@export var wheel_inertia: float = 0.8
 
 func wheel():
 	pass

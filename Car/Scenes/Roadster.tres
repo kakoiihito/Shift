@@ -5,6 +5,15 @@
 
 [resource]
 script = ExtResource("1_whfmr")
+ride_frequency = [1.15, 1.15, 1.01, 1.01]
+max_compression = [0.3, 0.3, 0.3, 0.3]
+damper_ratio = [0.35, 0.35, 0.35, 0.35]
+rear_antiroll_bar = false
+front_antiroll_bar = false
+front_antiroll_bar_stiffness = 35000.0
+rear_antiroll_bar_stiffness = 11000.0
+FR_torque_brake = true
+FL_torque_brake = true
 torque_curve = ExtResource("2_tsmdu")
 TBR = 2.5
 metadata/_custom_type_script = "uid://rj0v3jri7dxo"

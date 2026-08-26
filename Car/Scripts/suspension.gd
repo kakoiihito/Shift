@@ -12,9 +12,11 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 		var hit = ray.get_collision_point()
 		var up_dir_spring = ray.global_transform.basis.y
 		var hit_distance = ray.global_position.distance_to(hit)
-		Data.compression[wheel_index] = clamp(Values.rest_length[wheel_index] - hit_distance, -Values.max_compression[wheel_index], Values.max_compression[wheel_index]) 
-			
+		var rest_length = ray.target_position.length()
+		Data.compression[wheel_index] = clamp(rest_length - hit_distance, 0, Values.max_compression[wheel_index]) 
+		
 		# anti roll bar calc
+		
 		if Values.front_antiroll_bar:
 			var arb = Values.front_antiroll_bar_stiffness * (Data.compression[0] - Data.compression[1])
 			Data.arb_force[0] = -arb
@@ -25,27 +27,33 @@ func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: Rigi
 			Data.arb_force[2] = -arb
 			Data.arb_force[3] = arb
 		
+		# frequency based spring rate calc
+		
+		var sprung_mass = car.mass * Values.weight_distribution[wheel_index]
+		var omega_n = TAU * Values.ride_frequency[wheel_index]
+		var k = sprung_mass * omega_n * omega_n   
+		
 		# spring dampning calc
 		
 		var world_vel = _get_point_velocity(hit, car)
 		var relative_vel = up_dir_spring.dot(world_vel)
-		var sprung_mass = car.mass * Values.weight_distribution[wheel_index]
-		var c_crit = 2.0 * sqrt(Values.spring_stiffness[wheel_index] * sprung_mass)
-		var c = Values.damper_ratio[wheel_index] * c_crit
+		var c_crit = 2.0 * sqrt(k * sprung_mass)
+		var c = (Values.damper_ratio[wheel_index] if relative_vel > 0.0 else Values.damper_ratio[wheel_index]) * c_crit
 		var spring_dampning = c * pow(abs(relative_vel), Values.velocity_exponent) * sign(relative_vel)
 		
 		# spring force calc
 		
-		var spring_force = Values.spring_stiffness[wheel_index] * Data.compression[wheel_index]
+		var spring_force = k * Data.compression[wheel_index]
 		var wheel_force_area = ray.global_position - car.global_position
 		Data.wheel_spring_force[wheel_index] = (spring_force - spring_dampning + Data.arb_force[wheel_index]) * up_dir_spring
 
-		wheels[wheel_index].position.y = -Data.compression[wheel_index]
+		wheels[wheel_index].global_position = ray.global_position - up_dir_spring * hit_distance
 		car.apply_force(Data.wheel_spring_force[wheel_index], wheel_force_area) # application
 	
 	else:
 		Data.compression[wheel_index] = 0.0
-		wheels[wheel_index].position.y = -Values.rest_length[wheel_index]
+		var rest_length = ray.target_position.length()
+		wheels[wheel_index].position.y = -rest_length
 		
 
 		

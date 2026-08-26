@@ -8,8 +8,8 @@ func _process(_delta: float) -> void:
 	
 	if car != null:
 		# Speed
-		car_velocity = car.linear_velocity.length()
-		var speed = car_velocity * 2.237
+		var wheel_speed = car.wheeldata.wheel_angular_velocity[0] * car.VehicleValues.wheel_radius
+		var speed = wheel_speed * 2.237
 		
 		# Gear
 		var gear = car.transmission.current_gear - 1

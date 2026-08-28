@@ -8,10 +8,12 @@ extends Resource
 @export var wheel_base = 2.265 
 @export var track = 1.41
 
+func car():
+	pass
+
 @export_group("Suspension")
 
-@export var rest_length = [0.282, 0.282, 0.340, 0.340]
-@export var spring_stiffness = [28700, 28700, 17000, 17000]
+@export var ride_frequency = [1.0, 1.0, 1.0, 1.0]
 @export var max_compression = [0.11, 0.11, 0.11, 0.11]
 @export var weight_distribution = [0.25, 0.25, 0.25, 0.25]
 @export var damper_ratio = [0.69, 0.69, 0.75, 0.75]
@@ -20,6 +22,9 @@ extends Resource
 @export var front_antiroll_bar_stiffness = 8500.0
 @export var rear_antiroll_bar_stiffness = 2500.0
 @export var velocity_exponent = 1.0
+
+func suspension():
+	pass
 
 @export_group("Steering")
 
@@ -31,11 +36,20 @@ extends Resource
 @export var speed_factor_coeff = 0.035
 @export var ackermann_factor = 1.0
 
+func steering():
+	pass
+
 @export_group("Brake")
 
 @export var max_brake_torque = 900.0
 
+func brake():
+	pass
+
 @export_group("Assists")
+
+func assists():
+	pass
 
 @export_subgroup("ABS")
 
@@ -56,11 +70,14 @@ var Stability = false # a thing to work on
 
 @export_group("Motor")
 
-@export var max_torque = 135.0
+func motor():
+	pass
+
+@export var max_torque = 136.0
 @export var max_rpm = 7200.0
 @export var idle_rpm = 800.0
 @export var stall_rpm = 0.0
-@export var engine_inertia = 0.12 
+@export var engine_inertia = 0.1
 @export var friction_c0 = 3.0
 @export var friction_c1 = 4.5
 @export var friction_c2 = 8.0
@@ -68,8 +85,8 @@ var Stability = false # a thing to work on
 @export var FR_torque_engine = false
 @export var RL_torque_engine = true
 @export var RR_torque_engine = true
-@export var FR_torque_brake = true
-@export var FL_torque_brake = true
+@export var FR_torque_brake = false
+@export var FL_torque_brake = false
 @export var RR_torque_brake = true
 @export var RL_torque_brake = true
 @export var torque_curve: Curve
@@ -93,13 +110,14 @@ enum DiffType {
 
 @export_group("Transmission")
 
-@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.333, 1.000, 0.814]
+func transmisson():
+	pass
+
+@export var gear_ratio = [-3.758, 0.0, 3.136, 1.888, 1.330, 1.000, 0.814]
 @export var shift_timer = 0.0
-@export var drive_train_efficeny = 0.82
+@export var drive_train_efficeny = 1.0
 @export var final_drive = 4.3
-@export var is_shifting = false
-@export var max_clutch_torque = 160.0
-@export var unlock_threshold = 1.0
+@export var max_clutch_torque = 262.5
 
 @export_group("Wheel")
 
@@ -108,14 +126,30 @@ enum DiffType {
 @export var wheel_radius = 0.2885
 @export var wheel_mass = 13.4
 @export var rolling_resistance_coeff = 0.0105
+@export var wheel_inertia: float = 0.8
+
+func wheel():
+	pass
 
 enum TireModelType {
 	MF52_Lite,
 	MF52_Full,
-	Pacejka_Simplified # still working on adding this
+	Pacejka_Simplified, # still working on adding this
+	Brush_Model
 }
 
-@export var TireModel: TireModelType = TireModelType.MF52_Lite
+@export var TireModel: TireModelType = TireModelType.Brush_Model
+
+# Brush Model
+
+@export_subgroup("Brush Model")
+
+func brush_model():
+	pass
+
+@export var brush_Csx: float = 65000.0  
+@export var brush_Csy: float = 50000.0  
+@export var brush_mu: float = 1.25
 
 # Pacejka MF 5.2 Lite 
 
@@ -151,6 +185,9 @@ enum TireModelType {
 @export var rBy21 = 9.2
 @export var rCy11 = 1.05
 @export var rVy51 = 1.9
+
+func mf52_lite():
+	pass
 
 # MF 5.2 model
 
@@ -242,3 +279,15 @@ enum TireModelType {
 @export var rVy6 = 0.0
 @export var lambda_ykappa = 1.0
 @export var lambda_Vyk = 1.0
+
+func mf52():
+	pass
+	
+@export_group("Debug")
+
+@export var DEBUG = true
+@export var Suspension_Arrow_Color: Color = Color.GREEN
+@export var Longtiude_Arrow_Color: Color = Color.RED
+@export var Lateral_Arrow_Color: Color = Color.BLUE
+@export var Position_Offset: Vector3 = Vector3(2, 0, 0)
+@export var Display_Force_Magntiude = false

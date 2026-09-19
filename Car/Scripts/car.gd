@@ -132,7 +132,7 @@ func _physics_process(delta: float) -> void:
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.MF52_Full:
 			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # requires wheel forces, suspension, motor, brakes
 		elif VehicleValues.TireModel == VehicleValues.TireModelType.Brush_Model:
-			BrushModel_Process._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, VehicleValues) # requires wheel forces, suspension, motor, brakes
+			MF52_FullProcess._get_wheel_angular_velocity(wheel, delta, wheeldata, engine, brake, suspension, car, VehicleValues) # requires wheel forces, suspension, motor, brakes
 
 	Assists.abs_proccess(delta, brake, wheeldata, VehicleValues)
 	Assists.tc_proccess(delta, engine, wheeldata, VehicleValues)

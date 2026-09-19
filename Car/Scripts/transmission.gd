@@ -3,12 +3,6 @@ extends Node
 
 
 func transmission_process(delta: float, Data: RuntimeData.transmission, Values: Resource):
-	
-	gear_change(Data, Values)
-	gear_ratio_change(Data, delta, Values)
-	
-func gear_change(Data: RuntimeData.transmission, Values: Resource):
-	
 	var target_clutch = Input.get_action_strength("Clutch")
 	if not Data.is_shifting and target_clutch > 0.95:
 		if Input.is_action_just_pressed("ShiftUp") and Data.current_gear < Values.gear_ratio.size() - 1:
@@ -19,8 +13,6 @@ func gear_change(Data: RuntimeData.transmission, Values: Resource):
 			Data.current_gear -= 1
 			Data.is_shifting = true
 			Data.shift_timer = 0.15 + randf() * 0.1
-
-func gear_ratio_change(Data: RuntimeData.transmission, delta: float, Values: Resource):
 
 	if Data.is_shifting:
 		Data.current_gear_ratio = 0.0

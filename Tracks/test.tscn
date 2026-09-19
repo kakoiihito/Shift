@@ -35,7 +35,7 @@ material = SubResource("StandardMaterial3D_5amgi")
 size = Vector3(2400, 3, 2400)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
-size = Vector3(2400, 3, 2400)
+size = Vector3(2400, 3, 300)
 
 [node name="Test" type="Node3D" unique_id=1300905328]
 
@@ -104,6 +104,7 @@ mesh = SubResource("BoxMesh_lbp5j")
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor/Floor" unique_id=1405423850]
+transform = Transform3D(1, 0, 0, 0, 0.99997526, 0, 0, 0, 8.429632, 0, 0, 0)
 shape = SubResource("BoxShape3D_37kl0")
 
 [node name="Functional" type="Node3D" parent="." unique_id=2031553437]
@@ -112,7 +113,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4642224, 4.3405104)
 [node name="E30" parent="Functional" unique_id=1125600135 instance=ExtResource("2_lbp5j")]
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
-transform = Transform3D(-0.6263046, 0, -0.7795785, 0, 1, 0, 0.7795785, 0, -0.6263046, -5.3882103, 4.738406, -2.8165026)
+transform = Transform3D(-0.626305, 0, -0.779579, 0, 1, 0, 0.779579, 0, -0.626305, -10.0349, 8.79027, -17.2665)
 
 [node name="RenderTest3" type="MeshInstance3D" parent="." unique_id=1568609221]
 transform = Transform3D(1, 0, 0, 0, -0.80963206, 0.5869377, 0, -0.5869377, -0.80963206, -64.91156, 3.87743, 82.714264)

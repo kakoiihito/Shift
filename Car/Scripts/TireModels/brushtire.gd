@@ -60,38 +60,33 @@ func _get_wheel_forces(ray: RayCast3D, WheelData: RuntimeData.wheels, Suspension
 
 func _get_wheel_angular_velocity(ray: RayCast3D, delta: float, WheelData: RuntimeData.wheels, EngineData: RuntimeData.engine, BrakeData: RuntimeData.brake, SuspensionData: RuntimeData.suspension, Values: Resource):
 	var wheel_index: int = ray.get_meta("wheel_index")
-
-	var angular_velocity: float = WheelData.wheel_angular_velocity[wheel_index]
-	var engine_torque: float = EngineData.wheel_engine_torque[wheel_index]
-	var brake_torque_mag: float = BrakeData.wheel_brake_torque[wheel_index]
-
 	var net_torque: float
 
 	# in air behavior
 
 	if not ray.is_colliding():
 
-		var brake_torque: float = brake_torque_mag * signf(angular_velocity)
-		var air_drag_coeff: float = 0.001 * absf(angular_velocity)
+		var brake_torque: float = BrakeData.wheel_brake_torque[wheel_index] * signf(WheelData.wheel_angular_velocity[wheel_index])
+		var air_drag_coeff: float = 0.001 * absf(WheelData.wheel_angular_velocity[wheel_index])
 
-		net_torque = engine_torque - brake_torque
-		angular_velocity = (angular_velocity + (net_torque / Values.wheel_inertia) * delta) / (1.0 + (air_drag_coeff / Values.wheel_inertia) * delta)
+		net_torque = EngineData.wheel_engine_torque[wheel_index] - brake_torque
+		WheelData.wheel_angular_velocity[wheel_index] = (WheelData.wheel_angular_velocity[wheel_index] + (net_torque / Values.wheel_inertia) * delta) / (1.0 + (air_drag_coeff / Values.wheel_inertia) * delta)
 
 	# on ground behavior
 
 	else:
 		var normal_force: float = SuspensionData.wheel_spring_force[wheel_index].length()
-		var rolling_resistance: float = Values.rolling_resistance_coeff * normal_force * Values.wheel_radius * signf(angular_velocity)
-		var ground_reaction_torque: float = -WheelData.longitude_force[wheel_index] * Values.wheel_radius
+		var rolling_resistance: float = Values.rolling_resistance_coeff * normal_force * Values.wheel_radius * signf(WheelData.wheel_angular_velocity[wheel_index])
+		var ground_reaction_torque: float = WheelData.longitude_force[wheel_index] * Values.wheel_radius
 
-		net_torque = engine_torque - brake_torque_mag + ground_reaction_torque - rolling_resistance
-		angular_velocity += (net_torque / Values.wheel_inertia) * delta
+		net_torque = EngineData.wheel_engine_torque[wheel_index] - BrakeData.wheel_brake_torque[wheel_index] - ground_reaction_torque - rolling_resistance
+		WheelData.wheel_angular_velocity[wheel_index] += (net_torque / Values.wheel_inertia) * delta
 
-		if brake_torque_mag > 0.0 and angular_velocity < 0.0:
-			angular_velocity = 0.0
+		if BrakeData.wheel_brake_torque[wheel_index] > 0.0 and WheelData.wheel_angular_velocity[wheel_index] < 0.0:
+			WheelData.wheel_angular_velocity[wheel_index] = 0.0
 
 
-	WheelData.wheel_angular_velocity[wheel_index] = angular_velocity
+
 
 
 

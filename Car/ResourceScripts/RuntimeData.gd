@@ -5,7 +5,6 @@ extends Resource
 class suspension:
 	var wheel_spring_force = [Vector3(), Vector3(), Vector3(), Vector3()]
 	var compression = [0.0, 0.0, 0.0, 0.0]
-	var arb_force = [0.0, 0.0, 0.0, 0.0]
 	
 class brake:
 	var wheel_brake_torque = [0.0, 0.0, 0.0, 0.0]
@@ -41,6 +40,7 @@ class wheels:
 	var aligning_torque = [0.0, 0.0, 0.0, 0.0]
 	var camber = [0.0, 0.0, 0.0, 0.0]
 	var slip_angle = [0.0, 0.0, 0.0, 0.0]
+	
 
 class steering:
 	var target_fl :float

@@ -50,7 +50,7 @@ func angular_velocity_sum_calc(WheelData: RuntimeData.wheels, Values: Resource):
 	
 func engine_torque_calc(EngineData: RuntimeData.engine, Values: Resource):
 	
-	var throttle_input = 1.0
+	var throttle_input = Input.get_action_strength("Gas")
 	
 	var normalized_rpm = EngineData.engine_rpm / Values.max_rpm
 

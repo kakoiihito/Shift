@@ -1,22 +1,21 @@
 extends Node
 
 func suspension_proccess(ray: RayCast3D, Data: RuntimeData.suspension, car: RigidBody3D, Values: Resource):
-	
+	var wheel_index: int = ray.get_meta("wheel_index")
 	if ray.is_colliding():
-		for i in range(4):
-			var sprung_mass = sprung_mass_calc(car, Values, i)
-			var k = spring_rate_calc(car, Values, i)
-			var spring_dampning = spring_dampning_calc(ray, car, Values, k, sprung_mass, i)
-			var arb_force = anti_roll_bar_calc(Data, Values)
-			compression_calc(ray, Data, Values, i)
-			
-			spring_force_calc(ray, Data, car, k, spring_dampning, arb_force, i)
-			print(Data.wheel_spring_force)
+		var sprung_mass = sprung_mass_calc(car, Values, wheel_index)
+		var k = spring_rate_calc(car, Values, wheel_index)
+		var spring_dampning = spring_dampning_calc(ray, car, Values, k, sprung_mass, wheel_index)
+		var arb_force = anti_roll_bar_calc(Data, Values)
+		compression_calc(ray, Data, Values, wheel_index)
+		
+		spring_force_calc(ray, Data, car, k, spring_dampning, arb_force, wheel_index)
 	else:
+		var wheels = [car.fl_wheel_mesh, car.fr_wheel_mesh, car.rl_wheel_mesh, car.rr_wheel_mesh]
 		for i in range(4):
 			Data.compression[i] = 0.0
-			#var rest_length = ray.target_position.length()
-			#wheels[i].position.y = -rest_length
+			var rest_length = ray.target_position.length()
+			wheels[i].position.y = -rest_length
 
 func anti_roll_bar_calc(Data: RuntimeData.suspension, Values: Resource):# anti roll bar calc
 		
@@ -82,11 +81,11 @@ func spring_force_calc(ray: RayCast3D, Data: RuntimeData.suspension, car: RigidB
 
 		# compression calc
 func compression_calc(ray: RayCast3D, Data: RuntimeData.suspension, Values: Resource, i: int):
+	
 	var hit = ray.get_collision_point()
 	var hit_distance = ray.global_position.distance_to(hit)
 	var rest_length = ray.target_position.length()
 	Data.compression[i] = clamp(rest_length - hit_distance, 0, Values.max_compression[i]) 
-		
 
 func _get_point_velocity(point: Vector3, car: RigidBody3D) -> Vector3:
 	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)

@@ -29,7 +29,6 @@ torque_curve = ExtResource("2_pdrt3")
 center_diff_split = 0.0
 TBR = 0.0
 gear_ratio = [-3.46, 0.0, 3.71, 2.403, 1.681, 1.26, 1.0]
-drive_train_efficeny = 2.0
 final_drive = 3.25
 max_clutch_torque = 300.0
 wheel_radius = 0.303

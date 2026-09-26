@@ -40,6 +40,9 @@ class wheels:
 	var aligning_torque = [0.0, 0.0, 0.0, 0.0]
 	var camber = [0.0, 0.0, 0.0, 0.0]
 	var slip_angle = [0.0, 0.0, 0.0, 0.0]
+	var forward_speed = 0.0
+	var side_velocity = 0.0
+	var wheel_surface_speed = 0.0
 	
 
 class steering:

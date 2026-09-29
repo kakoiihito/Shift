@@ -31,7 +31,6 @@ class transmission:
 
 class wheels:
 	var wheel_angular_velocity = [0.0, 0.0, 0.0, 0.0]
-	var F_max = [0.0, 0.0, 0.0, 0.0]
 	var longitude_force_vector = [Vector3(), Vector3(), Vector3(), Vector3()]
 	var lateral_force_vector = [Vector3(), Vector3(), Vector3(), Vector3()]
 	var longitude_force = [0.0, 0.0, 0.0, 0.0]
@@ -43,8 +42,21 @@ class wheels:
 	var forward_speed = 0.0
 	var side_velocity = 0.0
 	var wheel_surface_speed = 0.0
+	var normal_load = [0.0, 0.0, 0.0, 0.0]      
+	var friction_limit = [0.0, 0.0, 0.0, 0.0]   
+	var slip_force_x = [0.0, 0.0, 0.0, 0.0]     
+	var slip_force_y = [0.0, 0.0, 0.0, 0.0]
+	var s_combined = [0.0, 0.0, 0.0, 0.0]
+	var theta = [0.0, 0.0, 0.0, 0.0]
+	var total_force = [0.0, 0.0, 0.0, 0.0]      
+	var combined_force_vector = [Vector3(), Vector3(), Vector3(), Vector3()]
 	
 
 class steering:
 	var target_fl :float
 	var target_fr :float
+	var inner: float
+	var outer: float
+	var input_turn: float = 0.0
+	var steering_amount: float = 0.0
+	var max_angle: float = 0.0

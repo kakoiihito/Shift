@@ -112,7 +112,7 @@ func _physics_process(delta: float) -> void:
 	for wheel in wheels:
 		Suspension.suspension_proccess(wheel, suspension, car, VehicleValues) # independent
 	
-	Steering.steering_proccess(delta, steering, wheeldata, car, VehicleValues) # independent
+	Steering.steering_proccess(delta, steering, car, VehicleValues) # independent
 	Brake.brake_process(delta, brake, VehicleValues) # independent
 	
 

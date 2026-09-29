@@ -1,15 +1,10 @@
 extends Node
 
 func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionData: RuntimeData.transmission, WheelData: RuntimeData.wheels, Values: Resource) -> void:
-
-	var driven_wheels = [Values.FL_torque_engine, Values.FR_torque_engine, Values.RL_torque_engine, Values.RR_torque_engine]
-	var driven_count = 0
-
-	for i in range(4):
-		if driven_wheels[i]:
-			driven_count += 1
-
-	EngineData.engine_driven_count = driven_count
+	
+	# driven count calc
+	
+	driven_count_calc(Values, EngineData)
 	
 	# engine torque calculation
 	
@@ -34,6 +29,17 @@ func motor_process(delta: float, EngineData: RuntimeData.engine, TransmissionDat
 	#Torque division (lsds, open diff)
 	
 	wheel_torque_divison(TransmissionData, EngineData, WheelData, Values)
+	
+func driven_count_calc(Values: Resource, EngineData: RuntimeData.engine):
+	
+	var driven_wheels = [Values.FL_torque_engine, Values.FR_torque_engine, Values.RL_torque_engine, Values.RR_torque_engine]
+	var driven_count = 0
+
+	for i in range(4):
+		if driven_wheels[i]:
+			driven_count += 1
+
+	EngineData.engine_driven_count = driven_count
 
 func angular_velocity_sum_calc(WheelData: RuntimeData.wheels, Values: Resource):
 	

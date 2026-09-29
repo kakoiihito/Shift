@@ -1,32 +1,44 @@
 extends Node
 
-func steering_proccess(delta: float, SteeringData: RuntimeData.steering, WheelData: RuntimeData.wheels, car: RigidBody3D, Values: Resource) -> void:
+func steering_proccess(delta: float, SteeringData: RuntimeData.steering, car: RigidBody3D, Values: Resource) -> void:
 	
-	var input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
-	var speed = car.linear_velocity.length()
-	var speed_factor = 1.0 / (1.0 + pow(speed * Values.speed_factor_coeff, 2))
-	var steering_amount = (input_turn * deg_to_rad(Values.steering_wheel_travel) * speed_factor) / Values.steering_ratio
-	var max_angle = deg_to_rad(Values.max_tire_turn_angle)
-	var mz_to_angle = 1.0 / (Values.steering_stiffness * Values.steering_ratio)
+	steering_input_calc(Values, SteeringData)
+	inner_outer_turn_calc(Values, SteeringData)
+	ackermann_target_calc(Values, SteeringData)
+	apply_wheel_steering(delta, Values, SteeringData, car)
 
+func steering_input_calc(Values: Resource, SteeringData: RuntimeData.steering) -> void:
 	
+	SteeringData.input_turn = Input.get_action_strength("SteerLeft") - Input.get_action_strength("SteerRight")
+	SteeringData.steering_amount = (SteeringData.input_turn * deg_to_rad(Values.steering_wheel_travel)) / Values.steering_ratio
+	SteeringData.max_angle = deg_to_rad(Values.max_tire_turn_angle)
+
+
+func inner_outer_turn_calc(Values: Resource, SteeringData: RuntimeData.steering) -> void:
+	
+	if abs(SteeringData.steering_amount) < 0.0001:
+		SteeringData.inner = 0.0
+		SteeringData.outer = 0.0
+		return
+
 	var L = Values.wheel_base
 	var W = Values.track
-	var R = L / tan(abs(steering_amount))
+	var R = L / tan(abs(SteeringData.steering_amount))
 
-	var inner = atan(L / (R - W * 0.5))
-	var outer = atan(L / (R + W * 0.5))
-		
-	if steering_amount > 0.0:
-		SteeringData.target_fr = lerp(steering_amount, inner, Values.ackermann_factor) # left
-		SteeringData.target_fl = lerp(steering_amount, outer, Values.ackermann_factor)
+	SteeringData.inner = atan(L / (R - W * 0.5))
+	SteeringData.outer = atan(L / (R + W * 0.5))
+
+
+func ackermann_target_calc(Values: Resource, SteeringData: RuntimeData.steering) -> void:
+	
+	if SteeringData.steering_amount > 0.0:
+		SteeringData.target_fr = lerp(SteeringData.steering_amount, SteeringData.inner, Values.ackermann_factor) # left
+		SteeringData.target_fl = lerp(SteeringData.steering_amount, SteeringData.outer, Values.ackermann_factor)
 	else:
-		SteeringData.target_fl = lerp(steering_amount, -inner, Values.ackermann_factor)
-		SteeringData.target_fr = lerp(steering_amount, -outer, Values.ackermann_factor) # right
-	
-	SteeringData.target_fl = clamp(SteeringData.target_fl - WheelData.aligning_torque[0] * mz_to_angle, -max_angle, max_angle) * 0.8
-	SteeringData.target_fr = clamp(SteeringData.target_fr - WheelData.aligning_torque[1] * mz_to_angle, -max_angle, max_angle) * 0.8
-	
+		SteeringData.target_fl = lerp(SteeringData.steering_amount, -SteeringData.inner, Values.ackermann_factor)
+		SteeringData.target_fr = lerp(SteeringData.steering_amount, -SteeringData.outer, Values.ackermann_factor) # r
+
+func apply_wheel_steering(delta: float, Values: Resource, SteeringData: RuntimeData.steering, car: RigidBody3D) -> void:
 	
 	car.fl_wheel.rotation.y = move_toward(
 		car.fl_wheel.rotation.y,
@@ -38,5 +50,3 @@ func steering_proccess(delta: float, SteeringData: RuntimeData.steering, WheelDa
 		SteeringData.target_fr,
 		Values.tire_turn_speed * delta
 	)
-	
-	

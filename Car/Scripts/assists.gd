@@ -1,15 +1,30 @@
 extends Node
 
 
-func abs_proccess(delta: float, BrakeData: RuntimeData.brake, WheelData: RuntimeData.wheels, Values: Resource) -> void:
-	if Values.ABS == true:
-		for i in range(4):
-			if clamp(WheelData.slip_ratio[i], -1.0, 1.0) > Values.abs_slip_threshold:
-				BrakeData.abs_active[i] = true
-				BrakeData.wheel_brake_torque[i] *= exp(Values.abs_decay_rate * delta)
-			else:
-				BrakeData.abs_active[i] = false
-				
+func abs_proccess(delta: float, AssistsData: RuntimeData.assists, BrakeData: RuntimeData.brake, WheelData: RuntimeData.wheels, Values: Resource) -> void:
+
+	for i in range(4):
+		if not Values.ABS:
+			AssistsData.abs_active[i] = false
+			BrakeData.abs_input_brake[i] = BrakeData.input_brake
+			continue
+
+		var slip = WheelData.slip_ratio[i]
+
+		if AssistsData.abs_active[i]:
+			if slip < Values.abs_slip_apply:   # wheel has recovered
+				AssistsData.abs_active[i] = false
+		elif slip > Values.abs_slip_release:     # wheel slipping too much
+			AssistsData.abs_active[i] = true
+
+		var target = BrakeData.input_brake
+		if AssistsData.abs_active[i]:
+			target *= Values.abs_pedal_target
+
+		var current: float = BrakeData.abs_input_brake[i]
+		var rate: float = Values.abs_rate_release if target < current else Values.abs_rate_apply
+		BrakeData.abs_input_brake[i] = move_toward(current, target, rate * delta)
+		
 func tc_proccess(delta: float, EngineData: RuntimeData.engine, WheelData: RuntimeData.wheels, Values: Resource) -> void:
 	if Values.TC == true:
 		for i in range(4):

@@ -2,7 +2,10 @@
 
 <img width="690" height="320" alt="Screenshot from 2026-10-26 17-56-59" src="https://github.com/user-attachments/assets/4e1ea6c7-fb53-419a-b29d-ad70420c3f4f" />
 
-<img alt="Static Badge" src="https://img.shields.io/badge/License-MIT-red?style=flat&label=License&link=https%3A%2F%2Fgithub.com%2Fkakoiihito%2FShift%3Ftab%3DMIT-1-ov-file">
+<img alt="Static Badge" src="https://img.shields.io/badge/License-MIT-red?style=flat&label=License&link=https%3A%2F%2Fgithub.com%2Fkakoiihito%2FShift%3Ftab%3DMIT-1-ov-file"> <img alt="Static Badge" src="https://img.shields.io/badge/Language-GDScript-lightblue"> <img alt="Static Badge" src="https://img.shields.io/badge/OS-Windows%2C%20Linux-green"> <img alt="Static Badge" src="https://img.shields.io/badge/Engine-Godot-orange?cacheSeconds=https%3A%2F%2Fgodotengine.org%2F">
+
+
+
 
   ## About This Project
 

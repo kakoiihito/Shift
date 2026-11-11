@@ -12,7 +12,7 @@
 > Shift is a vehicle  simulator made in the Godot engine attempting to become the gold standard of vehicle simulation. This projects aims to simulate vehicles at an accurate level and was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Feature List
-  > * 333 Hz Tick Rate Project
+  > * 300 Hz Tick Rate Project
   > * 100+ of tuning parameters for ultimate control 
   > * Modular Functions for easy re-use
   > * Car

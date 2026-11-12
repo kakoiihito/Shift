@@ -45,7 +45,24 @@
 
   ## Getting Started
 
-  ### Installing
+  ### Installing Plugin
+
+> Requirements: Hardware Supporting Godot 4.7
+>
+> 1. Download the latest project release
+> ```
+> https://github.com/kakoiihito/Shift/releases/download/v1.0.0/Shift-v1.0.zip)
+> ```
+> 2. Install and Open Godot Engine (https://godotengine.org/download/windows/)
+> 3. Create or open an existing project
+
+><img width="588" height="170" alt="plugin" src="https://github.com/user-attachments/assets/5665376d-4a65-42c7-9a63-c222e3270d22" />
+
+> 4. Select the Import Button
+> 5. Find the zip file and import it
+> 6. Compile the project or run through the engine
+
+  ### Using Source Code
 
 > Requirements: Operating System and Hardware Supporting Godot 4.7 and git
 >
@@ -53,9 +70,12 @@
 > ```
 > gh repo clone kakoiihito/Shift
 > ```
+
 > 2. Install and Open Godot Engine (https://godotengine.org/download/windows/)
-> 3. Select the Import button
-> 4. Find the file and import it
+><img width="537" height="315" alt="image" src="https://github.com/user-attachments/assets/e2f77325-545f-43d4-9a64-a1d867b0a4e0" />
+
+> 3. Select the Import button in the Project Manager window
+> 4. Find the folder and import it
 > 5. Compile the project or run through the engine
 
   ### Documentation

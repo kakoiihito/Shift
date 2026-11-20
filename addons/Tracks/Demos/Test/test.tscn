@@ -1,0 +1,269 @@
+[gd_scene format=3 uid="uid://dpu35v4g0f3s4"]
+
+[ext_resource type="Texture2D" uid="uid://borrppv5qrpkg" path="res://addons/Tracks/Demos/Test/Textures/Grid.jpg" id="1_6yjmu"]
+[ext_resource type="PackedScene" uid="uid://dg7ovdjb3e81a" path="res://addons/Car/Demos/E30/e30.scn" id="2_wihm1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_37kl0"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_8uh7m"]
+sky_material = SubResource("ProceduralSkyMaterial_37kl0")
+
+[sub_resource type="Environment" id="Environment_6uqi0"]
+background_mode = 2
+sky = SubResource("Sky_8uh7m")
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5amgi"]
+albedo_texture = ExtResource("1_6yjmu")
+uv1_scale = Vector3(0.04, 0.04, 0.04)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_lbp5j"]
+material = SubResource("StandardMaterial3D_5amgi")
+size = Vector3(2400, 3, 2400)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37kl0"]
+size = Vector3(2400, 3, 2400)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_37kl0"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8uh7m"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_2ksnj"]
+size = Vector3(13, 3, 5)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_6yjmu"]
+data = PackedVector3Array(0, 1.5, 2.5, 6.5, -1.5, 2.5, -6.5, -1.5, 2.5, 0, 1.5, -2.5, -6.5, -1.5, -2.5, 6.5, -1.5, -2.5, 0, 1.5, 2.5, 0, 1.5, -2.5, 6.5, -1.5, 2.5, 0, 1.5, -2.5, 6.5, -1.5, -2.5, 6.5, -1.5, 2.5, 0, 1.5, -2.5, 0, 1.5, 2.5, -6.5, -1.5, -2.5, 0, 1.5, 2.5, -6.5, -1.5, 2.5, -6.5, -1.5, -2.5, -6.5, -1.5, 2.5, 6.5, -1.5, 2.5, -6.5, -1.5, -2.5, 6.5, -1.5, 2.5, 6.5, -1.5, -2.5, -6.5, -1.5, -2.5)
+
+[node name="Test" type="Node3D" unique_id=1300905328]
+
+[node name="Lighting&Enviorment" type="Node3D" parent="." unique_id=705270786]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Lighting&Enviorment" unique_id=1814475033]
+environment = SubResource("Environment_6uqi0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Lighting&Enviorment" unique_id=475219111]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Scenery&Level" type="Node3D" parent="." unique_id=38368424]
+
+[node name="Floor" type="MeshInstance3D" parent="Scenery&Level" unique_id=1604084394]
+mesh = SubResource("BoxMesh_lbp5j")
+
+[node name="Floor" type="StaticBody3D" parent="Scenery&Level/Floor" unique_id=1049420459]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Floor/Floor" unique_id=1405423850]
+shape = SubResource("BoxShape3D_37kl0")
+
+[node name="Bumps" type="Node3D" parent="Scenery&Level" unique_id=1891028796]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.0722227, 0, 0)
+
+[node name="Bump" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=559140122]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump" unique_id=1272663136]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump" unique_id=1282092686]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump2" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1251657788]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump2" unique_id=2069394748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump2" unique_id=1095308092]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump3" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=2051649741]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -6.82753)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump3" unique_id=1947867299]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump3" unique_id=700245316]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump4" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=477749622]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -9.723824)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump4" unique_id=255880504]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump4" unique_id=2140212364]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump5" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1264202798]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -9.723824)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump5" unique_id=801116045]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump5" unique_id=1512576915]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump6" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=263776823]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -9.723824)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump6" unique_id=1300903787]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump6" unique_id=2097559836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump7" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=170365908]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -12.676011)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump7" unique_id=1871914505]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump7" unique_id=1016914966]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump8" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=871825149]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -12.676011)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump8" unique_id=1677473438]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump8" unique_id=814085988]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump9" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=44924614]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -12.676011)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump9" unique_id=2109296729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump9" unique_id=2042022534]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump10" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1837284041]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -15.51556)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump10" unique_id=7805572]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump10" unique_id=1293510291]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump11" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1620914446]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -15.51556)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump11" unique_id=301655054]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump11" unique_id=2073304757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump12" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1678894201]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -15.51556)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump12" unique_id=937475741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump12" unique_id=180167924]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump13" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=925217638]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -18.411854)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump13" unique_id=403015750]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump13" unique_id=130516082]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump14" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1872546488]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -18.411854)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump14" unique_id=1479934045]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump14" unique_id=1030011842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump15" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=750516799]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -18.411854)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump15" unique_id=1316120862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump15" unique_id=422621004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump16" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=721942953]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -21.36404)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump16" unique_id=156680647]
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump16" unique_id=64885638]
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump17" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1247034100]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -21.36404)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump17" unique_id=1911098002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump17" unique_id=52884898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Bump18" type="StaticBody3D" parent="Scenery&Level/Bumps" unique_id=1656234150]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 1.1142449, -21.36404)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Bumps/Bump18" unique_id=1669051672]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+shape = SubResource("CylinderShape3D_37kl0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Bumps/Bump18" unique_id=1477503493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("CylinderMesh_8uh7m")
+
+[node name="Ramps" type="Node3D" parent="Scenery&Level" unique_id=1554824510]
+
+[node name="Ramp" type="StaticBody3D" parent="Scenery&Level/Ramps" unique_id=1891379837]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 2.1260693, -13.581783)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Scenery&Level/Ramps/Ramp" unique_id=1498931214]
+mesh = SubResource("PrismMesh_2ksnj")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scenery&Level/Ramps/Ramp" unique_id=196378627]
+shape = SubResource("ConcavePolygonShape3D_6yjmu")
+
+[node name="Functional" type="Node3D" parent="." unique_id=2031553437]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4642224, 4.3405104)
+
+[node name="E30" parent="Functional" unique_id=1125600135 instance=ExtResource("2_wihm1")]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=317120203]
+transform = Transform3D(-0.8171448, 0, -0.57643235, 0, 1, 0, 0.5764323, 0, -0.8171449, -3.1465569, 4.375242, -3.3562698)

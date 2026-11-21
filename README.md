@@ -55,7 +55,7 @@
 >
 > 1. Download the latest project release
 > ```
-> https://github.com/kakoiihito/Shift/releases/download/v1.0.0/Shift-v1.0.zip)
+> https://github.com/kakoiihito/Shift/releases
 > ```
 > 2. Install and Open Godot Engine (https://godotengine.org/download/windows/)
 > 3. Create or open an existing project

@@ -12,7 +12,7 @@
 > Shift is a vehicle  simulator made in the Godot engine attempting to become the gold standard of vehicle simulation. This projects aims to simulate vehicles at an accurate level and was made as an alternative to other vehicle simulators open to anyone to improve, work on, use for projects, or personal use.
 
   ### Feature List
-  > * 300 Hz Tick Rate Project
+  > * Customizable Physics Hz Rate (1-1000Hz)
   > * 100+ of tuning parameters for ultimate control 
   > * Modular Functions for easy re-use
   > * Car
@@ -38,10 +38,14 @@
   >   * Ackermann Steering Model
   >   * Adjustable Ackermann
   >   * Adjustable Steering Ratio and Angle
+  > * Aerodynamics
+  >   * Drag
+  >   * Downforce/Lift
+  >   * Aero Weighting/Balance Tuning
   > * Example Assets 
   >   * Roadster Example Car
   >   * E30 Example Car 
-  >   * Track Example (Ichi Circuit) 
+  >   * Track Example (Ichi Circuit)
 
   ## Getting Started
 
@@ -95,4 +99,5 @@
 
   ## Acknowledgements
 
-  > Inspired and originally based off of DAShoe1's Godot-Easy-Vehicle-Physics (https://github.com/DAShoe1/Godot-Easy-Vehicle-Physics)
+> * Inspired and originally based off of DAShoe1's Godot-Easy-Vehicle-Physics (https://github.com/DAShoe1/Godot-Easy-Vehicle-Physics)
+> *  Features and Inspiration from Jenga500's fork of Shift (https://github.com/Jenga500/Shift)
